@@ -1,6 +1,6 @@
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.createStore
-import com.fuzz.kedux.reducer
+import com.fuzz.kedux.typedReducer
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,11 +16,10 @@ sealed class StoreTestAction {
     object Reset : StoreTestAction()
 }
 
-val sampleReducer = reducer<State> { state, action ->
+val sampleReducer = typedReducer<State, StoreTestAction> { state, action ->
     when (action) {
         is StoreTestAction.NameChange -> state.copy(name = action.name)
         is StoreTestAction.Reset -> state
-        else -> state
     }
 }
 
@@ -65,5 +64,6 @@ class StoreTest {
         val action = object {
         }
         store.dispatch(action)
+        assertEquals(State(""), store.state)
     }
 }
