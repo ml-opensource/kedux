@@ -30,6 +30,8 @@ class Store<S>(
     val state: ReceiveChannel<S>
         get() = _state.openSubscription()
 
+    suspend fun awaitDispatch(action: Any) = dispatch(action).join()
+
     fun dispatch(action: Any): Job = GlobalScope.launch {
         _state.send(reducer.reduce(_state.value, action))
         changeListenerSet.forEach { it(_state.value) }

@@ -45,7 +45,7 @@ class StoreTest {
 
     @Test
     fun dispatchActionChangesState() = runTest {
-        store.dispatch(StoreTestAction.NameChange("NewName")).join()
+        store.awaitDispatch(StoreTestAction.NameChange("NewName"))
         val updated = store.state.receive()
         assertEquals(State("NewName"), updated)
     }
@@ -59,11 +59,11 @@ class StoreTest {
             assertEquals(State("NewName2"), state)
             count++
         }
-        store.dispatch(StoreTestAction.NameChange("NewName2")).join()
+        store.awaitDispatch(StoreTestAction.NameChange("NewName2"))
         job.join()
         assertEquals(1, count)
 
-        store.dispatch(StoreTestAction.NameChange("Done")).join()
+        store.awaitDispatch(StoreTestAction.NameChange("Done"))
         job.join()
         // ensure count no longer increases.
         assertEquals(1, count)
@@ -74,7 +74,7 @@ class StoreTest {
     fun invalidAction() = runTest {
         val action = object {
         }
-        store.dispatch(action).join()
+        store.awaitDispatch(action)
         assertEquals(State(""), store.state.receive())
     }
 }
