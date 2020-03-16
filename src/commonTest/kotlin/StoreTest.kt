@@ -1,6 +1,11 @@
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.typedReducer
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -23,6 +28,7 @@ val sampleReducer = typedReducer<State, StoreTestAction> { state, action ->
     }
 }
 
+@ExperimentalCoroutinesApi
 class StoreTest {
 
     private lateinit var store: Store<State>
@@ -33,37 +39,42 @@ class StoreTest {
     }
 
     @Test
-    fun storeConstructed() {
-        assertEquals(State(""), store.state)
+    fun storeConstructed() = runTest {
+        assertEquals(State(""), store.state.receive())
     }
 
     @Test
-    fun dispatchActionChangesState() {
-        store.dispatch(StoreTestAction.NameChange("NewName"))
-        assertEquals(State("NewName"), store.state)
+    fun dispatchActionChangesState() = runTest {
+        store.dispatch(StoreTestAction.NameChange("NewName")).join()
+        val updated = store.state.receive()
+        assertEquals(State("NewName"), updated)
     }
 
     @Test
-    fun canSubscribeToAction() {
+    fun canSubscribeToAction() = runTest {
         var count = 0
-        val stateListener: (state: State) -> Unit = { state ->
+
+        val job = GlobalScope.launch {
+            val state = store.state.consumeAsFlow().first()
+            assertEquals(State("NewName2"), state)
             count++
         }
-        store.subscribe(stateListener)
-        store.dispatch(StoreTestAction.NameChange("NewName2"))
+        store.dispatch(StoreTestAction.NameChange("NewName2")).join()
+        job.join()
         assertEquals(1, count)
 
-        store.unsubscribe(stateListener)
-        store.dispatch(StoreTestAction.NameChange("Done"))
+        store.dispatch(StoreTestAction.NameChange("Done")).join()
+        job.join()
         // ensure count no longer increases.
         assertEquals(1, count)
+
     }
 
     @Test
-    fun invalidAction() {
+    fun invalidAction() = runTest {
         val action = object {
         }
-        store.dispatch(action)
-        assertEquals(State(""), store.state)
+        store.dispatch(action).join()
+        assertEquals(State(""), store.state.receive())
     }
 }
