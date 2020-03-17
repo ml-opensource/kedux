@@ -39,6 +39,7 @@ class SelectorClass<S, R> internal constructor(
                 }
             }
             store.logIfEnabled { "selector -> DONE" }
+            close()
         }
     }
 

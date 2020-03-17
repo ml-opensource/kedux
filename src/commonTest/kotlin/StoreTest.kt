@@ -4,7 +4,7 @@ import com.fuzz.kedux.createStore
 import com.fuzz.kedux.typedReducer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -91,7 +91,10 @@ class StoreTest {
             store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
             store.awaitDispatch(StoreTestAction.NameChange("Name2-$it"))
         }
-        assertEquals("Name2-2", name.receive())
+        store.closeState()
+        name.consumeAsFlow().collectLatest {
+            assertEquals("Name2-2", it)
+        }
         assertEquals(7, count)
     }
 
@@ -106,7 +109,10 @@ class StoreTest {
             store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
             store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
         }
-        assertEquals("Name2", name.receive())
+        store.closeState()
+        name.consumeAsFlow().collectLatest {
+            assertEquals("Name2", it)
+        }
         assertEquals(4, count)
     }
 }

@@ -31,6 +31,10 @@ class Store<S> internal constructor(
     val state: ReceiveChannel<S>
         get() = _state.openSubscription()
 
+    fun closeState() {
+        _state.close()
+    }
+
     /**
      * Used to await dispatch result before continuing. This is useful to ensure dispatch parity within a coroutine.
      */
