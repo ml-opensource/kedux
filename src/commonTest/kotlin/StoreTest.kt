@@ -1,8 +1,10 @@
 import com.fuzz.kedux.Store
+import com.fuzz.kedux.createSelector
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.typedReducer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -35,7 +37,7 @@ class StoreTest {
 
     @BeforeTest
     fun constructStore() {
-        store = createStore(sampleReducer, State(""))
+        store = createStore(sampleReducer, State(""), loggingEnabled = true)
     }
 
     @Test
@@ -76,5 +78,35 @@ class StoreTest {
         }
         store.awaitDispatch(action)
         assertEquals(State(""), store.state.receive())
+    }
+
+    @Test
+    fun selectorEmitsAllValues() = runTest {
+        var count = 0
+        val name = store.createSelector { state ->
+            count++
+            state.name
+        }
+        repeat(3) {
+            store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
+            store.awaitDispatch(StoreTestAction.NameChange("Name2-$it"))
+        }
+        assertEquals("Name2-2", name.receive())
+        assertEquals(7, count)
+    }
+
+    @Test
+    fun selectorSelectivelyEmitsValues() = runTest {
+        var count = 0
+        val name = store.createSelector { state ->
+            count++
+            state.name
+        }
+        repeat(3) {
+            store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
+            store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
+        }
+        assertEquals("Name2", name.receive())
+        assertEquals(4, count)
     }
 }

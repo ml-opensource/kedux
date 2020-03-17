@@ -5,9 +5,9 @@
       <configuration version="3" platform="JavaScript " allPlatforms="JS []" useProjectSettings="false" isTestModule="true" externalProjectId="kedux">
         <dependsOnModuleNames>kedux:commonTest</dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.kedux.jsMain</sourceSet>
           <sourceSet>com.example.kedux.commonTest</sourceSet>
           <sourceSet>com.example.kedux.commonMain</sourceSet>
+          <sourceSet>com.example.kedux.jsMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>

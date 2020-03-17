@@ -8,11 +8,11 @@
           <dependsOn>kedux:iosTest</dependsOn>
         </dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.kedux.commonTest</sourceSet>
-          <sourceSet>com.example.kedux.iosMain</sourceSet>
           <sourceSet>com.example.kedux.iosArm64Main</sourceSet>
           <sourceSet>com.example.kedux.iosTest</sourceSet>
+          <sourceSet>com.example.kedux.commonTest</sourceSet>
           <sourceSet>com.example.kedux.commonMain</sourceSet>
+          <sourceSet>com.example.kedux.iosMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <compilerSettings />
