@@ -8,6 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 typealias StoreCreator<S> = (reducer: Reducer<S>, initialState: S) -> Store<S>
 
@@ -15,17 +16,37 @@ typealias StoreCreator<S> = (reducer: Reducer<S>, initialState: S) -> Store<S>
 fun <S> createStore(
     reducer: Reducer<S>,
     initialState: S,
-    enhancer: Enhancer<S>? = null,
+    enhancer: Enhancer<S> = emptyEnhancer(),
     loggingEnabled: Boolean = false
 ) =
     Store(reducer, initialState, enhancer, loggingEnabled)
 
 class Store<S> internal constructor(
+    /**
+     * The main reducer on this store. See Reducers.kt
+     */
     private var reducer: Reducer<S>,
+
+    /**
+     * Provide a default state for the application store.
+     */
     initialState: S,
-    private val enhancer: Enhancer<S>? = null,
-    val loggingEnabled: Boolean = false
-) : CoroutineScope by CoroutineScope(Dispatchers.Default) {
+
+    /**
+     * Used to enhance
+     */
+    private val enhancer: Enhancer<S> = emptyEnhancer(),
+
+    /**
+     * If true, everything is logged to the native console.
+     */
+    val loggingEnabled: Boolean = false,
+    /**
+     * Specify a [coroutineContext] to run dispatches, selectors, and reducers within.
+     * By default this is the [Dispatchers.Default]
+     */
+    coroutineContext: CoroutineContext = Dispatchers.Default
+) : CoroutineScope by CoroutineScope(coroutineContext) {
     private var _state: ConflatedBroadcastChannel<S> = ConflatedBroadcastChannel(initialState)
 
     val state: ReceiveChannel<S>
@@ -46,9 +67,12 @@ class Store<S> internal constructor(
      */
     fun dispatch(action: Any): Job = launch {
         logIfEnabled { "dispatch -> $action" }
-        val value = reducer.reduce(_state.value, action)
-        logIfEnabled { "state -> $value" }
-        _state.send(value)
+        val dispatcher = { enhancedAction: Any ->
+            val value = reducer.reduce(_state.value, enhancedAction)
+            logIfEnabled { "state -> $value" }
+            _state.offer(value)
+        }
+        enhancer(this@Store)(dispatcher)(action)
     }
 
     fun replaceReducer(reducer: Reducer<S>) {
