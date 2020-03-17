@@ -11,7 +11,7 @@ typealias Selector<S, R> = (state: S) -> R
 typealias StoreLogger = (() -> String) -> Unit
 
 @ExperimentalCoroutinesApi
-class SelectorClass<S, R> internal constructor(
+class SelectorClass<S, R : Any?> internal constructor(
     private val storeLogger: StoreLogger,
     private val selector: Selector<S, R>
 ) {
@@ -27,8 +27,12 @@ class SelectorClass<S, R> internal constructor(
             storeLogger { "selector -> RECOMPUTE $value" }
             return value
         } else {
-            storeLogger { "selector -> UNCHANGED ${previousSelectorValue.value}" }
-            return previousSelectorValue.value!!
+            val value = previousSelectorValue.value
+            storeLogger { "selector -> UNCHANGED $value" }
+            // unsafe cast as kotlin has no way to know that R is optional from the class.
+            // let's not force unwrap, as we expect callers to know nullability.
+            @Suppress("UNCHECKED_CAST")
+            return value as R
         }
     }
 }
@@ -62,6 +66,31 @@ fun <S, R1, R2> Store<S>.createSelector(
         channel.send(selectorClass.consumeState(latest))
         launch {
             channel.consumeEach { latest -> this@createSelectorProducer.send(selector2Class.consumeState(latest)) }
+        }
+    }
+    logIfEnabled { "selector -> DONE" }
+    channel.close()
+    close()
+}
+
+@ExperimentalCoroutinesApi
+fun <S, R1, R2, R3> Store<S>.createSelector(
+    selector1: Selector<S, R1>,
+    selector2: Selector<R1, R2>,
+    selector3: Selector<R2, R3>
+): ReceiveChannel<R3> = createSelectorProducer {
+    val selectorClass = SelectorClass(this@createSelector::logIfEnabled, selector1)
+    val selector2Class = SelectorClass(this@createSelector::logIfEnabled, selector2)
+    val selector3Class = SelectorClass(this@createSelector::logIfEnabled, selector3)
+    val channel = Channel<R1>(Channel.CONFLATED)
+    val channel2 = Channel<R2>(Channel.CONFLATED)
+    state.consumeEach { state ->
+        channel.send(selectorClass.consumeState(state))
+        launch {
+            channel.consumeEach { latest -> channel2.send(selector2Class.consumeState(latest)) }
+        }
+        launch {
+            channel2.consumeEach { latest -> this@createSelectorProducer.send(selector3Class.consumeState(latest)) }
         }
     }
     logIfEnabled { "selector -> DONE" }

@@ -12,7 +12,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-data class Location(val id: Int)
+data class Product(val id: Int, val name: String)
+data class Location(val id: Int, val other: String, val product: Product? = null)
 data class State(val name: String, val location: Location? = null)
 
 sealed class StoreTestAction {
@@ -132,13 +133,44 @@ class StoreTest {
             state?.id
         }
         repeat(3) {
-            store.awaitDispatch(StoreTestAction.LocationChange(Location(5)))
-            store.awaitDispatch(StoreTestAction.LocationChange(Location(3)))
+            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1")))
+            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1")))
             store.awaitDispatch(StoreTestAction.NameChange("New Name"))
         }
         store.closeState()
         location.consumeAsFlow().collectLatest { value: Int? ->
-            assertEquals(3, value)
+            assertEquals(5, value)
+            assertEquals(3, count1)
+            assertEquals(1, count2)
+        }
+    }
+
+    @Test
+    fun composeSelectors3() = runTest {
+        var count1 = 0
+        var count2 = 0
+        var count3 = 0
+        val location = store.createSelector({ state ->
+            count1++
+            state.location
+        }, { state ->
+            count2++
+            state?.product
+        }) { state ->
+            count3++
+            state?.id
+        }
+        repeat(3) {
+            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
+            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
+            store.awaitDispatch(StoreTestAction.NameChange("New Name"))
+        }
+        store.closeState()
+        location.consumeAsFlow().collectLatest { value: Int? ->
+            assertEquals(5, value)
+            assertEquals(3, count1)
+            assertEquals(1, count2)
+            assertEquals(1, count3)
         }
     }
 }
