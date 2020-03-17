@@ -10,8 +10,6 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-typealias StoreCreator<S> = (reducer: Reducer<S>, initialState: S) -> Store<S>
-
 @Suppress("UNCHECKED_CAST")
 fun <S> createStore(
     reducer: Reducer<S>,

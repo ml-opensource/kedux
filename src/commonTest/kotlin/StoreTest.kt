@@ -12,12 +12,15 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
-data class State(val name: String)
+data class Location(val id: Int)
+data class State(val name: String, val location: Location? = null)
 
 sealed class StoreTestAction {
 
     data class NameChange(val name: String) :
+        StoreTestAction()
+
+    data class LocationChange(val location: Location) :
         StoreTestAction()
 
     object Reset : StoreTestAction()
@@ -27,6 +30,7 @@ val sampleReducer = typedReducer<State, StoreTestAction> { state, action ->
     when (action) {
         is StoreTestAction.NameChange -> state.copy(name = action.name)
         is StoreTestAction.Reset -> state
+        is StoreTestAction.LocationChange -> state.copy(location = action.location)
     }
 }
 
@@ -58,7 +62,7 @@ class StoreTest {
 
         val job = GlobalScope.launch {
             val state = store.state.consumeAsFlow().first()
-            assertEquals(State("NewName2"), state)
+            assertEquals(State("NewName2", null), state)
             count++
         }
         store.awaitDispatch(StoreTestAction.NameChange("NewName2"))
@@ -114,5 +118,27 @@ class StoreTest {
             assertEquals("Name2", it)
         }
         assertEquals(4, count)
+    }
+
+    @Test
+    fun composeSelectors() = runTest {
+        var count1 = 0
+        var count2 = 0
+        val location = store.createSelector({ state ->
+            count1++
+            state.location
+        }) { state ->
+            count2++
+            state?.id
+        }
+        repeat(3) {
+            store.awaitDispatch(StoreTestAction.LocationChange(Location(5)))
+            store.awaitDispatch(StoreTestAction.LocationChange(Location(3)))
+            store.awaitDispatch(StoreTestAction.NameChange("New Name"))
+        }
+        store.closeState()
+        location.consumeAsFlow().collectLatest { value: Int? ->
+            assertEquals(3, value)
+        }
     }
 }
