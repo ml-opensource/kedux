@@ -55,45 +55,54 @@ fun <S, R> Store<S>.createSelector(selector: Selector<S, R>): ReceiveChannel<R> 
 }
 
 @ExperimentalCoroutinesApi
-fun <S, R1, R2> Store<S>.createSelector(
+fun <S : Any, R1 : Any?, R2 : Any?> Store<S>.createSelector(
     selector1: Selector<S, R1>,
     selector2: Selector<R1, R2>
 ): ReceiveChannel<R2> = createSelectorProducer {
-    val selectorClass = SelectorClass(this@createSelector::logIfEnabled, selector1)
-    val selector2Class = SelectorClass(this@createSelector::logIfEnabled, selector2)
-    val channel = Channel<R1>(Channel.CONFLATED)
-    state.consumeEach { latest ->
-        channel.send(selectorClass.consumeState(latest))
+    val channelSelectors = listOf(
+        SelectorClass(this@createSelector::logIfEnabled, selector1 as Selector<Any?, Any?>),
+        SelectorClass(this@createSelector::logIfEnabled, selector2 as Selector<Any?, Any?>)
+    )
+    val channel = Channel<R2>(Channel.CONFLATED)
+    state.consumeEach { state ->
         launch {
-            channel.consumeEach { latest -> this@createSelectorProducer.send(selector2Class.consumeState(latest)) }
+            channel.consumeEach { this@createSelectorProducer.send(it) }
         }
+        @Suppress("UNCHECKED_CAST")
+        channel.send(propagateStates<S, R2>(state, channelSelectors))
     }
     logIfEnabled { "selector -> DONE" }
-    channel.close()
     close()
 }
 
 @ExperimentalCoroutinesApi
-fun <S, R1, R2, R3> Store<S>.createSelector(
+fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?> Store<S>.createSelector(
     selector1: Selector<S, R1>,
     selector2: Selector<R1, R2>,
     selector3: Selector<R2, R3>
 ): ReceiveChannel<R3> = createSelectorProducer {
-    val selectorClass = SelectorClass(this@createSelector::logIfEnabled, selector1)
-    val selector2Class = SelectorClass(this@createSelector::logIfEnabled, selector2)
-    val selector3Class = SelectorClass(this@createSelector::logIfEnabled, selector3)
-    val channel = Channel<R1>(Channel.CONFLATED)
-    val channel2 = Channel<R2>(Channel.CONFLATED)
+    val channelSelectors = listOf(
+        SelectorClass(this@createSelector::logIfEnabled, selector1 as Selector<Any?, Any?>),
+        SelectorClass(this@createSelector::logIfEnabled, selector2 as Selector<Any?, Any?>),
+        SelectorClass(this@createSelector::logIfEnabled, selector3 as Selector<Any?, Any?>)
+    )
+    val channel = Channel<R3>(Channel.RENDEZVOUS)
     state.consumeEach { state ->
-        channel.send(selectorClass.consumeState(state))
         launch {
-            channel.consumeEach { latest -> channel2.send(selector2Class.consumeState(latest)) }
+            channel.consumeEach { this@createSelectorProducer.send(it) }
         }
-        launch {
-            channel2.consumeEach { latest -> this@createSelectorProducer.send(selector3Class.consumeState(latest)) }
-        }
+        @Suppress("UNCHECKED_CAST")
+        channel.send(propagateStates<S, R3>(state, channelSelectors))
     }
     logIfEnabled { "selector -> DONE" }
-    channel.close()
     close()
+}
+
+@ExperimentalCoroutinesApi
+fun <S : Any?, R : Any?> propagateStates(state: S, channelSelectors: List<SelectorClass<Any?, Any?>>): R {
+    return channelSelectors.fold(state) { state: Any?, channelSelector ->
+        channelSelector.consumeState(
+            state
+        )
+    } as R
 }

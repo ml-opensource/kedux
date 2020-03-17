@@ -90,6 +90,7 @@ class StoreTest {
         var count = 0
         val name = store.createSelector { state ->
             count++
+            println("INCREMENTING COUNT $count")
             state.name
         }
         repeat(3) {
@@ -140,7 +141,7 @@ class StoreTest {
         store.closeState()
         location.consumeAsFlow().collectLatest { value: Int? ->
             assertEquals(5, value)
-            assertEquals(3, count1)
+            assertEquals(2, count1)
             assertEquals(1, count2)
         }
     }
