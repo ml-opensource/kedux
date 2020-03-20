@@ -8,7 +8,7 @@ import com.badoo.reaktive.observable.take
 import com.badoo.reaktive.subject.behavior.BehaviorSubject
 
 @Suppress("UNCHECKED_CAST")
-fun <S> createStore(
+fun <S: Any> createStore(
     reducer: Reducer<S>,
     initialState: S,
     enhancer: Enhancer<S> = emptyEnhancer(),
@@ -16,7 +16,7 @@ fun <S> createStore(
 ) =
     Store(reducer, initialState, enhancer, loggingEnabled)
 
-class Store<S> internal constructor(
+class Store<S: Any> internal constructor(
     /**
      * The main reducer on this store. See Reducers.kt
      */

@@ -82,9 +82,7 @@ class SelectorSubject<S : Any, R : Any?> internal constructor(
 }
 
 fun <S : Any, R : Any?> Store<S>.createSelector(selectorFunction: SelectorFunction<S, R>): Observable<R> =
-    SelectorSubject<S, R>(
-        this@createSelector, selectorFunction as SelectorFunction<Any?, Any?>
-    )
+    SelectorSubject<S, R>(this@createSelector, selectorFunction as SelectorFunction<Any?, Any?>)
         .safeUnwrap().threadLocal()
 
 fun <S : Any, R1 : Any?, R2 : Any?> Store<S>.createSelector(
