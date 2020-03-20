@@ -42,10 +42,12 @@ class SelectorConsumer<S, R : Any?> internal constructor(
 
 class SelectorSubject<S : Any, R : Any?> internal constructor(
     private val store: Store<S>,
-    private val channelSelectors: List<SelectorConsumer<Any?, Any?>>,
+    vararg channelSelectors: SelectorFunction<Any?, Any?>,
     private val _stateSubject: Subject<Optional<R>> = BehaviorSubject(Optional.None())
 ) : Subject<Optional<R>> by _stateSubject {
 
+    private val channelSelectors: List<SelectorConsumer<Any?, Any?>> =
+        channelSelectors.map { SelectorConsumer(store::logIfEnabled, it) }
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
@@ -79,36 +81,78 @@ class SelectorSubject<S : Any, R : Any?> internal constructor(
         .threadLocal()
 }
 
-fun <S : Any, R : Any?> Store<S>.createSelector(selectorFunction: SelectorFunction<S, R>): Observable<R> {
-    val channelSelectors = listOf(
-        SelectorConsumer(this@createSelector::logIfEnabled, selectorFunction as SelectorFunction<Any?, Any?>)
+fun <S : Any, R : Any?> Store<S>.createSelector(selectorFunction: SelectorFunction<S, R>): Observable<R> =
+    SelectorSubject<S, R>(
+        this@createSelector, selectorFunction as SelectorFunction<Any?, Any?>
     )
-    return SelectorSubject<S, R>(this@createSelector, channelSelectors)
-        .safeUnwrap()
-        .threadLocal()
-}
+        .safeUnwrap().threadLocal()
 
 fun <S : Any, R1 : Any?, R2 : Any?> Store<S>.createSelector(
     selectorFunction1: SelectorFunction<S, R1>,
     selectorFunction2: SelectorFunction<R1, R2>
-): Observable<R2> {
-    val channelSelectors = listOf(
-        SelectorConsumer(this@createSelector::logIfEnabled, selectorFunction1 as SelectorFunction<Any?, Any?>),
-        SelectorConsumer(this@createSelector::logIfEnabled, selectorFunction2 as SelectorFunction<Any?, Any?>)
-    )
-    return SelectorSubject<S, R2>(this@createSelector, channelSelectors).safeUnwrap().threadLocal()
-}
+): Observable<R2> =
+    SelectorSubject<S, R2>(
+        this@createSelector,
+        selectorFunction1 as SelectorFunction<Any?, Any?>,
+        selectorFunction2 as SelectorFunction<Any?, Any?>
+    ).safeUnwrap().threadLocal()
 
 fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?> Store<S>.createSelector(
     selectorFunction1: SelectorFunction<S, R1>,
     selectorFunction2: SelectorFunction<R1, R2>,
     selectorFunction3: SelectorFunction<R2, R3>
-): Observable<R3> {
-    val channelSelectors = listOf(
-        SelectorConsumer(this@createSelector::logIfEnabled, selectorFunction1 as SelectorFunction<Any?, Any?>),
-        SelectorConsumer(this@createSelector::logIfEnabled, selectorFunction2 as SelectorFunction<Any?, Any?>),
-        SelectorConsumer(this@createSelector::logIfEnabled, selectorFunction3 as SelectorFunction<Any?, Any?>)
-    )
-    return SelectorSubject<S, R3>(this@createSelector, channelSelectors).safeUnwrap().threadLocal()
-}
+): Observable<R3> =
+    SelectorSubject<S, R3>(
+        this@createSelector,
+        selectorFunction1 as SelectorFunction<Any?, Any?>,
+        selectorFunction2 as SelectorFunction<Any?, Any?>,
+        selectorFunction3 as SelectorFunction<Any?, Any?>
+    ).safeUnwrap().threadLocal()
 
+fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?> Store<S>.createSelector(
+    selectorFunction1: SelectorFunction<S, R1>,
+    selectorFunction2: SelectorFunction<R1, R2>,
+    selectorFunction3: SelectorFunction<R2, R3>,
+    selectorFunction4: SelectorFunction<R3, R4>
+): Observable<R4> =
+    SelectorSubject<S, R4>(
+        this@createSelector,
+        selectorFunction1 as SelectorFunction<Any?, Any?>,
+        selectorFunction2 as SelectorFunction<Any?, Any?>,
+        selectorFunction3 as SelectorFunction<Any?, Any?>,
+        selectorFunction4 as SelectorFunction<Any?, Any?>
+    ).safeUnwrap().threadLocal()
+
+fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?> Store<S>.createSelector(
+    selectorFunction1: SelectorFunction<S, R1>,
+    selectorFunction2: SelectorFunction<R1, R2>,
+    selectorFunction3: SelectorFunction<R2, R3>,
+    selectorFunction4: SelectorFunction<R3, R4>,
+    selectorFunction5: SelectorFunction<R4, R5>
+): Observable<R5> =
+    SelectorSubject<S, R5>(
+        this@createSelector,
+        selectorFunction1 as SelectorFunction<Any?, Any?>,
+        selectorFunction2 as SelectorFunction<Any?, Any?>,
+        selectorFunction3 as SelectorFunction<Any?, Any?>,
+        selectorFunction4 as SelectorFunction<Any?, Any?>,
+        selectorFunction5 as SelectorFunction<Any?, Any?>
+    ).safeUnwrap().threadLocal()
+
+fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?, R6 : Any?> Store<S>.createSelector(
+    selectorFunction1: SelectorFunction<S, R1>,
+    selectorFunction2: SelectorFunction<R1, R2>,
+    selectorFunction3: SelectorFunction<R2, R3>,
+    selectorFunction4: SelectorFunction<R3, R4>,
+    selectorFunction5: SelectorFunction<R4, R5>,
+    selectorFunction6: SelectorFunction<R5, R6>
+): Observable<R6> =
+    SelectorSubject<S, R6>(
+        this@createSelector,
+        selectorFunction1 as SelectorFunction<Any?, Any?>,
+        selectorFunction2 as SelectorFunction<Any?, Any?>,
+        selectorFunction3 as SelectorFunction<Any?, Any?>,
+        selectorFunction4 as SelectorFunction<Any?, Any?>,
+        selectorFunction5 as SelectorFunction<Any?, Any?>,
+        selectorFunction6 as SelectorFunction<Any?, Any?>
+    ).safeUnwrap().threadLocal()
