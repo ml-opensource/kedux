@@ -7,7 +7,7 @@ interface Reducer<S : Any> {
     fun reduce(state: S, action: Any): S
 }
 
-inline fun <reified S : Any> reducer(crossinline fn: (state: S, action: Any) -> S) = object : Reducer<S> {
+inline fun <reified S : Any> anyReducer(crossinline fn: (state: S, action: Any) -> S) = object : Reducer<S> {
     override fun reduce(state: S, action: Any): S = fn(state, action)
     override val stateClass: KClass<S>
         get() = S::class
@@ -17,7 +17,7 @@ inline fun <reified S : Any> reducer(crossinline fn: (state: S, action: Any) -> 
  * Constructs a typesafe action that only accepts the type argument [A] as an action. Useful for sealed classes.
  */
 inline fun <reified S : Any, reified A> typedReducer(crossinline fn: (state: S, action: A) -> S) =
-    reducer<S> { state, action ->
+    anyReducer<S> { state, action ->
         when (action is A) {
             true -> fn(state, action)
             else -> state
@@ -28,6 +28,6 @@ inline fun <reified S : Any, reified A> typedReducer(crossinline fn: (state: S, 
  * Combines a set of reducers into smaller pieces.
  */
 inline fun <reified S : Any> combineReducers(vararg reducers: Reducer<S>): Reducer<S> =
-    reducer { state: S, action: Any ->
+    anyReducer { state: S, action: Any ->
         reducers.foldRight(state) { reducer, localState -> reducer.reduce(localState, action) }
     }

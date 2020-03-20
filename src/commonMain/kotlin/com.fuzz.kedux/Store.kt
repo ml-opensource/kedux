@@ -2,9 +2,9 @@
 
 package com.fuzz.kedux
 
-import com.badoo.reaktive.observable.Observable
-import com.badoo.reaktive.observable.subscribe
-import com.badoo.reaktive.observable.take
+import com.badoo.reaktive.observable.*
+import com.badoo.reaktive.scheduler.computationScheduler
+import com.badoo.reaktive.scheduler.mainScheduler
 import com.badoo.reaktive.subject.behavior.BehaviorSubject
 
 @Suppress("UNCHECKED_CAST")
@@ -40,7 +40,7 @@ class Store<S: Any> internal constructor(
     private val _state = BehaviorSubject(initialState)
 
     val state: Observable<S>
-        get() = _state
+        get() = _state.observeOn(mainScheduler)
 
     /**
      * Launches a new coroutine to call the specified reducers. It will emit a
@@ -50,6 +50,7 @@ class Store<S: Any> internal constructor(
         logIfEnabled { "dispatch -> $action" }
         val dispatcher = { enhancedAction: Any ->
             _state.take(1)
+                .observeOn(computationScheduler)
                 .subscribe { state ->
                     val value = reducer.reduce(state, enhancedAction)
                     logIfEnabled { "state -> $value" }
