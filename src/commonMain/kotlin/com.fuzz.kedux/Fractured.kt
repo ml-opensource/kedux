@@ -33,6 +33,11 @@ class ReducerMap(
 fun fracturedReducer(vararg reducers: Reducer<out Any>) = ReducerMap(*reducers as Array<out Reducer<Any>>)
 
 /**
+ * Used to provide typesafety between reducer and state it consumes.
+ */
+infix fun <R : Any> Reducer<R>.reduce(data: R) = Pair(this, data)
+
+/**
  * Creates a Fractured store using the passed reducer to state pairings.
  */
 fun createFracturedStore(

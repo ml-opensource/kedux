@@ -1,10 +1,8 @@
+import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.subscribe
 import com.badoo.reaktive.scheduler.overrideSchedulers
 import com.badoo.reaktive.test.scheduler.TestScheduler
-import com.fuzz.kedux.FracturedState
-import com.fuzz.kedux.Store
-import com.fuzz.kedux.createFracturedStore
-import com.fuzz.kedux.fracturedSelector
+import com.fuzz.kedux.*
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -20,8 +18,8 @@ class FracturedStoreTest {
             main = { TestScheduler() }
         )
         store = createFracturedStore(
-            productReducer to Product(0, ""),
-            locationReducer to Location(0, ""),
+            productReducer reduce Product(0, ""),
+            locationReducer reduce Location(0, ""),
             loggingEnabled = true
         )
     }
@@ -36,6 +34,20 @@ class FracturedStoreTest {
                 product = value
             }.use {
                 assertEquals(Product(0, "Name Changed"), product)
+            }
+    }
+
+    @Test
+    fun canUpdateLocationState() {
+        store.dispatch(LocationActions.ProductChange(Product(5, "Namey")))
+
+        var product: Product? = null
+        store.fracturedSelector(locationReducer)
+            .map { it.product }
+            .subscribe { value ->
+                product = value
+            }.use {
+                assertEquals(Product(5, "Namey"), product)
             }
     }
 }
