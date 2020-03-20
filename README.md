@@ -69,13 +69,16 @@ val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action -
 
 As you would for Redux, construct your store somewhere accessible.
 
-We recommend using dependency injection to provide your store in your application so it's easier to test.
+We recommend using dependency injection to provide your store in your app so it's easier to test.
 
 ```kotlin
 
 val store =  createStore(sampleReducer, initialState, loggingEnabled = true)
 
 ```
+
+`loggingEnabled`: set this to log events to the native console as they come in. Preferrably this is set only on development 
+builds.
 
 ### Selectors
 
@@ -91,12 +94,73 @@ store.createSelector { state -> state.name }
 It's important to ensure you add the store subscription to `compositeDisposable` in scope, 
 so that you do not introduce memory leaks.
 
-
 ## Features
 
 This library has a few features. TBD on full descriptions.
 
-### Fractured State
+## Store
+
+`Store` is an object that exposes an `Observable<State>` in which subscribers can listen to state changes. 
+
+`createStore`: creates the store with a global `reducer`, initialState (required), `enhancer` (more on these later), 
+and `loggingEnabled`.
+
+`Store.dispatch`: **asynchronously** dispatches actions to the `state`. Selection happens on the `computationScheduler`, 
+and then returns the result object on the `mainScheduler` thread of the platform. 
+
+__Note__: Kotlin Native targets should be wary of frozen objects. Using Reaktive's `threadLocal` method, we can mostly 
+get around this, but its not perfect and please be forewarned. `State` in any sense should be immutable, so in theory this 
+will not be much of an issue. 
+
+## Reducers
+
+There are two main kinds of reducers.
+
+`anyReducer`: constructs a reducer on the whole global store, without specifying action type. This is useful when your reducer 
+consumes multiple action classes. You will need to handle default case in this instance.
+
+`typedReducer` (preferred): constructs a reducer that will only run when the `Action` class type is of the type specified. So 
+that a safer consumption occurs. I.e. the reducer only executes when the action type is a subtype of the expected action type.
+
+`combineReducers`: Combines multiple reducers to listen on the same state object. 
+
+## Selectors
+
+Selectors are functions that are memoized with their input data and only recompute when the state changes. 
+They are useful for heavy calculations such as retrieving an object out of a list by id, for example.
+
+Creating a selector is easy:
+```kotlin
+store.createSelector { state -> state.field }
+  .subscribe { value  ->
+  // do something
+}
+.addTo(compositeDisposable)
+```
+
+Selectors go up to 6 nested functions so far. If you need more, file an issue.
+
+```kotlin
+store.createSelector( 
+  { state -> state.location }, 
+  { state -> state.product})    
+  { state -> state.name }
+```
+
+## Advanced Features
+
+## Enhancers
+
+Enhancers enable you to transform an action as they come in and go to `dispatch`. They enable 
+you to dispatch multiple actions outside the normal single-dispatch action. 
+
+```kotlin
+createStore(reducer, initialState, enhancer = DevToolsEnhancer()) // just an example
+```
+
+__combining enhancers__: coming soon.
+
+### Fractured States
 
 Fractured state is when we want to have our reducers only respond to state changes on a single field from the `GlobalState` 
 variable. This is accomplished using the `FracturedState` object and special creation of our store:
@@ -108,9 +172,10 @@ variable. This is accomplished using the `FracturedState` object and special cre
         )
 ```
 This method returns a `Store<FracturedState>` with a few helper extensions to make usage cleaner.
-`FracturedState` is essentially an unsafe reducer-class to object mapper. 
+`FracturedState` is essentially a reducer-class to object map. 
 
-`reduce` is an `infix` convenience to enforce our reducer we specify lines up with the default state of its fractured state.
+`reduce` is an `infix` convenience to enforce unified object type between our reducer and default state of its fractured state. This 
+is impossible to enforce using the `Pair` class directly, so use `reduce` instead of `to`.
 
 `productReducer` looks like:
 ```kotlin
@@ -122,9 +187,6 @@ val productReducer = typedReducer<Product, ProductActions> { state, action ->
 }
 ```
 
-`loggingEnabled`: set this to log events to the native console as they come in. Preferrably this is set only on development 
-builds.
-
 Now we can subscribe to the changes via:
 ```kotlin
  store.fracturedSelector(productReducer)
@@ -134,6 +196,9 @@ Now we can subscribe to the changes via:
 ```
 
 The `fracturedReducer` will loop through each reducer to determine any state changes and update subscribers across the fractured state map. 
+
+Nesting `fracturedReducer` is not supported.
+
 
 [badge-android]: http://img.shields.io/badge/platform-android-brightgreen.svg?style=flat
 [badge-ios]: http://img.shields.io/badge/platform-ios-lightgrey.svg?style=flat
