@@ -19,6 +19,12 @@ val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action -
     }
 }
 
+val sampleReducer2 = typedReducer<GlobalState, ProductActions> { state, action ->
+    when (action) {
+        is ProductActions.NameChange -> state
+    }
+}
+
 sealed class ProductActions {
     data class NameChange(val name: String) : ProductActions()
 }

@@ -3,6 +3,7 @@ import com.badoo.reaktive.observable.take
 import com.badoo.reaktive.scheduler.overrideSchedulers
 import com.badoo.reaktive.test.scheduler.TestScheduler
 import com.fuzz.kedux.Store
+import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createStore
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -18,7 +19,7 @@ class StoreTest {
             computation = { TestScheduler() },
             main = { TestScheduler() }
         )
-        store = createStore(sampleReducer, initialState, loggingEnabled = true)
+        store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState, loggingEnabled = true)
     }
 
     @Test
