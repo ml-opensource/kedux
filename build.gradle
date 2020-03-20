@@ -11,12 +11,20 @@ plugins {
 }
 repositories {
     mavenCentral()
+    jcenter()
+    maven {
+        url "https://dl.bintray.com/badoo/maven"
+    }
 }
 group 'com.example'
 version '0.0.1'
 
 apply plugin: 'maven-publish'
 apply plugin: 'kotlinx-atomicfu'
+
+ext {
+    reaktiveVersion = '1.1.11'
+}
 
 kotlin {
     jvm()
@@ -36,46 +44,79 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.4'
+                implementation "com.badoo.reaktive:reaktive:${reaktiveVersion}"
             }
         }
         commonTest {
             dependencies {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
+                implementation "com.badoo.reaktive:reaktive-testing:${reaktiveVersion}"
             }
         }
         jvmMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
-                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.4'
+                implementation "com.badoo.reaktive:reaktive-jvm:${reaktiveVersion}"
             }
         }
         jvmTest {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit')
+                implementation "com.badoo.reaktive:reaktive-testing-jvm:${reaktiveVersion}"
             }
         }
         jsMain {
             dependencies {
                 implementation kotlin('stdlib-js')
-                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.3.4'
+                implementation "com.badoo.reaktive:reaktive-js:${reaktiveVersion}"
             }
         }
         jsTest {
             dependencies {
                 implementation kotlin('test-js')
+                implementation "com.badoo.reaktive:reaktive-testing-js:${reaktiveVersion}"
             }
         }
         macos {
             dependencies {
-                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-native:1.3.4'
+                implementation "com.badoo.reaktive:reaktive-macosx64:${reaktiveVersion}"
             }
         }
-        ios {
+        macosTest {
             dependencies {
-                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-native:1.3.4'
+                implementation "com.badoo.reaktive:reaktive-testing-macosx64:${reaktiveVersion}"
+            }
+        }
+        iosArm64 {
+            dependencies {
+                implementation "com.badoo.reaktive:reaktive-ios64:${reaktiveVersion}"
+            }
+        }
+        iosArm64Test {
+            dependencies {
+                implementation "com.badoo.reaktive:reaktive-testing-ios64:${reaktiveVersion}"
+            }
+        }
+        iosArm32 {
+            dependencies {
+                implementation "com.badoo.reaktive:reaktive-ios32:${reaktiveVersion}"
+            }
+        }
+        iosArm32Test {
+            dependencies {
+                implementation "com.badoo.reaktive:reaktive-testing-ios32:${reaktiveVersion}"
+            }
+        }
+        iosX64 {
+            dependencies {
+                implementation "com.badoo.reaktive:reaktive-iossim:${reaktiveVersion}"
+            }
+        }
+        iosX64Test {
+            dependencies {
+                implementation "com.badoo.reaktive:reaktive-testing-iossim:${reaktiveVersion}"
             }
         }
     }

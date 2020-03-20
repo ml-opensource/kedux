@@ -1,13 +1,11 @@
+import com.badoo.reaktive.observable.subscribe
+import com.badoo.reaktive.observable.take
+import com.badoo.reaktive.scheduler.overrideSchedulers
+import com.badoo.reaktive.test.scheduler.TestScheduler
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.createSelector
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.typedReducer
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,123 +33,115 @@ val sampleReducer = typedReducer<State, StoreTestAction> { state, action ->
     }
 }
 
-@ExperimentalCoroutinesApi
 class StoreTest {
 
     private lateinit var store: Store<State>
 
     @BeforeTest
     fun constructStore() {
+        overrideSchedulers(
+            computation = { TestScheduler() },
+            main = { TestScheduler() }
+        )
         store = createStore(sampleReducer, State(""), loggingEnabled = true)
     }
 
     @Test
-    fun storeConstructed() = runTest {
-        assertEquals(State(""), store.state.receive())
+    fun storeConstructed() {
+        store.state.take(1)
+            .subscribe {
+                assertEquals(State(""), it)
+            }
     }
 
     @Test
-    fun dispatchActionChangesState() = runTest {
-        store.awaitDispatch(StoreTestAction.NameChange("NewName"))
-        val updated = store.state.receive()
-        assertEquals(State("NewName"), updated)
+    fun dispatchActionChangesState() {
+        store.dispatch(StoreTestAction.NameChange("NewName"))
+        store.state.take(1)
+            .subscribe { updated ->
+                assertEquals(State("NewName"), updated)
+            }
     }
 
     @Test
-    fun canSubscribeToAction() = runTest {
-        var count = 0
-
-        val job = GlobalScope.launch {
-            val state = store.state.consumeAsFlow().first()
-            assertEquals(State("NewName2", null), state)
-            count++
-        }
-        store.awaitDispatch(StoreTestAction.NameChange("NewName2"))
-        job.join()
-        assertEquals(1, count)
-
-        store.awaitDispatch(StoreTestAction.NameChange("Done"))
-        job.join()
-        // ensure count no longer increases.
-        assertEquals(1, count)
-
-    }
-
-    @Test
-    fun invalidAction() = runTest {
+    fun invalidAction() {
         val action = object {
         }
-        store.awaitDispatch(action)
-        assertEquals(State(""), store.state.receive())
+        store.dispatch(action)
+        store.state.take(1).subscribe { state ->
+            assertEquals(State(""), state)
+        }
     }
 
     @Test
-    fun selectorEmitsAllValues() = runTest {
+    fun selectorEmitsAllValues() {
         var count = 0
-        val name = store.createSelector { state ->
-            count++
-            println("INCREMENTING COUNT $count")
-            state.name
-        }
-        repeat(3) {
-            store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
-            store.awaitDispatch(StoreTestAction.NameChange("Name2-$it"))
-        }
-        store.closeState()
-        name.consumeAsFlow().collectLatest {
-            assertEquals("Name2-2", it)
-        }
-        assertEquals(7, count)
+        var name = ""
+        store.createSelector { state -> state.name }
+            .subscribe(isThreadLocal = true) {
+                name = it
+                println("INCREMENTING COUNT $count")
+                count++
+            }.use {
+                repeat(3) {
+                    store.dispatch(StoreTestAction.NameChange("Name$it"))
+                    store.dispatch(StoreTestAction.NameChange("Name2-$it"))
+                }
+                assertEquals(name, "Name2-2")
+                assertEquals(7, count)
+            }
     }
 
     @Test
-    fun selectorSelectivelyEmitsValues() = runTest {
+    fun selectorSelectivelyEmitsValues() {
         var count = 0
-        val name = store.createSelector { state ->
+        var name = ""
+        store.createSelector { state ->
             count++
             state.name
+        }.subscribe {
+            name = it
+        }.use {
+            repeat(3) {
+                store.dispatch(StoreTestAction.NameChange("Name$it"))
+                store.dispatch(StoreTestAction.NameChange("Name$it"))
+            }
+            assertEquals("Name2", name)
+            assertEquals(4, count)
         }
-        repeat(3) {
-            store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
-            store.awaitDispatch(StoreTestAction.NameChange("Name$it"))
-        }
-        store.closeState()
-        name.consumeAsFlow().collectLatest {
-            assertEquals("Name2", it)
-        }
-        assertEquals(4, count)
     }
 
     @Test
-    fun composeSelectors() = runTest {
+    fun composeSelectors() {
         var count1 = 0
         var count2 = 0
-        val location = store.createSelector({ state ->
-            count1++
-            state.location
-        }) { state ->
-            count2++
-            state?.id
-        }
-        repeat(3) {
-            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1")))
-            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1")))
-            store.awaitDispatch(StoreTestAction.NameChange("New Name"))
-        }
-        store.closeState()
-        location.consumeAsFlow().collectLatest { value: Int? ->
-            assertEquals(5, value)
-            assertEquals(2, count1)
-            assertEquals(1, count2)
-        }
+        var value: Int? = null
+        store.createSelector({ state ->
+                count1++
+                state.location
+            }) { state ->
+                count2++
+                state?.id
+            }
+            .subscribe { value = it }
+            .use {
+                repeat(3) {
+                    store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
+                    store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
+                    store.dispatch(StoreTestAction.NameChange("New Name"))
+                }
+                assertEquals(5, value)
+                assertEquals(3, count1)
+                assertEquals(1, count2)
+            }
     }
 
     @Test
-    fun composeSelectors3() = runTest {
+    fun composeSelectors3() {
         var count1 = 0
         var count2 = 0
         var count3 = 0
-        val location = store.createSelector({ state ->
+        store.createSelector({ state ->
             count1++
             state.location
         }, { state ->
@@ -160,18 +150,17 @@ class StoreTest {
         }) { state ->
             count3++
             state?.id
-        }
-        repeat(3) {
-            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
-            store.awaitDispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
-            store.awaitDispatch(StoreTestAction.NameChange("New Name"))
-        }
-        store.closeState()
-        location.consumeAsFlow().collectLatest { value: Int? ->
+        }.subscribe { value ->
             assertEquals(5, value)
-            assertEquals(3, count1)
+            assertEquals(2, count1)
             assertEquals(1, count2)
             assertEquals(1, count3)
+        }.use {
+            repeat(3) {
+                store.dispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
+                store.dispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
+                store.dispatch(StoreTestAction.NameChange("New Name"))
+            }
         }
     }
 }

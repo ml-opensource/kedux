@@ -2,13 +2,10 @@
 
 package com.fuzz.kedux
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
+import com.badoo.reaktive.observable.Observable
+import com.badoo.reaktive.observable.subscribe
+import com.badoo.reaktive.observable.take
+import com.badoo.reaktive.subject.behavior.BehaviorSubject
 
 @Suppress("UNCHECKED_CAST")
 fun <S> createStore(
@@ -38,37 +35,26 @@ class Store<S> internal constructor(
     /**
      * If true, everything is logged to the native console.
      */
-    val loggingEnabled: Boolean = false,
-    /**
-     * Specify a [coroutineContext] to run dispatches, selectors, and reducers within.
-     * By default this is the [Dispatchers.Default]
-     */
-    coroutineContext: CoroutineContext = Dispatchers.Default
-) : CoroutineScope by CoroutineScope(coroutineContext) {
-    private var _state: ConflatedBroadcastChannel<S> = ConflatedBroadcastChannel(initialState)
+    val loggingEnabled: Boolean = false
+) {
+    private val _state = BehaviorSubject(initialState)
 
-    val state: ReceiveChannel<S>
-        get() = _state.openSubscription()
-
-    fun closeState() {
-        _state.close()
-    }
-
-    /**
-     * Used to await dispatch result before continuing. This is useful to ensure dispatch parity within a coroutine.
-     */
-    suspend fun awaitDispatch(action: Any) = dispatch(action).join()
+    val state: Observable<S>
+        get() = _state
 
     /**
      * Launches a new coroutine to call the specified reducers. It will emit a
      * [state] result to selectors and subscribers on the store.
      */
-    fun dispatch(action: Any): Job = launch {
+    fun dispatch(action: Any) {
         logIfEnabled { "dispatch -> $action" }
         val dispatcher = { enhancedAction: Any ->
-            val value = reducer.reduce(_state.value, enhancedAction)
-            logIfEnabled { "state -> $value" }
-            _state.offer(value)
+            _state.take(1)
+                .subscribe { state ->
+                    val value = reducer.reduce(state, enhancedAction)
+                    logIfEnabled { "state -> $value" }
+                    _state.onNext(value)
+                }
         }
         enhancer(this@Store)(dispatcher)(action)
     }
