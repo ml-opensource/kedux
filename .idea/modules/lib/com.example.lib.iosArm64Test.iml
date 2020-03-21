@@ -9,10 +9,10 @@
         </dependsOnModuleNames>
         <sourceSets>
           <sourceSet>com.example.lib.iosTest</sourceSet>
-          <sourceSet>com.example.lib.commonMain</sourceSet>
-          <sourceSet>com.example.lib.iosArm64Main</sourceSet>
-          <sourceSet>com.example.lib.commonTest</sourceSet>
           <sourceSet>com.example.lib.iosMain</sourceSet>
+          <sourceSet>com.example.lib.commonTest</sourceSet>
+          <sourceSet>com.example.lib.iosArm64Main</sourceSet>
+          <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <compilerSettings />

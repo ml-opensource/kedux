@@ -2,15 +2,12 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="Native " allPlatforms="Native []" useProjectSettings="false" isTestModule="true" externalProjectId=":lib">
-        <dependsOnModuleNames>:lib:commonTest</dependsOnModuleNames>
+      <configuration version="3" platform="Native " allPlatforms="Native []" useProjectSettings="false" isTestModule="false" externalProjectId=":lib">
+        <dependsOnModuleNames>:lib:commonMain</dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.lib.macosMain</sourceSet>
-          <sourceSet>com.example.lib.commonTest</sourceSet>
           <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
-        <externalSystemTestTasks>macosTest|:lib:macosTest|macos</externalSystemTestTasks>
         <compilerSettings />
         <compilerArguments>
           <option name="languageVersion" value="1.3" />

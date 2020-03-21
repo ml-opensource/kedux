@@ -44,6 +44,8 @@ android {
 dependencies {
     releaseApi "com.badoo.reaktive:reaktive-android-release:${reaktiveVersion}"
     debugApi "com.badoo.reaktive:reaktive-android-debug:${reaktiveVersion}"
+    releaseApi "com.badoo.reaktive:reaktive-utils-android-release:${reaktiveVersion}"
+    debugApi "com.badoo.reaktive:reaktive-utils-android-debug:${reaktiveVersion}"
 }
 
 
@@ -81,6 +83,7 @@ kotlin {
             dependencies {
                 api kotlin('stdlib-common')
                 api "com.badoo.reaktive:reaktive:${reaktiveVersion}"
+                api "com.badoo.reaktive:utils:${reaktiveVersion}"
             }
         }
         commonTest {
@@ -94,6 +97,7 @@ kotlin {
             dependencies {
                 api kotlin('stdlib-jdk8')
                 api "com.badoo.reaktive:reaktive-jvm:${reaktiveVersion}"
+                api "com.badoo.reaktive:utils-jvm:${reaktiveVersion}"
             }
         }
         jvmTest {
@@ -119,6 +123,7 @@ kotlin {
             dependencies {
                 api kotlin('stdlib-js')
                 api "com.badoo.reaktive:reaktive-js:${reaktiveVersion}"
+                api "com.badoo.reaktive:utils-js:${reaktiveVersion}"
             }
         }
         jsTest {
@@ -130,6 +135,7 @@ kotlin {
         macos {
             dependencies {
                 api "com.badoo.reaktive:reaktive-macosx64:${reaktiveVersion}"
+                api "com.badoo.reaktive:utils-macosx64:${reaktiveVersion}"
             }
         }
         macosTest {
@@ -140,6 +146,7 @@ kotlin {
         ios {
             dependencies {
                 api "com.badoo.reaktive:reaktive-native:${reaktiveVersion}"
+                api "com.badoo.reaktive:utils-native:${reaktiveVersion}"
             }
         }
         iosTest {

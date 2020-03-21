@@ -2,21 +2,21 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false" isTestModule="false" externalProjectId=":lib">
+      <configuration version="3" platform="JavaScript " allPlatforms="JS []" useProjectSettings="false" isTestModule="false" externalProjectId=":lib">
         <dependsOnModuleNames>:lib:commonMain</dependsOnModuleNames>
         <sourceSets>
           <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
-        <compilerSettings>
-          <option name="additionalArguments" value="-Xallow-no-source-files" />
-        </compilerSettings>
+        <compilerSettings />
         <compilerArguments>
-          <option name="destination" value="$MODULE_DIR$/../../../lib/build/classes/kotlin/jvm/main" />
-          <option name="classpath" value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.3.70/c706d9a12aa043400daacbb15b61ba662a1eb9a9/kotlin-stdlib-jdk8-1.3.70.jar:/Users/andrewgrosner/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.3.70/95aee922bc2a0fff3b7bfa1b6503ff0afe38264a/kotlin-stdlib-jdk7-1.3.70.jar:/Users/andrewgrosner/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.3.70/e5d97e25bb5b30dcfc022ec1c8f3959a875257fb/kotlin-stdlib-1.3.70.jar:/Users/andrewgrosner/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.3.70/3fa8dd6c896d635e78201e5e811545f3846dec04/kotlin-stdlib-common-1.3.70.jar:/Users/andrewgrosner/.gradle/caches/modules-2/files-2.1/com.badoo.reaktive/reaktive-jvm/1.1.12/fdc0a321af2716257e333894a54fe4cc9f3e45ee/reaktive-jvm-1.1.12.jar:/Users/andrewgrosner/.gradle/caches/modules-2/files-2.1/com.badoo.reaktive/utils-jvm/1.1.12/68d936175f037dad90cb9f8539395e799740ad7a/utils-jvm-1.1.12.jar:/Users/andrewgrosner/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" />
+          <option name="outputFile" value="$MODULE_DIR$/../../../build/js/packages/kedux-lib/kotlin/kedux-lib.js" />
           <option name="noStdlib" value="true" />
-          <option name="noReflect" value="true" />
-          <option name="moduleName" value="lib" />
+          <option name="sourceMap" value="true" />
+          <option name="metaInfo" value="true" />
+          <option name="target" value="v5" />
+          <option name="moduleKind" value="umd" />
+          <option name="main" value="call" />
           <option name="languageVersion" value="1.3" />
           <option name="apiVersion" value="1.3" />
           <option name="pluginOptions">

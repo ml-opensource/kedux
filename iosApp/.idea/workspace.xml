@@ -2,79 +2,41 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="60d3422e-a3b8-4a8a-a34c-239e0eee7962" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../.idea/$CACHE_FILE$" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/artifacts/app_jvm.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/artifacts/kedux_js_0_0_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/artifacts/kedux_jvm_0_0_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/artifacts/lib_js_0_0_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/artifacts/lib_jvm_0_0_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/caches/build_file_checksums.ser" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/codeStyles/Project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/gradle.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/jarRepositories.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/kedux.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/kotlinc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.androidAndroidTestRelease.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.commonMain.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.commonTest.iml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/artifacts/app_jvm.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/artifacts/lib_js_0_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/artifacts/lib_jvm_0_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/kedux.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.androidAndroidTestRelease.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.commonMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.commonTest.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iosMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.androidAndroidTestRelease.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.commonMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.commonTest.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosTest.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jsMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macos.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macosMain.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iosMain.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iosTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iosTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.jvmMain.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.jvmMain.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.jvmMain.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.jvmTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.jvmTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.androidAndroidTestRelease.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.commonMain.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.commonTest.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm32.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm32Test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Main.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosMain.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosTest.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Main.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jsMain.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jsTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jsTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jvmMain.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jvmTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jvmTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macos.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macosMain.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macosTest.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macosTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macosTest.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/kedux.lib.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/kedux.lib.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/kedux.example.app.commonMain.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/kedux.example.app.commonTest.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/kedux.example.app.iosMain.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/kedux.example.app.iosTest.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/DI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/DI.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/Store.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/Store.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/java/sample/SampleAndroid.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/sample/SampleAndroid.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/Podfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Podfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iosApp.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iosApp.xcodeproj/xcuserdata/andrewgrosner.xcuserdatad/xcschemes/xcschememanagement.plist" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp.xcodeproj/xcuserdata/andrewgrosner.xcuserdatad/xcschemes/xcschememanagement.plist" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iosApp.xcworkspace/xcuserdata/andrewgrosner.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp.xcworkspace/xcuserdata/andrewgrosner.xcuserdatad/UserInterfaceState.xcuserstate" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iosApp/ViewController.swift" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp/ViewController.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/Kedux.podspec" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/Kedux.podspec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Fractured.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Fractured.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Reducers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Reducers.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Selectors.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Selectors.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Store.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Store.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lib/src/commonTest/kotlin/SelectorTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/src/commonTest/kotlin/SelectorTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../settings.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +90,7 @@
       <workItem from="1584816819219" duration="1432000" />
       <workItem from="1584818262221" duration="12000" />
       <workItem from="1584818285499" duration="1084000" />
-      <workItem from="1584819966368" duration="6781000" />
+      <workItem from="1584819966368" duration="7630000" />
     </task>
     <servers />
   </component>
