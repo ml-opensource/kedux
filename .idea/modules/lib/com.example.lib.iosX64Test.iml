@@ -2,20 +2,20 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="Native " allPlatforms="Native []" useProjectSettings="false" isTestModule="true" externalProjectId="kedux">
+      <configuration version="3" platform="Native " allPlatforms="Native []" useProjectSettings="false" isTestModule="true" externalProjectId=":lib">
         <dependsOnModuleNames>
-          <dependsOn>kedux:commonTest</dependsOn>
-          <dependsOn>kedux:iosTest</dependsOn>
+          <dependsOn>:lib:commonTest</dependsOn>
+          <dependsOn>:lib:iosTest</dependsOn>
         </dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.kedux.commonTest</sourceSet>
-          <sourceSet>com.example.kedux.iosTest</sourceSet>
-          <sourceSet>com.example.kedux.commonMain</sourceSet>
-          <sourceSet>com.example.kedux.iosMain</sourceSet>
-          <sourceSet>com.example.kedux.iosX64Main</sourceSet>
+          <sourceSet>com.example.lib.iosX64Main</sourceSet>
+          <sourceSet>com.example.lib.iosTest</sourceSet>
+          <sourceSet>com.example.lib.commonTest</sourceSet>
+          <sourceSet>com.example.lib.iosMain</sourceSet>
+          <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
-        <externalSystemTestTasks>iosX64Test|kedux:iosX64Test|iosX64</externalSystemTestTasks>
+        <externalSystemTestTasks>iosX64Test|:lib:iosX64Test|iosX64</externalSystemTestTasks>
         <compilerSettings />
         <compilerArguments>
           <option name="languageVersion" value="1.3" />

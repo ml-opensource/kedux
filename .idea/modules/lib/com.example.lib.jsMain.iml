@@ -2,21 +2,15 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="JavaScript " allPlatforms="JS []" useProjectSettings="false" isTestModule="true" externalProjectId="kedux">
-        <dependsOnModuleNames>kedux:commonTest</dependsOnModuleNames>
+      <configuration version="3" platform="JavaScript " allPlatforms="JS []" useProjectSettings="false" isTestModule="false" externalProjectId=":lib">
+        <dependsOnModuleNames>:lib:commonMain</dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.kedux.commonTest</sourceSet>
-          <sourceSet>com.example.kedux.commonMain</sourceSet>
-          <sourceSet>com.example.kedux.jsMain</sourceSet>
+          <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
-        <externalSystemTestTasks>
-          <externalSystemTestTask>jsBrowserTest|kedux:jsTest|js</externalSystemTestTask>
-          <externalSystemTestTask>jsNodeTest|kedux:jsTest|js</externalSystemTestTask>
-        </externalSystemTestTasks>
         <compilerSettings />
         <compilerArguments>
-          <option name="outputFile" value="$MODULE_DIR$/../../build/js/packages/kedux-test/kotlin/kedux-test.js" />
+          <option name="outputFile" value="$MODULE_DIR$/../../../build/js/packages/kedux-lib/kotlin/kedux-lib.js" />
           <option name="noStdlib" value="true" />
           <option name="sourceMap" value="true" />
           <option name="metaInfo" value="true" />

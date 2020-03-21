@@ -1,4 +1,1 @@
-rootProject.name = 'kedux'
-
-
-enableFeaturePreview('GRADLE_METADATA')
+include ":lib"

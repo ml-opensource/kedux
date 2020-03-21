@@ -2,19 +2,15 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="Native " allPlatforms="Native []" useProjectSettings="false" isTestModule="true" externalProjectId="kedux">
-        <dependsOnModuleNames>
-          <dependsOn>kedux:commonTest</dependsOn>
-          <dependsOn>kedux:iosTest</dependsOn>
-        </dependsOnModuleNames>
+      <configuration version="3" platform="Native " allPlatforms="Native []" useProjectSettings="false" isTestModule="true" externalProjectId=":lib">
+        <dependsOnModuleNames>:lib:commonTest</dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.kedux.commonTest</sourceSet>
-          <sourceSet>com.example.kedux.iosTest</sourceSet>
-          <sourceSet>com.example.kedux.commonMain</sourceSet>
-          <sourceSet>com.example.kedux.iosArm64Main</sourceSet>
-          <sourceSet>com.example.kedux.iosMain</sourceSet>
+          <sourceSet>com.example.lib.commonTest</sourceSet>
+          <sourceSet>com.example.lib.macosMain</sourceSet>
+          <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
+        <externalSystemTestTasks>macosTest|:lib:macosTest|macos</externalSystemTestTasks>
         <compilerSettings />
         <compilerArguments>
           <option name="languageVersion" value="1.3" />

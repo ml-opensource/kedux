@@ -2,8 +2,15 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="Common (experimental) " allPlatforms="JS []/JVM [1.6]/Native []" useProjectSettings="false" isTestModule="false" externalProjectId="kedux">
+      <configuration version="3" platform="Common (experimental) " allPlatforms="JS []/JVM [1.6]/Native []" useProjectSettings="false" isTestModule="true" externalProjectId=":lib">
         <newMppModelJpsModuleKind>SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
+        <externalSystemTestTasks>
+          <externalSystemTestTask>iosX64Test|:lib:iosX64Test|iosX64</externalSystemTestTask>
+          <externalSystemTestTask>jsBrowserTest|:lib:jsTest|js</externalSystemTestTask>
+          <externalSystemTestTask>jsNodeTest|:lib:jsTest|js</externalSystemTestTask>
+          <externalSystemTestTask>jvmTest|:lib:jvmTest|jvm</externalSystemTestTask>
+          <externalSystemTestTask>macosTest|:lib:macosTest|macos</externalSystemTestTask>
+        </externalSystemTestTasks>
         <compilerSettings />
         <compilerArguments>
           <option name="languageVersion" value="1.3" />
