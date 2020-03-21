@@ -1,0 +1,16 @@
+PODS:
+  - Kedux (0.0.1)
+
+DEPENDENCIES:
+  - Kedux (from `../lib/`)
+
+EXTERNAL SOURCES:
+  Kedux:
+    :path: "../lib/"
+
+SPEC CHECKSUMS:
+  Kedux: a3779492f1a5eb605b644901165351058dd751f7
+
+PODFILE CHECKSUM: 78aeb813df71ad59d4ad1ec54aef9c9557a6e652
+
+COCOAPODS: 1.8.4

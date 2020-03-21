@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="60d3422e-a3b8-4a8a-a34c-239e0eee7962" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/artifacts/app_jvm.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/kedux.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/kotlinc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.androidAndroidTestRelease.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.commonMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.commonTest.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iosMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.iosTest.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.jvmMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/app/kedux.app.jvmTest.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.androidAndroidTestRelease.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/kedux.example.app.commonMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/kedux.example.app.iosMain.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/sample/SampleAndroid.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/sample/UI.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/iosApp.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/iosApp.xcodeproj/project.xcworkspace/xcuserdata/andrewgrosner.xcuserdatad/xcschemes/xcschememanagement.plist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/iosApp.xcworkspace/xcuserdata/andrewgrosner.xcuserdatad/xcschemes/xcschememanagement.plist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/iosApp/ViewController.swift" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lib/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/artifacts/lib_js_0_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/artifacts/lib_js_0_0_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/artifacts/lib_jvm_0_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/artifacts/lib_jvm_0_0_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__android_arch_core_common_1_1_1_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__android_arch_core_runtime_1_1_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__android_arch_lifecycle_common_1_1_1_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__android_arch_lifecycle_livedata_1_1_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__android_arch_lifecycle_livedata_core_1_1_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__android_arch_lifecycle_runtime_1_1_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__android_arch_lifecycle_viewmodel_1_1_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_animated_vector_drawable_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_appcompat_v7_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_asynclayoutinflater_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_collections_28_0_0_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_1_1_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_constraint_constraint_layout_solver_1_1_3_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_coordinatorlayout_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_cursoradapter_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_customview_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_documentfile_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_drawerlayout_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_interpolator_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_loader_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_localbroadcastmanager_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_print_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_slidingpanelayout_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_support_annotations_28_0_0_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_support_compat_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_support_core_ui_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_support_core_utils_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_support_fragment_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_support_vector_drawable_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_swiperefreshlayout_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_test_monitor_1_0_2_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_test_runner_1_0_2_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_versionedparcelable_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_android_support_viewpager_28_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_badoo_reaktive_reaktive_android_debug_1_1_11_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__com_badoo_reaktive_reaktive_jvm_1_1_11_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__junit_junit_4_12_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__kedux_lib_lib_js_0_0_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__kedux_lib_lib_jvm_0_0_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__kedux_lib_lib_metadata_0_0_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__kedux_lib_lib_metadata_0_0_1_sources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__net_sf_kxml_kxml2_2_3_0_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_hamcrest_hamcrest_core_1_3_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_annotations_13_0_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_android_extensions_runtime_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_common_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk7_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk8_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_test_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_test_annotations_common_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_test_common_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_test_junit_1_3_70_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_kodein_di_kodein_di_core_jvm_6_5_3_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/libraries/Gradle__org_kodein_di_kodein_di_erased_jvm_6_5_3_jar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/example.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/kedux.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosArm64Test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.iosX64Test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jvmTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.jvmTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macosTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/com.example.lib.macosTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules/lib/kedux.lib.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules/lib/kedux.lib.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/../app/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/kedux.example.app.commonMain.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/kedux.example.app.commonTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/kedux.example.app.commonTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/kedux.example.app.iosMain.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/kedux.example.app.iosTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/kedux.example.app.iosTest.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/commonMain/kotlin/sample/Actions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/Actions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/commonMain/kotlin/sample/DI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/DI.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/commonMain/kotlin/sample/Reducers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/Reducers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/commonMain/kotlin/sample/State.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/State.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/commonMain/kotlin/sample/Store.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/commonMain/kotlin/sample/Store.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/commonTest/kotlin/sample/SampleTests.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/iosMain/kotlin/sample/SampleIos.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/iosTest/kotlin/sample/SampleTestsIOS.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/main/java/sample/SampleAndroid.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/main/res/layout/activity_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/res/values/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/app/src/test/java/sample/SampleTestsAndroid.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/test/java/sample/SampleTestsAndroid.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosApp.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosApp/AppDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp/AppDelegate.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosApp/Base.lproj/LaunchScreen.storyboard" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp/Base.lproj/LaunchScreen.storyboard" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosApp/Base.lproj/Main.storyboard" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosApp/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosApp/ViewController.swift" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosAppTests/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/iosAppTests/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/iosApp/iosAppTests/iosAppTests.swift" beforeDir="false" afterPath="$PROJECT_DIR$/iosAppTests/iosAppTests.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/local.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../example/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Fractured.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Fractured.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../settings.gradle" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="iphonesimulator_C386D2AC-AA83-4A5D-BEE0-9B39A6C93342" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1ZRW2MiUvYnHscDPTSV8VGcdV6E" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RunManager">
+    <configuration name="iosApp" type="AppleRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="iosApp" TARGET_NAME="iosApp" CONFIG_NAME="Debug" SCHEME_NAME="iosApp" IS_LOCATION_SIMULATION_ALLOWED="true" APPLICATION_LANGUAGE="IDELaunchSchemeLanguageUseSystemLanguage" APPLICATION_REGION="" RUN_TARGET_PROJECT_NAME="iosApp" RUN_TARGET_NAME="iosApp" MAKE_ACTIVE="TRUE" SHOULD_DEBUG_EXTENSIONS="false">
+      <EXTENSION ID="org.jetbrains.appcode.reveal.RevealRunConfigurationExtension">
+        <REVEAL_SETTINGS autoInject="false" autoInstall="true" askToEnableAutoInstall="true" />
+      </EXTENSION>
+      <embedded_app_extension_list />
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="60d3422e-a3b8-4a8a-a34c-239e0eee7962" name="Default Changelist" comment="" />
+      <created>1584802178351</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1584802178351</updated>
+      <workItem from="1584802185405" duration="3033000" />
+      <workItem from="1584816819219" duration="1432000" />
+      <workItem from="1584818262221" duration="12000" />
+      <workItem from="1584818285499" duration="1084000" />
+      <workItem from="1584819966368" duration="89000" />
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="578" y="290" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1584802678355">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="578" y="290" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1584802678355" />
+    <state x="628" y="298" key="FileChooserDialogImpl" timestamp="1584802425768">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="628" y="298" key="FileChooserDialogImpl/0.23.1680.1027@0.23.1680.1027" timestamp="1584802425768" />
+    <state width="1638" height="346" key="GridCell.Tab.0.bottom" timestamp="1584816791025">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.0.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791025" />
+    <state width="1638" height="346" key="GridCell.Tab.0.center" timestamp="1584816791025">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.0.center/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791025" />
+    <state width="1638" height="346" key="GridCell.Tab.0.left" timestamp="1584816791024">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.0.left/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791024" />
+    <state width="1638" height="346" key="GridCell.Tab.0.right" timestamp="1584816791025">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.0.right/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791025" />
+    <state width="1638" height="346" key="GridCell.Tab.1.bottom" timestamp="1584816791027">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.1.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791027" />
+    <state width="1638" height="346" key="GridCell.Tab.1.center" timestamp="1584816791026">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.1.center/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791026" />
+    <state width="1638" height="346" key="GridCell.Tab.1.left" timestamp="1584816791026">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.1.left/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791026" />
+    <state width="1638" height="346" key="GridCell.Tab.1.right" timestamp="1584816791026">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="346" key="GridCell.Tab.1.right/0.23.1680.1027@0.23.1680.1027" timestamp="1584816791026" />
+    <state x="100" y="123" width="1480" height="827" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1584803416865">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="100" y="123" width="1480" height="827" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1584803416865" />
+    <state x="540" y="292" width="644" height="488" key="find.popup" timestamp="1584816565679">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="540" y="292" width="644" height="488" key="find.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1584816565679" />
+    <state x="505" y="250" width="670" height="676" key="search.everywhere.popup" timestamp="1584820050448">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="505" y="250" width="670" height="676" key="search.everywhere.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1584820050448" />
+  </component>
+</project>
