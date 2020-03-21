@@ -5,9 +5,9 @@
       <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false" isTestModule="true" externalProjectId=":lib">
         <dependsOnModuleNames>:lib:commonTest</dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.lib.commonMain</sourceSet>
           <sourceSet>com.example.lib.jvmMain</sourceSet>
           <sourceSet>com.example.lib.commonTest</sourceSet>
+          <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>jvmTest|:lib:jvmTest|jvm</externalSystemTestTasks>

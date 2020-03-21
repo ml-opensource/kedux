@@ -6,8 +6,8 @@
         <dependsOnModuleNames>:example:app:commonTest</dependsOnModuleNames>
         <sourceSets>
           <sourceSet>kedux.example.app.iosMain</sourceSet>
-          <sourceSet>kedux.example.app.commonTest</sourceSet>
           <sourceSet>kedux.example.app.commonMain</sourceSet>
+          <sourceSet>kedux.example.app.commonTest</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>iosTest|:example:app:iosTest|ios</externalSystemTestTasks>
