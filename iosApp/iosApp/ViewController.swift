@@ -14,7 +14,6 @@ class MoviesModel: ObservableObject {
                 .subscribe(isThreadLocal: false, onSubscribe: nil, onError: nil, onComplete: nil) { movies in
                     self.movies = movies as! [Movie]
         })
-        store.dispatch(action: MovieActions.AddMovie(movie: Movie(id: 4, name: "This is a movie", description: "MOVIE")))
     }
 }
 
@@ -34,7 +33,7 @@ struct HomeView: View {
             }
             Spacer(minLength: 10)
             Button(action: {
-                self.moviesModel.store.dispatch(action: MovieActions.AddMovie(movie: Movie(id: 0, name: "Random Movie", description: "I am a movie")))
+                self.moviesModel.store.dispatch(action: MovieActions.AddMovie(movie: Movie(id: 0, name: "Random Movie \(self.moviesModel.movies.count + 1)", description: "I am a movie")))
             }) {
                 Text("Add Movie")
                     .padding()
