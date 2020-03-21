@@ -10,9 +10,9 @@
         <sourceSets>
           <sourceSet>com.example.lib.iosX64Main</sourceSet>
           <sourceSet>com.example.lib.iosTest</sourceSet>
-          <sourceSet>com.example.lib.commonTest</sourceSet>
-          <sourceSet>com.example.lib.iosMain</sourceSet>
           <sourceSet>com.example.lib.commonMain</sourceSet>
+          <sourceSet>com.example.lib.iosMain</sourceSet>
+          <sourceSet>com.example.lib.commonTest</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <externalSystemTestTasks>iosX64Test|:lib:iosX64Test|iosX64</externalSystemTestTasks>

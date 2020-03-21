@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: kedux.lib.lib-metadata-0.0.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/build/libs/lib-metadata-0.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

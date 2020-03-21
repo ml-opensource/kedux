@@ -9,7 +9,6 @@ import com.badoo.reaktive.scheduler.computationScheduler
 import com.badoo.reaktive.scheduler.mainScheduler
 import com.badoo.reaktive.subject.Subject
 import com.badoo.reaktive.subject.behavior.BehaviorSubject
-import kotlinx.atomicfu.atomic
 
 typealias SelectorFunction<S, R> = (state: S) -> R
 typealias StoreLogger = (() -> String) -> Unit
@@ -18,19 +17,19 @@ class SelectorConsumer<S, R : Any?> internal constructor(
     private val storeLogger: StoreLogger,
     private val selectorFunction: SelectorFunction<S, R>
 ) {
-    private val previousValue = atomic<S?>(null)
-    private val previousSelectorValue = atomic<R?>(null)
+    private var previousValue: S? = null
+    private var previousSelectorValue: R? = null
 
     fun consumeState(latest: S): R {
-        storeLogger { "selector -> previous ${previousValue.value} : latest $latest" }
-        storeLogger { "selector -> previous == latest ${previousValue.value == latest}" }
-        if (latest != previousValue.getAndSet(latest)) {
+        storeLogger { "selector -> previous $previousValue : latest $latest" }
+        storeLogger { "selector -> previous == latest ${previousValue == latest}" }
+        if (latest != previousValue) {
             val value = selectorFunction(latest)
-            previousSelectorValue.value = value
+            previousSelectorValue = value
             storeLogger { "selector -> RECOMPUTE $value" }
             return value
         } else {
-            val value = previousSelectorValue.value
+            val value = previousSelectorValue
             storeLogger { "selector -> UNCHANGED $value" }
             // unsafe cast as kotlin has no way to know that R is optional from the class.
             // let's not force unwrap, as we expect callers to know nullability.
