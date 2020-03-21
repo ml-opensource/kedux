@@ -8,9 +8,9 @@
           <dependsOn>:lib:iosTest</dependsOn>
         </dependsOnModuleNames>
         <sourceSets>
+          <sourceSet>com.example.lib.iosTest</sourceSet>
           <sourceSet>com.example.lib.commonMain</sourceSet>
           <sourceSet>com.example.lib.commonTest</sourceSet>
-          <sourceSet>com.example.lib.iosTest</sourceSet>
           <sourceSet>com.example.lib.iosMain</sourceSet>
           <sourceSet>com.example.lib.iosX64Main</sourceSet>
         </sourceSets>

@@ -1,1 +1,3 @@
+rootProject.name = "kedux"
+
 include ":lib", ":app"

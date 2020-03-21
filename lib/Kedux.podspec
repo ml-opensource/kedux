@@ -8,11 +8,9 @@ Pod::Spec.new do |spec|
     spec.summary                  = 'Kedux is a kotlin-multiplatform state management library.'
 
     spec.static_framework         = true
-    spec.vendored_frameworks      = "build/cocoapods/framework/Kedux.framework"
+    spec.vendored_frameworks      = "build/cocoapods/framework/#{spec.name}.framework"
     spec.libraries                = "c++"
     spec.module_name              = "#{spec.name}_umbrella"
-
-            
 
     spec.pod_target_xcconfig = {
         'KOTLIN_TARGET[sdk=iphonesimulator*]' => 'ios_x64',

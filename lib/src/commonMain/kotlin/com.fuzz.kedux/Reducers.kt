@@ -2,16 +2,17 @@ package com.fuzz.kedux
 
 import kotlin.reflect.KClass
 
-interface Reducer<S : Any> {
-    val stateClass: KClass<S>
-    fun reduce(state: S, action: Any): S
+abstract class Reducer<S : Any> {
+    abstract val stateClass: KClass<S>
+    abstract fun reduce(state: S, action: Any): S
 }
 
-inline fun <reified S : Any> anyReducer(crossinline fn: (state: S, action: Any) -> S) = object : Reducer<S> {
-    override fun reduce(state: S, action: Any): S = fn(state, action)
-    override val stateClass: KClass<S>
-        get() = S::class
-}
+inline fun <reified S : Any> anyReducer(crossinline fn: (state: S, action: Any) -> S) =
+    object : Reducer<S>() {
+        override fun reduce(state: S, action: Any): S = fn(state, action)
+        override val stateClass: KClass<S>
+            get() = S::class
+    }
 
 /**
  * Constructs a typesafe action that only accepts the type argument [A] as an action. Useful for sealed classes.

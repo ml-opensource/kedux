@@ -7,5 +7,5 @@ import org.kodein.di.erased.bind
 import org.kodein.di.erased.singleton
 
 val kodein = Kodein {
-    bind<Store<FracturedState>>() with singleton { store() }
+    bind<Store<FracturedState>>() with singleton { appGlobalStore() }
 }

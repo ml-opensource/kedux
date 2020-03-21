@@ -8,8 +8,8 @@
           <dependsOn>:lib:iosMain</dependsOn>
         </dependsOnModuleNames>
         <sourceSets>
-          <sourceSet>com.example.lib.commonMain</sourceSet>
           <sourceSet>com.example.lib.iosMain</sourceSet>
+          <sourceSet>com.example.lib.commonMain</sourceSet>
         </sourceSets>
         <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
         <compilerSettings />

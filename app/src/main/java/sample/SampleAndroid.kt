@@ -6,7 +6,6 @@ import androidx.ui.core.Text
 import androidx.ui.core.setContent
 import com.badoo.reaktive.disposable.CompositeDisposable
 import com.badoo.reaktive.disposable.addTo
-import com.badoo.reaktive.observable.subscribe
 import com.fuzz.kedux.FracturedState
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.fracturedSelector

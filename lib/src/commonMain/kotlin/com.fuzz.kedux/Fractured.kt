@@ -20,7 +20,7 @@ fun createFracturedState(
 class ReducerMap(
     vararg reducers: Reducer<Any>,
     override val stateClass: KClass<FracturedState> = FracturedState::class
-) : Reducer<FracturedState> {
+) : Reducer<FracturedState>() {
     private val reducerMap: Map<KClass<Any>, Reducer<Any>> =
         reducers.map { it.stateClass to it }.toMap()
 

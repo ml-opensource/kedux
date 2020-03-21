@@ -1,4 +1,3 @@
-import com.badoo.reaktive.observable.subscribe
 import com.badoo.reaktive.scheduler.overrideSchedulers
 import com.badoo.reaktive.test.scheduler.TestScheduler
 import com.fuzz.kedux.Store
@@ -105,8 +104,24 @@ class SelectorTest {
             assertEquals(1, count3)
         }.use {
             repeat(3) {
-                store.dispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
-                store.dispatch(StoreTestAction.LocationChange(Location(5, "1", product = Product(5, "Burger"))))
+                store.dispatch(
+                    StoreTestAction.LocationChange(
+                        Location(
+                            5,
+                            "1",
+                            product = Product(5, "Burger")
+                        )
+                    )
+                )
+                store.dispatch(
+                    StoreTestAction.LocationChange(
+                        Location(
+                            5,
+                            "1",
+                            product = Product(5, "Burger")
+                        )
+                    )
+                )
                 store.dispatch(StoreTestAction.NameChange("New Name"))
             }
         }

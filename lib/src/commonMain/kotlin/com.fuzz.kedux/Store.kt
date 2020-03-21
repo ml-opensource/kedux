@@ -39,8 +39,8 @@ class Store<S: Any> internal constructor(
 ) {
     private val _state = BehaviorSubject(initialState)
 
-    val state: Observable<S>
-        get() = _state.observeOn(mainScheduler)
+    val state: ObservableWrapper<S>
+        get() = _state.observeOn(mainScheduler).wrap()
 
     /**
      * Launches a new coroutine to call the specified reducers. It will emit a

@@ -78,14 +78,18 @@ kotlin {
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
     iosX64("ios") {
         binaries {
-            framework()
+            framework {
+                freeCompilerArgs += "-Xobjc-generics"
+                export project(':lib')
+                transitiveExport = true
+            }
         }
     }
     sourceSets {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-                implementation project(':lib')
+                api project(':lib')
                 implementation "org.kodein.di:kodein-di-erased:$kodeinVersion"
             }
         }
