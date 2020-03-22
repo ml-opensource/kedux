@@ -5,7 +5,7 @@ buildscript {
         maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0-alpha03'
+        classpath 'com.android.tools.build:gradle:3.6.1'
     }
 }
 
@@ -96,15 +96,12 @@ kotlin {
         jvmMain {
             dependencies {
                 api kotlin('stdlib-jdk8')
-                api "com.badoo.reaktive:reaktive-jvm:${reaktiveVersion}"
-                api "com.badoo.reaktive:utils-jvm:${reaktiveVersion}"
             }
         }
         jvmTest {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit')
-                implementation "com.badoo.reaktive:reaktive-testing-jvm:${reaktiveVersion}"
             }
         }
         androidMain {
@@ -116,42 +113,32 @@ kotlin {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit')
-                implementation "com.badoo.reaktive:reaktive-testing-android:${reaktiveVersion}"
             }
         }
         jsMain {
             dependencies {
                 api kotlin('stdlib-js')
-                api "com.badoo.reaktive:reaktive-js:${reaktiveVersion}"
-                api "com.badoo.reaktive:utils-js:${reaktiveVersion}"
             }
         }
         jsTest {
             dependencies {
                 implementation kotlin('test-js')
-                implementation "com.badoo.reaktive:reaktive-testing-js:${reaktiveVersion}"
             }
         }
         macos {
             dependencies {
-                api "com.badoo.reaktive:reaktive-macosx64:${reaktiveVersion}"
-                api "com.badoo.reaktive:utils-macosx64:${reaktiveVersion}"
             }
         }
         macosTest {
             dependencies {
-                implementation "com.badoo.reaktive:reaktive-testing-macosx64:${reaktiveVersion}"
             }
         }
         ios {
             dependencies {
-                api "com.badoo.reaktive:reaktive-native:${reaktiveVersion}"
-                api "com.badoo.reaktive:utils-native:${reaktiveVersion}"
             }
         }
         iosTest {
             dependencies {
-                implementation "com.badoo.reaktive:reaktive-testing-native:${reaktiveVersion}"
             }
         }
     }
