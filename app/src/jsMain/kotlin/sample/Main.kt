@@ -1,5 +1,6 @@
 package sample
 
+import react.child
 import react.dom.render
 import kotlin.browser.document
 
@@ -10,6 +11,7 @@ fun main() {
     document.addEventListener("DOMContentLoaded", {
         render(document.getElementById("root")) {
             child(MoviesComponent::class) {}
+            child(SelectorComponent)
         }
     })
 }

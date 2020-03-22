@@ -9,6 +9,5 @@ pluginManagement {
 }
 rootProject.name = "kedux"
 
-include ":lib", ":app"
-include 'web2'
+include ":lib", ":app", ":js-react"
 

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="js-react-js">
+    <output-path>$PROJECT_DIR$/js-react/build/libs</output-path>
+    <root id="archive" name="js-react-js.jar">
+      <element id="module-output" name="kedux.js-react.jsMain" />
+    </root>
+  </artifact>
+</component>

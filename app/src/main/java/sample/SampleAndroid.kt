@@ -19,14 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            Text(text = "Hello Worldies")
-            store.fracturedSelector(movieReducer) { it.movies }
-                .subscribe { movies -> MoviesList(moviesList = movies) }
-                .addTo(disposable)
-        }
 
-        store.dispatch(MovieActions.AddMovie(Movie(1, "Name", "Description")))
     }
 
     override fun onDestroy() {

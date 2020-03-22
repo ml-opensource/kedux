@@ -2,6 +2,7 @@ package sample
 
 import com.badoo.reaktive.disposable.CompositeDisposable
 import com.badoo.reaktive.disposable.addTo
+import com.fuzz.kedux.js_react.useSelector
 import kotlinx.css.Display.flex
 import kotlinx.css.FlexDirection.column
 import kotlinx.css.display
@@ -11,13 +12,24 @@ import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
+import react.dom.div
+import react.functionalComponent
 import react.setState
+import react.useState
 import styled.css
 import styled.styledButton
 import styled.styledDiv
 import styled.styledSpan
 
 data class State(var movies: List<Movie>) : RState
+
+val SelectorComponent = functionalComponent<RProps> {
+    val (movies, setMovies) = useState(listOf<Movie>())
+    store.useSelector(setMovies) { moviesSelector(this) }
+    div {
+        +"Found ${movies.size}"
+    }
+}
 
 class MoviesComponent : RComponent<RProps, State>() {
 

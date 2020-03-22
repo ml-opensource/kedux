@@ -1,22 +1,11 @@
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0-alpha03'
-    }
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
 }
 
-plugins {
-    id 'org.jetbrains.kotlin.multiplatform' version '1.3.70'
-}
 ext {
     kodeinVersion = "6.5.3"
     compose_version = "0.1.0-dev07"
 }
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 
@@ -41,22 +30,22 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    buildFeatures {
-        // Enables Jetpack Compose for this module
-        compose true
-    }
+    /* buildFeatures {
+         // Enables Jetpack Compose for this module
+         compose true
+     }*/
 
 }
 
 dependencies {
-    implementation("androidx.compose:compose-runtime:$compose_version")
+    /*implementation("androidx.compose:compose-runtime:$compose_version")
     implementation "androidx.ui:ui-core:$compose_version"
     implementation("androidx.ui:ui-framework:$compose_version")
     implementation("androidx.ui:ui-layout:$compose_version")
     implementation("androidx.ui:ui-material:$compose_version")
     implementation("androidx.ui:ui-foundation:$compose_version")
     implementation("androidx.ui:ui-animation:$compose_version")
-    implementation("androidx.ui:ui-tooling:$compose_version")
+    implementation("androidx.ui:ui-tooling:$compose_version")*/
     implementation('androidx.appcompat:appcompat:1.1.0')
     implementation('androidx.activity:activity-ktx:1.1.0')
     implementation "androidx.core:core-ktx:1.2.0"
@@ -82,6 +71,20 @@ kotlin {
                 freeCompilerArgs += "-Xobjc-generics"
                 export project(':lib')
                 transitiveExport = true
+            }
+        }
+    }
+    js {
+        browser()
+        useCommonJs()
+
+        compilations.all {
+            kotlinOptions {
+                languageVersion = "1.3"
+                moduleKind = "commonjs"
+                sourceMap = true
+                sourceMapEmbedSources = "always"
+                metaInfo = true
             }
         }
     }
@@ -119,11 +122,36 @@ kotlin {
         }
         iosTest {
         }
+        jsMain {
+            dependencies {
+                implementation project(':js-react')
+
+                implementation(npm("core-js", "^2.0.0"))
+
+                implementation kotlin('stdlib-js')
+                implementation deps.react
+                implementation deps.react_dom
+                implementation(npm("react", reactVersion))
+                implementation(npm("react-dom", reactVersion))
+                implementation(npm("react-is", reactVersion))
+
+                def css_version = '1.0.0-pre.91'
+                def kotlinext_version = '1.0.1-pre.91'
+                implementation "org.jetbrains:kotlin-styled:1.0.0-pre.94-kotlin-1.3.70"
+                implementation(npm("styled-components", "^4.3.2"))
+                implementation(npm("css-in-js-utils", "^3.0.4"))
+                implementation(npm("@jetbrains/kotlin-css", "^$css_version"))
+                implementation(npm("@jetbrains/kotlin-css-js", "^$css_version"))
+                implementation(npm("@jetbrains/kotlin-extensions", "^$kotlinext_version"))
+                implementation(npm("@jetbrains/kotlin-styled", "^$css_version"))
+                implementation(npm("inline-style-prefixer", "^5.1.2"))
+            }
+        }
     }
 }
 
 // This task attaches native framework built from ios module to Xcode project
-// (see iosApp directory). Don't run this task directly,
+// (see iosApp directory). Don't run this task directly,a
 // Xcode runs this task itself during its build process.
 // Before opening the project from iosApp directory in Xcode,
 // make sure all Gradle infrastructure exists (gradle.wrapper, gradlew).
