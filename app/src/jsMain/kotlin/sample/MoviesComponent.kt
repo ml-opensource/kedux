@@ -2,6 +2,7 @@ package sample
 
 import com.badoo.reaktive.disposable.CompositeDisposable
 import com.badoo.reaktive.disposable.addTo
+import com.fuzz.kedux.FracturedState
 import com.fuzz.kedux.js_react.useSelector
 import kotlinx.css.Display.flex
 import kotlinx.css.FlexDirection.column
@@ -25,7 +26,7 @@ data class State(var movies: List<Movie>) : RState
 
 val SelectorComponent = functionalComponent<RProps> {
     val (movies, setMovies) = useState(listOf<Movie>())
-    store.useSelector(setMovies) { moviesSelector(this) }
+    useSelector<FracturedState, List<Movie>>(setMovies) { moviesSelector(this) }
     div {
         +"Found ${movies.size}"
     }

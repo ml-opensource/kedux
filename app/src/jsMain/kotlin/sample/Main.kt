@@ -1,5 +1,6 @@
 package sample
 
+import com.fuzz.kedux.js_react.StoreProvider
 import react.child
 import react.dom.render
 import kotlin.browser.document
@@ -10,8 +11,10 @@ fun main() {
     GlobalStyles.inject()
     document.addEventListener("DOMContentLoaded", {
         render(document.getElementById("root")) {
-            child(MoviesComponent::class) {}
-            child(SelectorComponent)
+            StoreProvider(store) {
+                child(MoviesComponent::class) {}
+                child(SelectorComponent)
+            }
         }
     })
 }
