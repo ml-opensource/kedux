@@ -4,25 +4,28 @@ import SwiftUI
 
 class MoviesModel: ObservableObject {
     let disposable = CompositeDisposable()
-    let store = StoreKt_.appGlobalStore()
-    
+
     @Published
     var movies: [Movie] = []
 
-    init() {
+    init(store: Store<FracturedState>) {
         disposable.add(disposable: SelectorsKt.moviesSelector(store: store)
                 .subscribe(isThreadLocal: false, onSubscribe: nil, onError: nil, onComplete: nil) { movies in
                     self.movies = movies as! [Movie]
-        })
+                })
     }
 }
 
 struct HomeView: View {
 
-    @ObservedObject var moviesModel = MoviesModel()
+    @ObservedObject
+    var moviesModel: MoviesModel
 
-    init() {
+    private let store: Store<FracturedState>
 
+    init(store: Store<FracturedState>) {
+        self.store = store
+        self.moviesModel  = MoviesModel(store: store)
     }
 
     var body: some View {
@@ -33,23 +36,23 @@ struct HomeView: View {
             }
             Spacer(minLength: 10)
             Button(action: {
-                self.moviesModel.store.dispatch(action: MovieActions.AddMovie(movie: Movie(id: 0, name: "Random Movie \(self.moviesModel.movies.count + 1)", description: "I am a movie")))
+                self.store.dispatch(action: MovieActions.AddMovie(movie: Movie(id: 0, name: "Random Movie \(self.moviesModel.movies.count + 1)", description: "I am a movie")))
             }) {
                 Text("Add Movie")
-                    .padding()
-                    .accentColor(Color.blue)
-                    .border(Color.blue, width: 1)
+                        .padding()
+                        .accentColor(Color.blue)
+                        .border(Color.blue, width: 1)
             }
             Spacer().frame(height: 10)
             Button(action: {
                 if let last = self.moviesModel.movies.last {
-                self.moviesModel.store.dispatch(action: MovieActions.RemoveMovie(movie: last))
+                    self.store.dispatch(action: MovieActions.RemoveMovie(movie: last))
                 }
             }) {
                 Text("Remove Movie")
-                    .accentColor(Color.red)
-                    .padding()
-                    .border(Color.red, width: 1)
+                        .accentColor(Color.red)
+                        .padding()
+                        .border(Color.red, width: 1)
             }
         }
     }
