@@ -6,6 +6,7 @@ import com.badoo.reaktive.disposable.CompositeDisposable
 import com.badoo.reaktive.disposable.addTo
 import com.badoo.reaktive.observable.Observable
 import com.badoo.reaktive.observable.ObservableWrapper
+import com.badoo.reaktive.observable.distinctUntilChanged
 import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.observeOn
 import com.badoo.reaktive.observable.subscribe
@@ -86,7 +87,9 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
                 val value = propagateStates<S, R>(state)
                 Store.logIfEnabled { "PROPAGATING STATES $value" }
                 return@map Optional.Some(value)
-            }.observeOn(mainScheduler)
+            }
+            .distinctUntilChanged()
+            .observeOn(mainScheduler)
 }
 
 typealias Selector<S, R> = (ObservableWrapper<S>) -> ObservableWrapper<R>

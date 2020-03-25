@@ -28,7 +28,6 @@ class SelectorTest {
         store.select(nameSelector)
                 .subscribe(isThreadLocal = true) {
                     name = it
-                    println("INCREMENTING COUNT $count")
                     count++
                 }.use {
                     repeat(3) {
@@ -71,7 +70,7 @@ class SelectorTest {
                 store.dispatch(StoreTestAction.NameChange("New Name"))
             }
             assertEquals(5, value)
-            assertEquals(1, count)
+            assertEquals(2, count)
         }
     }
 
