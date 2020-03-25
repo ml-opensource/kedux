@@ -17,7 +17,7 @@ class SelectorTest {
                 computation = { TestScheduler() },
                 main = { TestScheduler() }
         )
-        //Store.loggingEnabled = true
+        Store.loggingEnabled = true
         store = createStore(sampleReducer, initialState)
     }
 

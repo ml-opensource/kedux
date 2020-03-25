@@ -10,7 +10,7 @@ import com.badoo.reaktive.observable.wrap
 import com.badoo.reaktive.scheduler.computationScheduler
 import com.badoo.reaktive.scheduler.mainScheduler
 import com.badoo.reaktive.subject.behavior.BehaviorSubject
-import kotlin.native.concurrent.ThreadLocal
+import com.badoo.reaktive.utils.atomic.AtomicBoolean
 
 @Suppress("UNCHECKED_CAST")
 fun <S : Any> createStore(
@@ -63,13 +63,17 @@ class Store<S : Any> internal constructor(
         this.reducer = reducer
     }
 
-    @ThreadLocal
     companion object {
         /**
          * If true, everything is logged to the native console.
          */
-        @ThreadLocal
-        var loggingEnabled: Boolean = false
+        private var internalLoggingEnabled: AtomicBoolean = AtomicBoolean(false)
+
+        var loggingEnabled: Boolean
+            get() = internalLoggingEnabled.value
+            set(value) {
+                internalLoggingEnabled.value = value
+            }
 
         inline fun logIfEnabled(messageBuilder: () -> String) {
             if (loggingEnabled) {

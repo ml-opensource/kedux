@@ -21,7 +21,7 @@ class FracturedStoreTest {
                 computation = { TestScheduler() },
                 main = { TestScheduler() }
         )
-        //Store.loggingEnabled = true
+        Store.loggingEnabled = true
         store = createFracturedStore(
                 productReducer reduce Product(0, ""),
                 locationReducer reduce Location(0, "")
