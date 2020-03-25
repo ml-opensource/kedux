@@ -48,14 +48,14 @@ class SelectorConsumer<S, R : Any?> internal constructor(
     }
 }
 
-class SelectorSubject<S : Any, R : Any?> internal constructor(
-        private val store: Store<S>,
+class SelectorSubject<S : Any?, R : Any?> internal constructor(
+        private val state: Observable<S>,
         vararg channelSelectors: SelectorFunction<Any?, Any?>,
         private val _stateSubject: Subject<Optional<R>> = BehaviorSubject(Optional.None())
 ) : Observable<R> by _stateSubject.safeUnwrap().threadLocal() {
 
     private val channelSelectors: List<SelectorConsumer<Any?, Any?>> =
-            channelSelectors.map { SelectorConsumer(store::logIfEnabled, it) }
+            channelSelectors.map { SelectorConsumer(Store.Companion::logIfEnabled, it) }
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     init {
@@ -78,86 +78,23 @@ class SelectorSubject<S : Any, R : Any?> internal constructor(
                 channelSelector.consumeState(foldState)
             } as R
 
-    private fun stateChange(): Observable<Optional<R>> = store.state
+    private fun stateChange(): Observable<Optional<R>> = state
             .subscribeOn(computationScheduler)
             .threadLocal()
             .map { state ->
-                store.logIfEnabled { "CONSUMING STATE $state" }
+                Store.logIfEnabled { "CONSUMING STATE $state" }
                 val value = propagateStates<S, R>(state)
-                store.logIfEnabled { "PROPAGATING STATES $value" }
+                Store.logIfEnabled { "PROPAGATING STATES $value" }
                 return@map Optional.Some(value)
             }.observeOn(mainScheduler)
 }
 
-fun <S : Any, R : Any?> Store<S>.createSelector(selectorFunction: SelectorFunction<S, R>): ObservableWrapper<R> =
-        SelectorSubject<S, R>(this@createSelector, selectorFunction as SelectorFunction<Any?, Any?>).wrap()
+typealias Selector<S, R> = (ObservableWrapper<S>) -> ObservableWrapper<R>
 
-fun <S : Any, R1 : Any?, R2 : Any?> Store<S>.createSelector(
-        selectorFunction1: SelectorFunction<S, R1>,
-        selectorFunction2: SelectorFunction<R1, R2>
-): ObservableWrapper<R2> =
-        SelectorSubject<S, R2>(
-                this@createSelector,
-                selectorFunction1 as SelectorFunction<Any?, Any?>,
-                selectorFunction2 as SelectorFunction<Any?, Any?>
-        ).wrap()
+fun <S : Any, R : Any?> Store<S>.select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
 
-fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?> Store<S>.createSelector(
-        selectorFunction1: SelectorFunction<S, R1>,
-        selectorFunction2: SelectorFunction<R1, R2>,
-        selectorFunction3: SelectorFunction<R2, R3>
-): ObservableWrapper<R3> =
-        SelectorSubject<S, R3>(
-                this@createSelector,
-                selectorFunction1 as SelectorFunction<Any?, Any?>,
-                selectorFunction2 as SelectorFunction<Any?, Any?>,
-                selectorFunction3 as SelectorFunction<Any?, Any?>
-        ).wrap()
+fun <S : Any?, R : Any?> createSelector(selectorFunction: SelectorFunction<S, R>): Selector<S, R> =
+        { observable -> SelectorSubject<S, R>(observable, selectorFunction as SelectorFunction<Any?, Any?>).wrap() }
 
-fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?> Store<S>.createSelector(
-        selectorFunction1: SelectorFunction<S, R1>,
-        selectorFunction2: SelectorFunction<R1, R2>,
-        selectorFunction3: SelectorFunction<R2, R3>,
-        selectorFunction4: SelectorFunction<R3, R4>
-): ObservableWrapper<R4> =
-        SelectorSubject<S, R4>(
-                this@createSelector,
-                selectorFunction1 as SelectorFunction<Any?, Any?>,
-                selectorFunction2 as SelectorFunction<Any?, Any?>,
-                selectorFunction3 as SelectorFunction<Any?, Any?>,
-                selectorFunction4 as SelectorFunction<Any?, Any?>
-        ).wrap()
-
-fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?> Store<S>.createSelector(
-        selectorFunction1: SelectorFunction<S, R1>,
-        selectorFunction2: SelectorFunction<R1, R2>,
-        selectorFunction3: SelectorFunction<R2, R3>,
-        selectorFunction4: SelectorFunction<R3, R4>,
-        selectorFunction5: SelectorFunction<R4, R5>
-): ObservableWrapper<R5> =
-        SelectorSubject<S, R5>(
-                this@createSelector,
-                selectorFunction1 as SelectorFunction<Any?, Any?>,
-                selectorFunction2 as SelectorFunction<Any?, Any?>,
-                selectorFunction3 as SelectorFunction<Any?, Any?>,
-                selectorFunction4 as SelectorFunction<Any?, Any?>,
-                selectorFunction5 as SelectorFunction<Any?, Any?>
-        ).wrap()
-
-fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?, R6 : Any?> Store<S>.createSelector(
-        selectorFunction1: SelectorFunction<S, R1>,
-        selectorFunction2: SelectorFunction<R1, R2>,
-        selectorFunction3: SelectorFunction<R2, R3>,
-        selectorFunction4: SelectorFunction<R3, R4>,
-        selectorFunction5: SelectorFunction<R4, R5>,
-        selectorFunction6: SelectorFunction<R5, R6>
-): ObservableWrapper<R6> =
-        SelectorSubject<S, R6>(
-                this@createSelector,
-                selectorFunction1 as SelectorFunction<Any?, Any?>,
-                selectorFunction2 as SelectorFunction<Any?, Any?>,
-                selectorFunction3 as SelectorFunction<Any?, Any?>,
-                selectorFunction4 as SelectorFunction<Any?, Any?>,
-                selectorFunction5 as SelectorFunction<Any?, Any?>,
-                selectorFunction6 as SelectorFunction<Any?, Any?>
-        ).wrap()
+fun <S : Any, R1 : Any?, R2 : Any?> Selector<S, R1>.compose(selectorFunction: SelectorFunction<R1, R2>): Selector<S, R2> =
+        { observable -> createSelector(selectorFunction)(this(observable)).wrap() }
