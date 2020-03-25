@@ -27,10 +27,6 @@ android {
 }
 
 dependencies {
-    releaseApi "com.badoo.reaktive:reaktive-android-release:${reaktiveVersion}"
-    debugApi "com.badoo.reaktive:reaktive-android-debug:${reaktiveVersion}"
-    releaseApi "com.badoo.reaktive:reaktive-utils-android-release:${reaktiveVersion}"
-    debugApi "com.badoo.reaktive:reaktive-utils-android-debug:${reaktiveVersion}"
 }
 
 
