@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.badoo.reaktive:reaktive-testing-android-debug:1.1.12@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/32140acdc88d1aa3f7802164e2ded063/reaktive-testing-debug/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/32140acdc88d1aa3f7802164e2ded063/reaktive-testing-debug/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badoo.reaktive/reaktive-testing-android-debug/1.1.12/a623e28fdf0f07ac46e524d2ac976693e26ddc0d/reaktive-testing-android-debug-1.1.12-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

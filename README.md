@@ -75,20 +75,34 @@ We recommend using dependency injection to provide your store in your app so it'
 
 ```kotlin
 
-val store =  createStore(sampleReducer, initialState, loggingEnabled = true)
+val store =  createStore(sampleReducer, initialState)
 
 ```
 
-`loggingEnabled`: set this to log events to the native console as they come in. Preferrably this is set only on development 
+#### Logging
+
+`Store.loggingEnabled`: set this to log events to the native console as they come in. Preferrably this is set only on development 
 builds.
 
 ### Selectors
 
+Selectors are pure `Observable` functions that accept state and emit changes to the state.
+
+Selectors _only_ emit when their output is distinct. 
+
+Selectors _only_ recompute when their upstream state is distinct.
+
+Selectors emit on subscription. So dowstream observers will receive the latest state.
+
+Selectors can be combined.
+
 To observe changes on the store, subscribe to its state:
 
 ```kotlin
-store.createSelector { state -> state.name }
-.subscribe { name ->
+val nameSelector = createSelector<GlobalState, String> { state -> state.name }
+
+// subscribe to store updates
+store.select(nameSelector).subscribe { name ->
   // do something with name
 }.addTo(compositeDisposable) 
 ```
@@ -133,21 +147,29 @@ They are useful for heavy calculations such as retrieving an object out of a lis
 
 Creating a selector is easy:
 ```kotlin
-store.createSelector { state -> state.field }
-  .subscribe { value  ->
+val fieldSelector = createSelector<GlobalState, Field> { state -> state.field }
+store.select(fieldSelector).subscribe { value  ->
   // do something
 }
 .addTo(compositeDisposable)
 ```
 
-Selectors go up to 6 nested functions so far. If you need more, file an issue.
+Selectors can be composed. Each nested level only recomputes when its outer state changes. It's best practice 
+to break up the composition into smaller pieces.
 
 ```kotlin
-store.createSelector( 
-  { state -> state.location }, 
-  { state -> state.product})    
-  { state -> state.name }
+// avoid
+val nameSelector = createSelector<GlobalState, Location?> { state -> state.location }
+    .compose { state -> state.product}
+    .compose { state -> state.name }
+
+// preferred
+val locationSelector = createSelector<GlobalState, Location?>  { state -> state.location }
+val productSelector = locationSelector.compose { state -> state.product}
+val productNameSelector = productSelector.compose { state -> state.name }
 ```
+
+By composing selectors in separate fields, they become more reusable.
 
 ## Advanced Features
 
@@ -169,8 +191,7 @@ variable. This is accomplished using the `FracturedState` object and special cre
 ```kotlin
  store = createFracturedStore(
             productReducer reduce Product(0, ""),
-            locationReducer reduce Location(0, ""),
-            loggingEnabled = true
+            locationReducer reduce Location(0, "")
         )
 ```
 This method returns a `Store<FracturedState>` with a few helper extensions to make usage cleaner.
@@ -191,7 +212,7 @@ val productReducer = typedReducer<Product, ProductActions> { state, action ->
 
 Now we can subscribe to the changes via:
 ```kotlin
- store.fracturedSelector(productReducer)
+ store.select(fracturedSelector(productReducer))
   .subscribe { value ->
    // do something with Product                 
  }.addTo(compositeDisposable)
@@ -199,8 +220,7 @@ Now we can subscribe to the changes via:
 
 The `fracturedReducer` will loop through each reducer to determine any state changes and update subscribers across the fractured state map. 
 
-Nesting `fracturedReducer` is not supported.
-
+Nesting `fracturedReducer` is not supported, though `compose`-ing is supported.
 
 [badge-android]: http://img.shields.io/badge/platform-android-brightgreen.svg?style=flat
 [badge-ios]: http://img.shields.io/badge/platform-ios-lightgrey.svg?style=flat
