@@ -165,7 +165,7 @@ val nameSelector = createSelector<GlobalState, Location?> { state -> state.locat
 
 // preferred
 val locationSelector = createSelector<GlobalState, Location?>  { state -> state.location }
-val productSelector = locationSelector.compose { state -> state.product}
+val productSelector = locationSelector.compose { state -> state.product }
 val productNameSelector = productSelector.compose { state -> state.name }
 ```
 
