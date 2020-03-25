@@ -5,6 +5,8 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f5792a8c60070b6a2f3933e9b4135872/reaktive-debug/res" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badoo.reaktive/reaktive-android-debug/1.1.12/60522312a9e0c62ca039328b536589bb8ee0764/reaktive-android-debug-1.1.12-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

@@ -1,7 +1,8 @@
 import com.badoo.reaktive.scheduler.overrideSchedulers
 import com.badoo.reaktive.test.scheduler.TestScheduler
+import com.badoo.reaktive.utils.atomic.AtomicInt
+import com.badoo.reaktive.utils.atomic.AtomicReference
 import com.fuzz.kedux.Store
-import com.fuzz.kedux.createSelector
 import com.fuzz.kedux.createStore
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -14,117 +15,100 @@ class SelectorTest {
     @BeforeTest
     fun constructStore() {
         overrideSchedulers(
-            computation = { TestScheduler() },
-            main = { TestScheduler() }
+                computation = { TestScheduler() },
+                main = { TestScheduler() }
         )
-        store = createStore(sampleReducer, initialState, loggingEnabled = true)
+        Store.loggingEnabled = true
+        store = createStore(sampleReducer, initialState)
     }
 
     @Test
     fun selectorEmitsAllValues() {
         var count = 0
         var name = ""
-        store.createSelector { state -> state.name }
-            .subscribe(isThreadLocal = true) {
-                name = it
-                println("INCREMENTING COUNT $count")
-                count++
-            }.use {
-                repeat(3) {
-                    store.dispatch(StoreTestAction.NameChange("Name$it"))
-                    store.dispatch(StoreTestAction.NameChange("Name2-$it"))
+        store.select(nameSelector)
+                .subscribe(isThreadLocal = true) {
+                    name = it
+                    count++
+                }.use {
+                    repeat(3) {
+                        store.dispatch(StoreTestAction.NameChange("Name$it"))
+                        store.dispatch(StoreTestAction.NameChange("Name2-$it"))
+                    }
+                    assertEquals(name, "Name2-2")
+                    assertEquals(7, count)
                 }
-                assertEquals(name, "Name2-2")
-                assertEquals(7, count)
-            }
     }
 
     @Test
     fun selectorSelectivelyEmitsValues() {
-        var count = 0
-        var name = ""
-        store.createSelector { state ->
-            count++
-            state.name
-        }.subscribe {
-            name = it
+        val count = AtomicInt(0)
+        val name = AtomicReference("")
+        store.select(nameSelector).subscribe {
+            count.value = count.value + 1
+            name.value = it
         }.use {
             repeat(3) {
                 store.dispatch(StoreTestAction.NameChange("Name$it"))
                 store.dispatch(StoreTestAction.NameChange("Name$it"))
             }
-            assertEquals("Name2", name)
-            assertEquals(4, count)
+            assertEquals("Name2", name.value)
+            assertEquals(4, count.value)
         }
     }
 
     @Test
     fun composeSelectors() {
-        var count1 = 0
-        var count2 = 0
         var value: Int? = null
-        store.createSelector({ state ->
-                count1++
-                state.location
-            }) { state ->
-                count2++
-                state?.id
+        var count = 0
+        store.select(locationIdSelector).subscribe(isThreadLocal = true) {
+            count++
+            value = it
+        }.use {
+            repeat(3) {
+                store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
+                store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
+                store.dispatch(StoreTestAction.NameChange("New Name"))
             }
-            .subscribe { value = it }
-            .use {
-                repeat(3) {
-                    store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
-                    store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
-                    store.dispatch(StoreTestAction.NameChange("New Name"))
-                }
-                assertEquals(5, value)
-                assertEquals(3, count1)
-                assertEquals(1, count2)
-            }
+            assertEquals(5, value)
+            assertEquals(2, count)
+        }
     }
 
     @Test
     fun composeSelectors3() {
-        var count1 = 0
-        var count2 = 0
-        var count3 = 0
-        store.createSelector({ state ->
-            count1++
-            state.location
-        }, { state ->
-            count2++
-            state?.product
-        }) { state ->
-            count3++
-            state?.id
-        }.subscribe { value ->
-            assertEquals(5, value)
-            assertEquals(2, count1)
-            assertEquals(1, count2)
-            assertEquals(1, count3)
-        }.use {
-            repeat(3) {
-                store.dispatch(
-                    StoreTestAction.LocationChange(
-                        Location(
-                            5,
-                            "1",
-                            product = Product(5, "Burger")
+        var count = 0
+        var value: Int? = null
+        store.select(locationProductIdSelector)
+                .subscribe(isThreadLocal = true) { next ->
+                    count++
+                    value = next
+                }.use {
+                    repeat(3) {
+                        store.dispatch(
+                                StoreTestAction.LocationChange(
+                                        Location(
+                                                5,
+                                                "1",
+                                                product = Product(5, "Burger")
+                                        )
+                                )
                         )
-                    )
-                )
-                store.dispatch(
-                    StoreTestAction.LocationChange(
-                        Location(
-                            5,
-                            "1",
-                            product = Product(5, "Burger")
+                        store.dispatch(
+                                StoreTestAction.LocationChange(
+                                        Location(
+                                                5,
+                                                "1",
+                                                product = Product(5, "Burger")
+                                        )
+                                )
                         )
-                    )
-                )
-                store.dispatch(StoreTestAction.NameChange("New Name"))
-            }
-        }
+                        store.dispatch(StoreTestAction.NameChange("New Name"))
+                    }
+
+                    assertEquals(5, value)
+                    assertEquals(2, count)
+                }
     }
 }
 
