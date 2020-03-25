@@ -19,7 +19,8 @@ class StoreTest {
             computation = { TestScheduler() },
             main = { TestScheduler() }
         )
-        store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState, loggingEnabled = true)
+        //Store.loggingEnabled = true
+        store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
     }
 
     @Test

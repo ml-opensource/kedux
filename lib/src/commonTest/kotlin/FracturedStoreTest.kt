@@ -1,8 +1,12 @@
-import com.badoo.reaktive.observable.map
-import com.badoo.reaktive.observable.subscribe
 import com.badoo.reaktive.scheduler.overrideSchedulers
 import com.badoo.reaktive.test.scheduler.TestScheduler
-import com.fuzz.kedux.*
+import com.fuzz.kedux.FracturedState
+import com.fuzz.kedux.Store
+import com.fuzz.kedux.compose
+import com.fuzz.kedux.createFracturedStore
+import com.fuzz.kedux.fracturedSelector
+import com.fuzz.kedux.reduce
+import com.fuzz.kedux.select
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,13 +18,13 @@ class FracturedStoreTest {
     @BeforeTest
     fun constructStore() {
         overrideSchedulers(
-            computation = { TestScheduler() },
-            main = { TestScheduler() }
+                computation = { TestScheduler() },
+                main = { TestScheduler() }
         )
+        //Store.loggingEnabled = true
         store = createFracturedStore(
-            productReducer reduce Product(0, ""),
-            locationReducer reduce Location(0, ""),
-            loggingEnabled = true
+                productReducer reduce Product(0, ""),
+                locationReducer reduce Location(0, "")
         )
     }
 
@@ -29,12 +33,12 @@ class FracturedStoreTest {
         store.dispatch(ProductActions.NameChange("Name Changed"))
 
         var product: Product? = null
-        store.fracturedSelector(productReducer)
-            .subscribe { value ->
-                product = value
-            }.use {
-                assertEquals(Product(0, "Name Changed"), product)
-            }
+        store.select(fracturedSelector(productReducer))
+                .subscribe { value ->
+                    product = value
+                }.use {
+                    assertEquals(Product(0, "Name Changed"), product)
+                }
     }
 
     @Test
@@ -42,12 +46,11 @@ class FracturedStoreTest {
         store.dispatch(LocationActions.ProductChange(Product(5, "Namey")))
 
         var product: Product? = null
-        store.fracturedSelector(locationReducer)
-            .map { it.product }
-            .subscribe { value ->
-                product = value
-            }.use {
-                assertEquals(Product(5, "Namey"), product)
-            }
+        store.select(fracturedSelector(locationReducer).compose { it.product })
+                .subscribe { value ->
+                    product = value
+                }.use {
+                    assertEquals(Product(5, "Namey"), product)
+                }
     }
 }
