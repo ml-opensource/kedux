@@ -7,34 +7,34 @@ import kotlin.reflect.KClass
 /**
  * Represents a fractured state map, allowing different reducers on difference pieces of state.
  */
-data class FracturedState(internal val map: Map<KClass<out Reducer<Any>>, Any>) {
+data class FracturedState(internal val map: Map<KClass<out Any>, Any>) {
     fun <R : Any> fromReducer(reducer: Reducer<R>): R =
-        map.getValue(reducer::class as KClass<out Reducer<Any>>) as R
+            map.getValue(reducer.stateClass) as R
 }
 
 @Suppress("UNCHECKED_CAST")
-fun createFracturedState(
-    vararg pairs: Pair<KClass<out Reducer<out Any>>, Any>
-) = FracturedState(mapOf(*pairs as Array<out Pair<KClass<out Reducer<Any>>, Any>>))
+internal fun createFracturedState(
+        vararg pairs: Pair<KClass<out Any>, Any>
+) = FracturedState(mapOf(*pairs))
 
 class ReducerMap(
-    vararg reducers: Reducer<Any>,
-    override val stateClass: KClass<FracturedState> = FracturedState::class
+        vararg reducers: Reducer<Any>,
+        override val stateClass: KClass<FracturedState> = FracturedState::class
 ) : Reducer<FracturedState>() {
     private val reducerMap: Map<KClass<Any>, Reducer<Any>> =
-        reducers.map { it.stateClass to it }.toMap()
+            reducers.map { it.stateClass to it }.toMap()
 
     override fun reduce(state: FracturedState, action: Any): FracturedState {
-        val map: MutableMap<KClass<out Reducer<Any>>, Any> = mutableMapOf()
-        reducerMap.forEach { (_, value) ->
-            map[value::class] = value.reduce(state.map.getValue(value::class), action)
+        val map: MutableMap<KClass<out Any>, Any> = mutableMapOf()
+        reducerMap.forEach { (valueClass, value) ->
+            map[valueClass] = value.reduce(state.map.getValue(valueClass), action)
         }
         return FracturedState(map)
     }
 }
 
 fun fracturedReducer(vararg reducers: Reducer<out Any>) =
-    ReducerMap(*reducers as Array<out Reducer<Any>>)
+        ReducerMap(*reducers as Array<out Reducer<Any>>)
 
 /**
  * Used to provide typesafety between reducer and state it consumes.
