@@ -1,8 +1,6 @@
 package com.fuzz.kedux.js_react
 
-import com.badoo.reaktive.observable.Observable
-import com.badoo.reaktive.observable.distinctUntilChanged
-import com.badoo.reaktive.observable.subscribe
+import com.fuzz.kedux.Selector
 import com.fuzz.kedux.Store
 import react.useContext
 import react.useEffectWithCleanup
@@ -23,11 +21,10 @@ fun <S : Any> useStore(): Store<S> {
 /**
  * useSelector referencing context. This requires a [Store] provided using the [StoreProvider] globally to use.
  */
-fun <S : Any, R : Any> useSelector(setValue: (value: R) -> Unit, fn: Store<S>.() -> Observable<R>) {
+fun <S : Any, R : Any> useSelector(setValue: (value: R) -> Unit, selector: Selector<S, R>) {
     val store = useStore<S>()
-    useEffectWithCleanup(listOf(store, setValue)) {
-        val observable = store.fn()
-                .distinctUntilChanged() // only emit if changed.
+    useEffectWithCleanup(listOf(store, setValue, selector)) {
+        val observable = store.select(selector) // only emit if changed.
                 .subscribe {
                     setValue(it)
                 }

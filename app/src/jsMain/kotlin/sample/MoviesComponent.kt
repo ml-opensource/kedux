@@ -2,8 +2,8 @@ package sample
 
 import com.badoo.reaktive.disposable.CompositeDisposable
 import com.badoo.reaktive.disposable.addTo
-import com.fuzz.kedux.FracturedState
 import com.fuzz.kedux.js_react.useSelector
+import com.fuzz.kedux.select
 import kotlinx.css.Display.flex
 import kotlinx.css.FlexDirection.column
 import kotlinx.css.display
@@ -26,7 +26,7 @@ data class State(var movies: List<Movie>) : RState
 
 val SelectorComponent = functionalComponent<RProps> {
     val (movies, setMovies) = useState(listOf<Movie>())
-    useSelector<FracturedState, List<Movie>>(setMovies) { moviesSelector(this) }
+    useSelector(setMovies, moviesSelector)
     div {
         +"Found ${movies.size}"
     }
@@ -41,11 +41,12 @@ class MoviesComponent : RComponent<RProps, State>() {
     }
 
     override fun componentDidMount() {
-        moviesSelector(store).subscribe {
-            setState {
-                movies = it
-            }
-        }.addTo(disposable)
+        store.select(moviesSelector)
+                .subscribe {
+                    setState {
+                        movies = it
+                    }
+                }.addTo(disposable)
     }
 
     override fun componentWillUnmount() {

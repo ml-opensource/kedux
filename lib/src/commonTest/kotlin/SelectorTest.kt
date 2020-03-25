@@ -1,8 +1,9 @@
 import com.badoo.reaktive.scheduler.overrideSchedulers
 import com.badoo.reaktive.test.scheduler.TestScheduler
+import com.badoo.reaktive.utils.atomic.AtomicInt
+import com.badoo.reaktive.utils.atomic.AtomicReference
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.createStore
-import com.fuzz.kedux.select
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -41,18 +42,18 @@ class SelectorTest {
 
     @Test
     fun selectorSelectivelyEmitsValues() {
-        var count = 0
-        var name = ""
+        val count = AtomicInt(0)
+        val name = AtomicReference("")
         store.select(nameSelector).subscribe {
-            count++
-            name = it
+            count.value = count.value + 1
+            name.value = it
         }.use {
             repeat(3) {
                 store.dispatch(StoreTestAction.NameChange("Name$it"))
                 store.dispatch(StoreTestAction.NameChange("Name$it"))
             }
-            assertEquals("Name2", name)
-            assertEquals(4, count)
+            assertEquals("Name2", name.value)
+            assertEquals(4, count.value)
         }
     }
 
@@ -60,7 +61,7 @@ class SelectorTest {
     fun composeSelectors() {
         var value: Int? = null
         var count = 0
-        store.select(locationIdSelector).subscribe {
+        store.select(locationIdSelector).subscribe(isThreadLocal = true) {
             count++
             value = it
         }.use {
@@ -79,7 +80,7 @@ class SelectorTest {
         var count = 0
         var value: Int? = null
         store.select(locationProductIdSelector)
-                .subscribe { next ->
+                .subscribe(isThreadLocal = true) { next ->
                     count++
                     value = next
                 }.use {

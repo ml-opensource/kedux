@@ -63,6 +63,8 @@ class Store<S : Any> internal constructor(
         this.reducer = reducer
     }
 
+    fun <R : Any?> select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
+
     companion object {
         /**
          * If true, everything is logged to the native console.

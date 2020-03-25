@@ -25,7 +25,7 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
         private val state: Observable<S>,
         private val selectorFunction: SelectorFunction<S, R>,
         private val _stateSubject: Subject<Optional<R>> = BehaviorSubject(Optional.None())
-) : Observable<R> by _stateSubject.safeUnwrap().threadLocal() {
+) : Observable<R> by _stateSubject.safeUnwrap() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -46,7 +46,6 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
 
     private fun stateChange(): Observable<Optional<R>> = state
             .subscribeOn(computationScheduler)
-            .threadLocal()
             .distinctUntilChanged()
             .map { state ->
                 Store.logIfEnabled { "CONSUMING STATE $state" }
@@ -57,8 +56,6 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
             .distinctUntilChanged()
             .observeOn(mainScheduler)
 }
-
-fun <S : Any, R : Any?> Store<S>.select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
 
 fun <S : Any?, R : Any?> createSelector(selectorFunction: SelectorFunction<S, R>): Selector<S, R> =
         { observable -> SelectorSubject(observable, selectorFunction).wrap() }
