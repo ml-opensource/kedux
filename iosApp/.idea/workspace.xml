@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="60d3422e-a3b8-4a8a-a34c-239e0eee7962" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/iosApp/PropertyWrappers.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iosApp.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iosApp.xcworkspace/xcuserdata/andrewgrosner.xcuserdatad/UserInterfaceState.xcuserstate" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp.xcworkspace/xcuserdata/andrewgrosner.xcuserdatad/UserInterfaceState.xcuserstate" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iosApp/SceneDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp/SceneDelegate.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iosApp/ViewController.swift" beforeDir="false" afterPath="$PROJECT_DIR$/iosApp/ViewController.swift" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Selectors.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/src/commonMain/kotlin/com.fuzz.kedux/Selectors.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,6 +61,7 @@
       <workItem from="1584818285499" duration="1084000" />
       <workItem from="1584819966368" duration="8507000" />
       <workItem from="1585006005968" duration="2391000" />
+      <workItem from="1585069332412" duration="296000" />
     </task>
     <servers />
   </component>

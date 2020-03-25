@@ -52,7 +52,7 @@ class SelectorSubject<S : Any, R : Any?> internal constructor(
         private val store: Store<S>,
         vararg channelSelectors: SelectorFunction<Any?, Any?>,
         private val _stateSubject: Subject<Optional<R>> = BehaviorSubject(Optional.None())
-) : Subject<Optional<R>> by _stateSubject {
+) : Observable<R> by _stateSubject.safeUnwrap().threadLocal() {
 
     private val channelSelectors: List<SelectorConsumer<Any?, Any?>> =
             channelSelectors.map { SelectorConsumer(store::logIfEnabled, it) }
@@ -90,8 +90,7 @@ class SelectorSubject<S : Any, R : Any?> internal constructor(
 }
 
 fun <S : Any, R : Any?> Store<S>.createSelector(selectorFunction: SelectorFunction<S, R>): ObservableWrapper<R> =
-        SelectorSubject<S, R>(this@createSelector, selectorFunction as SelectorFunction<Any?, Any?>)
-                .safeUnwrap().threadLocal().wrap()
+        SelectorSubject<S, R>(this@createSelector, selectorFunction as SelectorFunction<Any?, Any?>).wrap()
 
 fun <S : Any, R1 : Any?, R2 : Any?> Store<S>.createSelector(
         selectorFunction1: SelectorFunction<S, R1>,
@@ -101,7 +100,7 @@ fun <S : Any, R1 : Any?, R2 : Any?> Store<S>.createSelector(
                 this@createSelector,
                 selectorFunction1 as SelectorFunction<Any?, Any?>,
                 selectorFunction2 as SelectorFunction<Any?, Any?>
-        ).safeUnwrap().threadLocal().wrap()
+        ).wrap()
 
 fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?> Store<S>.createSelector(
         selectorFunction1: SelectorFunction<S, R1>,
@@ -113,7 +112,7 @@ fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?> Store<S>.createSelector(
                 selectorFunction1 as SelectorFunction<Any?, Any?>,
                 selectorFunction2 as SelectorFunction<Any?, Any?>,
                 selectorFunction3 as SelectorFunction<Any?, Any?>
-        ).safeUnwrap().threadLocal().wrap()
+        ).wrap()
 
 fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?> Store<S>.createSelector(
         selectorFunction1: SelectorFunction<S, R1>,
@@ -127,7 +126,7 @@ fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?> Store<S>.createSelecto
                 selectorFunction2 as SelectorFunction<Any?, Any?>,
                 selectorFunction3 as SelectorFunction<Any?, Any?>,
                 selectorFunction4 as SelectorFunction<Any?, Any?>
-        ).safeUnwrap().threadLocal().wrap()
+        ).wrap()
 
 fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?> Store<S>.createSelector(
         selectorFunction1: SelectorFunction<S, R1>,
@@ -143,7 +142,7 @@ fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?> Store<S>.cr
                 selectorFunction3 as SelectorFunction<Any?, Any?>,
                 selectorFunction4 as SelectorFunction<Any?, Any?>,
                 selectorFunction5 as SelectorFunction<Any?, Any?>
-        ).safeUnwrap().threadLocal().wrap()
+        ).wrap()
 
 fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?, R6 : Any?> Store<S>.createSelector(
         selectorFunction1: SelectorFunction<S, R1>,
@@ -161,4 +160,4 @@ fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?, R4 : Any?, R5 : Any?, R6 : Any?> 
                 selectorFunction4 as SelectorFunction<Any?, Any?>,
                 selectorFunction5 as SelectorFunction<Any?, Any?>,
                 selectorFunction6 as SelectorFunction<Any?, Any?>
-        ).safeUnwrap().threadLocal().wrap()
+        ).wrap()
