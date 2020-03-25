@@ -9,6 +9,8 @@
 Kedux is a Kotlin-multiplatform implementation of [redux](redux.js.org) that works 
 on Android, iOS, MacOS, and JS utilizing [Reaktive](https://github.com/badoo/Reaktive)
  to provide the RX plumbing on all platforms.
+ 
+ __NOTE: This library is currently in development preview. Please check back later when it's ready for release.__
 
 ## Getting Started
 
