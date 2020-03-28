@@ -29,6 +29,7 @@ class EffectsTest {
                 main = { TestScheduler() },
                 computation = { TestScheduler() }
         )
+        Store.loggingEnabled = true
         store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
                 .also { nameEffects.bindTo(it) }
     }

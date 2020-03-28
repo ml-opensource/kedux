@@ -42,7 +42,7 @@ class Store<S : Any> internal constructor(
         get() = _state.observeOn(mainScheduler).wrap()
 
     val actions: ObservableWrapper<Any>
-        get() = _actions.observeOn(mainScheduler).wrap()
+        get() = _actions.observeOn(mainScheduler).safeUnwrap().wrap()
 
     private val _actions: BehaviorSubject<Optional<Any>> = BehaviorSubject(Optional.None())
 
