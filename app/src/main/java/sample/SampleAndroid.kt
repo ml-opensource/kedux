@@ -1,5 +1,6 @@
 package sample
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -40,6 +41,10 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = movieAdapter
+        }
+
+        binding.composeButton.setOnClickListener {
+            startActivity(Intent(this, ComposeActivity::class.java))
         }
 
         binding.addMovie.setOnClickListener {

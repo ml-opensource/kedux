@@ -30,28 +30,24 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    /* buildFeatures {
-         // Enables Jetpack Compose for this module
-         compose true
-     }*/
-
-    viewBinding {
-        enabled = true
+    buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose true
+        viewBinding true
     }
-
 }
 
 dependencies {
-    /*implementation("androidx.compose:compose-runtime:$compose_version")
+    implementation("androidx.compose:compose-runtime:$compose_version")
     implementation "androidx.ui:ui-core:$compose_version"
     implementation("androidx.ui:ui-framework:$compose_version")
     implementation("androidx.ui:ui-layout:$compose_version")
     implementation("androidx.ui:ui-material:$compose_version")
     implementation("androidx.ui:ui-foundation:$compose_version")
     implementation("androidx.ui:ui-animation:$compose_version")
-    implementation("androidx.ui:ui-tooling:$compose_version")*/
+    implementation("androidx.ui:ui-tooling:$compose_version")
     implementation('androidx.appcompat:appcompat:1.1.0')
-    implementation('androidx.activity:activity-ktx:1.1.0')
+        implementation('androidx.activity:activity-ktx:1.1.0')
     implementation "androidx.core:core-ktx:1.2.0"
     implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
