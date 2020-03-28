@@ -11,6 +11,7 @@ import com.badoo.reaktive.scheduler.computationScheduler
 import com.badoo.reaktive.scheduler.mainScheduler
 import com.badoo.reaktive.subject.behavior.BehaviorSubject
 import com.badoo.reaktive.utils.atomic.AtomicBoolean
+import kotlin.js.JsName
 
 @Suppress("UNCHECKED_CAST")
 fun <S : Any> createStore(
@@ -46,10 +47,64 @@ class Store<S : Any> internal constructor(
         get() = _actions.observeOn(mainScheduler).safeUnwrap().wrap()
 
     /**
+     * [dispatch] overload to be more targeted.
+     */
+    @JsName("dispatchPair")
+    fun dispatch(action: Pair<Any, Any>) {
+        dispatchActual(action.first)
+        dispatchActual(action.second)
+    }
+
+    /**
+     * [dispatch] overload to be more targeted.
+     */
+    @JsName("dispatchTriple")
+    fun dispatch(action: Triple<Any, Any, Any>) {
+        dispatchActual(action.first)
+        dispatchActual(action.second)
+        dispatchActual(action.third)
+    }
+
+    /**
+     * [dispatch] overload to be more targeted.
+     */
+    @JsName("dispatchMultiAction")
+    fun dispatch(multiAction: MultiAction) {
+        multiAction.actions.forEach { a -> dispatchActual(a) }
+    }
+
+    /**
+     * [dispatch] overload to be more targeted.
+     */
+    @JsName("dispatchTypedAction")
+    fun dispatch(action: Action<*>) {
+        dispatchActual(action)
+    }
+
+    /**
      * Launches a new coroutine to call the specified reducers. It will emit a
      * [state] result to selectors and subscribers on the store.
      */
     fun dispatch(action: Any) {
+        // handle different action types just in case.
+        when (action) {
+            is Pair<*, *> -> {
+                dispatchActual(action.first!!)
+                dispatchActual(action.second!!)
+            }
+            is Triple<*, *, *> -> {
+                dispatchActual(action.first!!)
+                dispatchActual(action.second!!)
+                dispatchActual(action.third!!)
+            }
+            is MultiAction -> {
+                action.actions.forEach { a -> dispatchActual(a) }
+            }
+            else -> dispatchActual(action)
+        }
+    }
+
+    private fun dispatchActual(action: Any) {
         logIfEnabled { "dispatch -> $action" }
         val dispatcher = { enhancedAction: Any ->
             if (enhancedAction is NoAction) {
@@ -65,23 +120,7 @@ class Store<S : Any> internal constructor(
                         }
             }
         }
-        val actionEnhancer = enhancer(this@Store)(dispatcher)
-        // handle different action types.
-        when (action) {
-            is Pair<*, *> -> {
-                actionEnhancer(action.first!!)
-                actionEnhancer(action.second!!)
-            }
-            is Triple<*, *, *> -> {
-                actionEnhancer(action.first!!)
-                actionEnhancer(action.second!!)
-                actionEnhancer(action.third!!)
-            }
-            is MultiAction -> {
-                action.actions.forEach { a -> actionEnhancer(a) }
-            }
-            else -> actionEnhancer(action)
-        }
+        enhancer(this@Store)(dispatcher)(action)
     }
 
     fun replaceReducer(reducer: Reducer<S>) {
