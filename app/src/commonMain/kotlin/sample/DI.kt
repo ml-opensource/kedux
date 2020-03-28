@@ -8,4 +8,7 @@ import org.kodein.di.erased.singleton
 
 val kodein = Kodein {
     bind<Store<FracturedState>>() with singleton { appGlobalStore() }
+    bindKodein()
 }
+
+expect fun Kodein.MainBuilder.bindKodein()
