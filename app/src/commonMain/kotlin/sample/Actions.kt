@@ -7,4 +7,6 @@ sealed class MovieActions {
     data class RemoveMovie(val movie: Movie) : MovieActions()
 
     object ClearMovies : MovieActions()
+
+    data class MovieAdded(val movie: Movie) : MovieActions()
 }

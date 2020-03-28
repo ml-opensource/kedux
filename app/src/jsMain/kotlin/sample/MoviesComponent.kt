@@ -3,7 +3,6 @@ package sample
 import com.badoo.reaktive.disposable.CompositeDisposable
 import com.badoo.reaktive.disposable.addTo
 import com.fuzz.kedux.js_react.useSelector
-import com.fuzz.kedux.select
 import kotlinx.css.Display.flex
 import kotlinx.css.FlexDirection.column
 import kotlinx.css.display
@@ -22,7 +21,7 @@ import styled.styledButton
 import styled.styledDiv
 import styled.styledSpan
 
-data class State(var movies: List<Movie>) : RState
+data class State(var movies: List<Movie>, var isMovieAdded: Boolean) : RState
 
 val SelectorComponent = functionalComponent<RProps> {
     val (movies, setMovies) = useState(listOf<Movie>())
@@ -38,15 +37,16 @@ class MoviesComponent : RComponent<RProps, State>() {
 
     override fun State.init() {
         movies = listOf()
+        isMovieAdded = false
     }
 
     override fun componentDidMount() {
         store.select(moviesSelector)
-                .subscribe {
-                    setState {
-                        movies = it
-                    }
-                }.addTo(disposable)
+                .subscribe { setState { movies = it } }
+                .addTo(disposable)
+        store.select(isMovieAddedSelector)
+                .subscribe { setState { isMovieAdded = it } }
+                .addTo(disposable)
     }
 
     override fun componentWillUnmount() {
@@ -68,6 +68,9 @@ class MoviesComponent : RComponent<RProps, State>() {
             css {
                 display = flex
                 flexDirection = column
+            }
+            styledSpan {
+                +"Is Movie Added? ${state.isMovieAdded}"
             }
             state.movies.forEach {
                 styledSpan {

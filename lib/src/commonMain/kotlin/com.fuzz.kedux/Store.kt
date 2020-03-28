@@ -41,6 +41,11 @@ class Store<S : Any> internal constructor(
     val state: ObservableWrapper<S>
         get() = _state.observeOn(mainScheduler).wrap()
 
+    val actions: ObservableWrapper<Any>
+        get() = _actions.observeOn(mainScheduler).wrap()
+
+    private val _actions: BehaviorSubject<Optional<Any>> = BehaviorSubject(Optional.None())
+
     /**
      * Launches a new coroutine to call the specified reducers. It will emit a
      * [state] result to selectors and subscribers on the store.
@@ -54,9 +59,26 @@ class Store<S : Any> internal constructor(
                         val value = reducer.reduce(state, enhancedAction)
                         logIfEnabled { "state -> $value" }
                         _state.onNext(value)
+                        _actions.onNext(Optional.Some(enhancedAction))
                     }
         }
-        enhancer(this@Store)(dispatcher)(action)
+        val actionEnhancer = enhancer(this@Store)(dispatcher)
+        // handle different action types.
+        when (action) {
+            is Pair<*, *> -> {
+                actionEnhancer(action.first!!)
+                actionEnhancer(action.second!!)
+            }
+            is Triple<*, *, *> -> {
+                actionEnhancer(action.first!!)
+                actionEnhancer(action.second!!)
+                actionEnhancer(action.third!!)
+            }
+            is MultiAction -> {
+                action.actions.forEach { a -> actionEnhancer(a) }
+            }
+            else -> actionEnhancer(action)
+        }
     }
 
     fun replaceReducer(reducer: Reducer<S>) {
@@ -64,6 +86,11 @@ class Store<S : Any> internal constructor(
     }
 
     fun <R : Any?> select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
+
+    /**
+     * Constructs a new effect to perform asynchronous action on the store.
+     */
+    fun <A : Any> effect(effect: Effect<A>): ObservableWrapper<A> = effect(actions)
 
     companion object {
         /**

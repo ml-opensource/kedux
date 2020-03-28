@@ -3,10 +3,12 @@ import com.fuzz.kedux.typedReducer
 sealed class StoreTestAction {
 
     data class NameChange(val name: String) :
-        StoreTestAction()
+            StoreTestAction()
+
+    data class NamedChanged(val name: String) : StoreTestAction()
 
     data class LocationChange(val location: Location) :
-        StoreTestAction()
+            StoreTestAction()
 
     object Reset : StoreTestAction()
 }
@@ -16,6 +18,7 @@ val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action -
         is StoreTestAction.NameChange -> state.copy(name = action.name)
         is StoreTestAction.Reset -> state
         is StoreTestAction.LocationChange -> state.copy(location = action.location)
+        is StoreTestAction.NamedChanged -> state.copy(nameChanged = true)
     }
 }
 
