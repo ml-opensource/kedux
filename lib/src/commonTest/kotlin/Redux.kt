@@ -10,6 +10,9 @@ sealed class StoreTestAction {
     data class LocationChange(val location: Location) :
             StoreTestAction()
 
+    data class LocationChanged(val other: String) :
+            StoreTestAction()
+
     object Reset : StoreTestAction()
 }
 
@@ -19,6 +22,7 @@ val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action -
         is StoreTestAction.Reset -> state
         is StoreTestAction.LocationChange -> state.copy(location = action.location)
         is StoreTestAction.NamedChanged -> state.copy(nameChanged = true)
+        is StoreTestAction.LocationChanged -> state
     }
 }
 

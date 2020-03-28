@@ -26,6 +26,9 @@ class Effects(vararg effectArgs: Effect<out Any>) {
         Store.logIfEnabled { "EFFECTS: Dispatching New Action $action" }
     }
 
+    /**
+     * Binds all [Effect] to the specified store.
+     */
     fun bindTo(store: Store<*>) {
         effects.forEach { effect ->
             effect(store.actions).subscribe { action -> dispatch(store, action) }
@@ -33,7 +36,10 @@ class Effects(vararg effectArgs: Effect<out Any>) {
         }
     }
 
-    fun dispose() {
-        compositeDisposable.dispose()
+    /**
+     * Clears out bindings to this [Effects] object. Useful for scoping effects.
+     */
+    fun clearBindings() {
+        compositeDisposable.clear(dispose = false)
     }
 }
