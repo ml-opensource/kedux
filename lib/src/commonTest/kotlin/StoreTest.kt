@@ -2,6 +2,7 @@ import com.badoo.reaktive.observable.subscribe
 import com.badoo.reaktive.observable.take
 import com.badoo.reaktive.scheduler.overrideSchedulers
 import com.badoo.reaktive.test.scheduler.TestScheduler
+import com.fuzz.kedux.NoAction
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createStore
@@ -9,6 +10,7 @@ import com.fuzz.kedux.multipleActionOf
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 class StoreTest {
 
@@ -46,6 +48,14 @@ class StoreTest {
         store.state.take(1).subscribe { state ->
             assertEquals(GlobalState(""), state)
         }
+    }
+
+    @Test
+    fun noAction() {
+        store.actions.subscribe(isThreadLocal = true) {
+            fail("Action called $it, when it's not expected.")
+        }
+        store.dispatch(NoAction)
     }
 
     @Test

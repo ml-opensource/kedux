@@ -37,14 +37,13 @@ class Store<S : Any> internal constructor(
         private val enhancer: Enhancer<S> = emptyEnhancer()
 ) {
     private val _state = BehaviorSubject(initialState)
+    private val _actions: BehaviorSubject<Optional<Any>> = BehaviorSubject(Optional.None())
 
     val state: ObservableWrapper<S>
         get() = _state.observeOn(mainScheduler).wrap()
 
     val actions: ObservableWrapper<Any>
         get() = _actions.observeOn(mainScheduler).safeUnwrap().wrap()
-
-    private val _actions: BehaviorSubject<Optional<Any>> = BehaviorSubject(Optional.None())
 
     /**
      * Launches a new coroutine to call the specified reducers. It will emit a
@@ -53,14 +52,18 @@ class Store<S : Any> internal constructor(
     fun dispatch(action: Any) {
         logIfEnabled { "dispatch -> $action" }
         val dispatcher = { enhancedAction: Any ->
-            _state.take(1)
-                    .observeOn(computationScheduler)
-                    .subscribe { state ->
-                        val value = reducer.reduce(state, enhancedAction)
-                        logIfEnabled { "state -> $value" }
-                        _state.onNext(value)
-                        _actions.onNext(Optional.Some(enhancedAction))
-                    }
+            if (enhancedAction is NoAction) {
+                logIfEnabled { "STORE: NoAction received. Ignoring dispatch." }
+            } else {
+                _state.take(1)
+                        .observeOn(computationScheduler)
+                        .subscribe { state ->
+                            val value = reducer.reduce(state, enhancedAction)
+                            logIfEnabled { "state -> $value" }
+                            _state.onNext(value)
+                            _actions.onNext(Optional.Some(enhancedAction))
+                        }
+            }
         }
         val actionEnhancer = enhancer(this@Store)(dispatcher)
         // handle different action types.

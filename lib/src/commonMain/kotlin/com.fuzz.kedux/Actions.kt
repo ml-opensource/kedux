@@ -8,6 +8,11 @@ package com.fuzz.kedux
 data class MultiAction(val actions: List<Any>)
 
 /**
+ * Type marker explicity stating that this action should not dispatch when received.
+ */
+object NoAction
+
+/**
  * Constructs an object that contains multiple, sequential objects. See [MultiAction]
  */
 fun multipleActionOf(vararg actions: Any) = MultiAction(actions.toList())
