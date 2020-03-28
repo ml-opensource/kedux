@@ -5,5 +5,7 @@ import com.fuzz.kedux.Store
 import com.fuzz.kedux.createFracturedStore
 
 fun appGlobalStore(): Store<FracturedState> = createFracturedStore(
-    movieReducer to defaultMoviesState
-)
+        movieReducer to defaultMoviesState
+).also {
+    movieEffects.bindTo(it)
+}

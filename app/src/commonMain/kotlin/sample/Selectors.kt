@@ -11,3 +11,6 @@ import com.fuzz.kedux.compose
  */
 val moviesSelector: Selector<FracturedState, List<Movie>> = fracturedSelector(movieReducer)
         .compose { it.movies }
+
+val isMovieAddedSelector: Selector<FracturedState, Boolean> = fracturedSelector(movieReducer)
+        .compose { it.isMovieAdded }

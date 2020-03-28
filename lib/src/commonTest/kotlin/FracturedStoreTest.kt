@@ -17,10 +17,7 @@ class FracturedStoreTest {
 
     @BeforeTest
     fun constructStore() {
-        overrideSchedulers(
-                computation = { TestScheduler() },
-                main = { TestScheduler() }
-        )
+        applyTestSchedulers()
         Store.loggingEnabled = true
         store = createFracturedStore(
                 productReducer reduce Product(0, ""),

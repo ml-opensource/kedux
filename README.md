@@ -14,7 +14,6 @@ on Android, iOS, MacOS, and JS utilizing [Reaktive](https://github.com/badoo/Rea
 
 ## Getting Started
 
-
 ### State
 
 State in Kedux should be immutable. This means utilizing `data class`, `List`, `Map`, and 
@@ -122,21 +121,107 @@ This library has a few features. TBD on full descriptions.
 and `loggingEnabled`.
 
 `Store.dispatch`: **asynchronously** dispatches actions to the `state`. Selection happens on the `computationScheduler`, 
-and then returns the result object on the `mainScheduler` thread of the platform. 
+and then returns the result object on the `mainScheduler` thread of the platform.
 
 __Note__: Kotlin Native targets should be wary of frozen objects. Using Reaktive's `threadLocal` method, we can mostly 
 get around this, but its not perfect and please be forewarned. `State` in any sense should be immutable, so in theory this 
 will not be much of an issue. 
 
+### Supported Action Types
+
+You can `dispatch` special objects on the `Store` if you wish.
+
+Supported types:
+
+`1`. `Pair` - dispatches both actions on the store in order.
+```kotlin
+store.dispatch(MyAction() to MyAction2())
+```  
+
+`2`. `Triple` - dispatches all three actions on the store in order.
+```kotlin
+store.dispatch(Triple(MyAction(), MyAction2(), MyAction3()))
+```
+
+`3`. `MultiAction` - dispatches 0 to N actions on the store in order.
+
+```kotlin
+store.dispatch(multipleActionOf(MyAction(), MyAction2(), MyAction3(), MyActionN()))
+```
+
+`4`. `NoAction` - store will not dispatch the action. Useful for `Effects` that are silent, or within a `when` returns that 
+return an Action type based on conditions and you want to ignore the action:
+
+```kotlin
+store.dispatch(when(name) {
+    "first" -> FirstNameChanged(name) 
+    "middle" -> MiddleNameChanged(name)
+    "last" -> LastNameChanged(name)
+    else -> NoAction
+})
+```
+
+`5`. `Action<T>` - actions based on a type argument to distinguish them. Rather instead of using Action `data class`, 
+you can create actions as functions:
+
+```kotlin
+
+// no arguments or payload immediately create action (to get around passing `Unit` to `ActionCreator`)
+val loadUsersAction = createAction("[Users] Load Users")
+
+// use on store
+store.dispatch(loadUsersAction)
+
+// ActionCreator with `Int` argument, that returns an action with `Int` payload incremented by 1.
+val loadUserAction = createAction("[Users] Load User by Id") { argument: Int -> argument + 1 }
+
+// use on store
+store.dispatch(loadUserAction(5))
+
+// ActionCreator that accepts no arguments but allows payload return:
+val loadUserActionDefault = createAction("[Users] Load User by Id Default") { 1 }
+
+// use on Store
+store.dispatch(loadUserActionDefault())
+
+```
+
 ## Reducers
 
-There are two main kinds of reducers.
+There are three main kinds of reducers.
 
 `anyReducer`: constructs a reducer on the whole global store, without specifying action type. This is useful when your reducer 
 consumes multiple action classes. You will need to handle default case in this instance.
 
 `typedReducer` (preferred): constructs a reducer that will only run when the `Action` class type is of the type specified. So 
 that a safer consumption occurs. I.e. the reducer only executes when the action type is a subtype of the expected action type.
+
+```kotlin
+val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action ->
+    when (action) {
+        is StoreTestAction.NameChange -> state.copy(name = action.name)
+        is StoreTestAction.Reset -> state
+        is StoreTestAction.LocationChange -> state.copy(location = action.location)
+        is StoreTestAction.NamedChanged -> state.copy(nameChanged = true)
+        is StoreTestAction.LocationChanged -> state
+        // using data classes, compiler doesn't need an `else` branch.
+    }
+}
+```
+
+`actionTypeReducer`: constructs a reducer that will only run when the `Action.type` matches the type specified in the reducer. 
+This is useful for `createAction` results by function and switching on the type you want to consume.
+
+```kotlin
+val sampleTypedReducer = actionTypeReducer { state: GlobalState, action: Action<SampleEnumType, out Any> ->
+    when (action.type) {
+        SampleEnumType.LocationChange -> state.copy(location = action.payload as Location?)
+        SampleEnumType.NameChange -> state.copy(name = action.payload as String)
+        SampleEnumType.Reset -> initialState
+        // use enum for action type tokens ensures compiler doesnt need an `else` branch.
+    }
+}
+```
 
 `combineReducers`: Combines multiple reducers to listen on the same state object. 
 
@@ -170,6 +255,71 @@ val productNameSelector = productSelector.compose { state -> state.name }
 ```
 
 By composing selectors in separate fields, they become more reusable.
+
+## Effects / Sagas
+
+Effects are `Observable` chains that respond to a particular action, or set of actions and return with 
+another action, set of actions (`MultiAction`), or `NoAction`.
+
+To define an `Effect`:
+
+```kotlin
+val getUsersEffect = createEffect<LoadUsers, UsersReceived> { actionObservable ->
+    actionObservable.flatMap { (userId) -> userService.getUsers(userId) }
+        .map { users -> UsersReceived(users) }
+}
+```
+
+In this example, the `Effect` responds to a `LoadUsers` action, calls out to `UserService`, and returns a `UsersReceived` 
+action, which the store dispatches out to a `Reducer` to handle. 
+
+__Pro Tip__: Be careful of cyclical `Effect`. If you have two separate effects consume and dispatch each other's effects, 
+you could run into a cycle that consumes your application and might cause it to freeze.
+
+Now group the `Effect` into an `Effects` object:
+
+```kotlin
+val usersEffects = Effects(getUsersEffect)
+```
+
+An `Effects` object manage the scoped lifecycle and binding to the `Store` actions. They efficiently 
+group the bindings together into logical components.
+
+`Effects` are bound to the `Store` in a couple of ways: globally and scoped.
+
+Globally - bind to the `Store` in global scope when the `Store` is created:
+
+```kotlin
+store = createStore(...)
+    .also { usersEffects.bindTo(it) }
+ ```
+
+Or Scope Effect groupings at a smaller level, such as within a particular flow in your application:
+```kotlin
+
+val usersEffects = Effects(getUsersEffect, effect2, effectN)
+
+// bind to store when object in scope
+userEffect.bindTo(store)
+
+// remove subscriptions to Store when out of scope.
+userEffect.clearBindings()
+
+```
+
+### Multiple Actions
+
+`Effects` can return multiple effects at a time in a fan-out fashion. This is very useful 
+when you want keep your actions pure, such as notifying a `Reducer` of a loading state change, while another `Reducer`  
+receives the actual data.
+
+```kotlin
+val multipleDispatchEffect = createEffect<LocationChange, MultiAction> { change ->
+    change.map { (location) -> multipleActionOf(LocationChanged(location.other), LoadStatus.Done) }
+}
+```
+
+All types specified in `Store` are supported as return types in `Effects`.
 
 ## Advanced Features
 

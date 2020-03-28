@@ -7,5 +7,6 @@ val movieReducer = typedReducer<MoviesState, MovieActions> { state, action ->
         is MovieActions.AddMovie -> state.copy(movies = state.movies + action.movie)
         is MovieActions.RemoveMovie -> state.copy(movies = state.movies - action.movie)
         MovieActions.ClearMovies -> state.copy(movies = listOf())
+        is MovieActions.MovieAdded -> state.copy(isMovieAdded = true)
     }
 }
