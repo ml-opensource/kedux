@@ -3,7 +3,9 @@ package com.fuzz.kedux
 /**
  * Supports multiple actions dispatches in order provided through this object.
  *
+ * ```kotlin
  * MultiAction(ExampleAction(), AnotherAction("Name")).
+ * ```
  */
 data class MultiAction(val actions: List<Any>)
 
