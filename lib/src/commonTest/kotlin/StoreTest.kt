@@ -16,10 +16,7 @@ class StoreTest {
 
     @BeforeTest
     fun constructStore() {
-        overrideSchedulers(
-                computation = { TestScheduler() },
-                main = { TestScheduler() }
-        )
+        applyTestSchedulers()
         Store.loggingEnabled = true
         store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
     }
