@@ -29,11 +29,11 @@ inline fun <reified S : Any, reified A> typedReducer(crossinline fn: (state: S, 
  * Constructs a typed action that expects a key type passed into the reducer to distinguish actions by their type.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified S : Any, reified AT : Action<A>, A> actionTypeReducer(type: A, crossinline fn: (state: S, action: AT) -> S) =
+inline fun <reified S : Any, reified T : Any> actionTypeReducer(crossinline fn: (state: S, action: Action<T, out Any>) -> S) =
         anyReducer<S> { state, action ->
-            when (action is AT && action.type === type) {
-                true -> fn(state, action)
-                else -> state
+            when (action is Action<*, *> && action.type is T) {
+                true -> fn(state, action as Action<T, out Any>)
+                false -> state
             }
         }
 

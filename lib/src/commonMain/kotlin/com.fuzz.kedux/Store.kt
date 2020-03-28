@@ -77,13 +77,21 @@ class Store<S : Any> internal constructor(
      * [dispatch] overload to be more targeted.
      */
     @JsName("dispatchTypedAction")
-    fun dispatch(action: Action<*>) {
+    fun dispatch(action: Action<*, *>) {
         dispatchActual(action)
     }
 
     /**
-     * Launches a new coroutine to call the specified reducers. It will emit a
-     * [state] result to selectors and subscribers on the store.
+     * [dispatch] overload to be more targeted.
+     */
+    @JsName("dispatchNoAction")
+    @Suppress("UNUSED_PARAMETER")
+    fun dispatch(action: NoAction) {
+        logIfEnabled { "STORE: NoAction received. Ignoring dispatch." }
+    }
+
+    /**
+     * Dispatches an Action on the store. The action gets passed to a [Reducer] and [Effect] for data processing.
      */
     fun dispatch(action: Any) {
         // handle different action types just in case.

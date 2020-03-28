@@ -1,3 +1,6 @@
+import com.fuzz.kedux.Action
+import com.fuzz.kedux.actionTypeReducer
+import com.fuzz.kedux.createAction
 import com.fuzz.kedux.typedReducer
 
 sealed class StoreTestAction {
@@ -51,3 +54,21 @@ val locationReducer = typedReducer<Location, LocationActions> { state, action ->
         is LocationActions.ProductChange -> state.copy(product = action.product)
     }
 }
+
+enum class SampleEnumType {
+    LocationChange,
+    NameChange,
+    Reset
+}
+
+val sampleTypedReducer = actionTypeReducer { state: GlobalState, action: Action<SampleEnumType, out Any> ->
+    when (action.type) {
+        SampleEnumType.LocationChange -> state.copy(location = action.payload as Location?)
+        SampleEnumType.NameChange -> state.copy(name = action.payload as String)
+        SampleEnumType.Reset -> initialState
+    }
+}
+
+val locationChange = createAction(SampleEnumType.LocationChange) { payload: Location -> payload }
+val nameChange = createAction(SampleEnumType.NameChange) { payload: String -> payload }
+val resetAction = createAction(SampleEnumType.Reset)

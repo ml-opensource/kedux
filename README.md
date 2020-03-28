@@ -127,7 +127,7 @@ __Note__: Kotlin Native targets should be wary of frozen objects. Using Reaktive
 get around this, but its not perfect and please be forewarned. `State` in any sense should be immutable, so in theory this 
 will not be much of an issue. 
 
-### Multiple Actions
+### Supported Action Types
 
 You can `dispatch` special objects on the `Store` if you wish.
 
@@ -149,16 +149,79 @@ store.dispatch(Triple(MyAction(), MyAction2(), MyAction3()))
 store.dispatch(multipleActionOf(MyAction(), MyAction2(), MyAction3(), MyActionN()))
 ```
 
+`4`. `NoAction` - store will not dispatch the action. Useful for `Effects` that are silent, or within a `when` returns that 
+return an Action type based on conditions and you want to ignore the action:
+
+```kotlin
+store.dispatch(when(name) {
+    "first" -> FirstNameChanged(name) 
+    "middle" -> MiddleNameChanged(name)
+    "last" -> LastNameChanged(name)
+    else -> NoAction
+})
+```
+
+`5`. `Action<T>` - actions based on a type argument to distinguish them. Rather instead of using Action `data class`, 
+you can create actions as functions:
+
+```kotlin
+
+// no arguments or payload immediately create action (to get around passing `Unit` to `ActionCreator`)
+val loadUsersAction = createAction("[Users] Load Users")
+
+// use on store
+store.dispatch(loadUsersAction)
+
+// ActionCreator with `Int` argument, that returns an action with `Int` payload incremented by 1.
+val loadUserAction = createAction("[Users] Load User by Id") { argument: Int -> argument + 1 }
+
+// use on store
+store.dispatch(loadUserAction(5))
+
+// ActionCreator that accepts no arguments but allows payload return:
+val loadUserActionDefault = createAction("[Users] Load User by Id Default") { 1 }
+
+// use on Store
+store.dispatch(loadUserActionDefault())
+
+```
 
 ## Reducers
 
-There are two main kinds of reducers.
+There are three main kinds of reducers.
 
 `anyReducer`: constructs a reducer on the whole global store, without specifying action type. This is useful when your reducer 
 consumes multiple action classes. You will need to handle default case in this instance.
 
 `typedReducer` (preferred): constructs a reducer that will only run when the `Action` class type is of the type specified. So 
 that a safer consumption occurs. I.e. the reducer only executes when the action type is a subtype of the expected action type.
+
+```kotlin
+val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action ->
+    when (action) {
+        is StoreTestAction.NameChange -> state.copy(name = action.name)
+        is StoreTestAction.Reset -> state
+        is StoreTestAction.LocationChange -> state.copy(location = action.location)
+        is StoreTestAction.NamedChanged -> state.copy(nameChanged = true)
+        is StoreTestAction.LocationChanged -> state
+        // using data classes, compiler doesn't need an `else` branch.
+    }
+}
+```
+
+`actionTypeReducer`: constructs a reducer that will only run when the `Action.type` matches the type specified in the reducer. 
+This is useful for `createAction` results by function and switching on the type you want to consume.
+
+```kotlin
+val sampleTypedReducer = actionTypeReducer { state: GlobalState, action: Action<SampleEnumType, out Any> ->
+    when (action.type) {
+        SampleEnumType.LocationChange -> state.copy(location = action.payload as Location?)
+        SampleEnumType.NameChange -> state.copy(name = action.payload as String)
+        SampleEnumType.Reset -> initialState
+        // use enum for action type tokens ensures compiler doesnt need an `else` branch.
+    }
+}
+```
 
 `combineReducers`: Combines multiple reducers to listen on the same state object. 
 

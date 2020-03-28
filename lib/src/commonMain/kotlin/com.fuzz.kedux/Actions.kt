@@ -20,10 +20,34 @@ object NoAction
 fun multipleActionOf(vararg actions: Any) = MultiAction(actions.toList())
 
 /**
- * A class Action class, this is used to provide actions that are not purely class types. This is for class use, but
+ * This is used to provide actions that are not purely class types. This is for classic use, but
  * preferably use data class objects.
  */
-interface Action<T> {
+interface Action<T, P : Any?> {
 
     val type: T
+
+    val payload: P
 }
+
+typealias ActionCreator<T, A, P> = (arguments: A) -> Action<T, P>
+
+/**
+ * Creates an [ActionCreator] based on [type] and supplied [payloadCreator].
+ */
+inline fun <T, A, P> createAction(type: T, crossinline payloadCreator: (arguments: A) -> P): ActionCreator<T, A, P> = { arguments: A ->
+    object : Action<T, P> {
+        override val type: T = type
+        override val payload: P = payloadCreator(arguments)
+    }
+}
+
+/**
+ * Creates an [ActionCreator] based on [type] and no argument [payloadCreator].
+ */
+inline fun <T, P> createAction(type: T, crossinline payloadCreator: () -> P): ActionCreator<T, Unit, P> = createAction<T, Unit, P>(type) { payloadCreator() }
+
+/**
+ * Creates an [Action] based on [type] without any payload or arguments.
+ */
+fun <T> createAction(type: T): Action<T, Unit> = createAction<T, Unit, Unit>(type) {}(Unit)
