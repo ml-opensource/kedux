@@ -13,11 +13,6 @@ inline fun <reified A : Any, R : Any> createEffect(crossinline mapper: (Observab
         { actions: ObservableWrapper<Any> -> mapper(actions.ofType<A>().wrap()).wrap() }
 
 /**
- * Supports multiple actions dispatches
- */
-data class MultiAction(val actions: List<Any>)
-
-/**
  * Groups a set of [Effect] into a singular scoped unit. Handles registration to the [Store].
  */
 class Effects(vararg effectArgs: Effect<out Any>) {
