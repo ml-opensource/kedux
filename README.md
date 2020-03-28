@@ -14,7 +14,6 @@ on Android, iOS, MacOS, and JS utilizing [Reaktive](https://github.com/badoo/Rea
 
 ## Getting Started
 
-
 ### State
 
 State in Kedux should be immutable. This means utilizing `data class`, `List`, `Map`, and 
@@ -122,11 +121,34 @@ This library has a few features. TBD on full descriptions.
 and `loggingEnabled`.
 
 `Store.dispatch`: **asynchronously** dispatches actions to the `state`. Selection happens on the `computationScheduler`, 
-and then returns the result object on the `mainScheduler` thread of the platform. 
+and then returns the result object on the `mainScheduler` thread of the platform.
 
 __Note__: Kotlin Native targets should be wary of frozen objects. Using Reaktive's `threadLocal` method, we can mostly 
 get around this, but its not perfect and please be forewarned. `State` in any sense should be immutable, so in theory this 
 will not be much of an issue. 
+
+### Multiple Actions
+
+You can `dispatch` special objects on the `Store` if you wish.
+
+Supported types:
+
+`1`. `Pair` - dispatches both actions on the store in order.
+```kotlin
+store.dispatch(MyAction() to MyAction2())
+```  
+
+`2`. `Triple` - dispatches all three actions on the store in order.
+```kotlin
+store.dispatch(Triple(MyAction(), MyAction2(), MyAction3()))
+```
+
+`3`. `MultiAction` - dispatches 0 to N actions on the store in order.
+
+```kotlin
+store.dispatch(multipleActionOf(MyAction(), MyAction2(), MyAction3(), MyActionN()))
+```
+
 
 ## Reducers
 
@@ -170,6 +192,71 @@ val productNameSelector = productSelector.compose { state -> state.name }
 ```
 
 By composing selectors in separate fields, they become more reusable.
+
+## Effects / Sagas
+
+Effects are `Observable` chains that respond to a particular action, or set of actions and return with 
+another action, set of actions (`MultiAction`), or `NoAction`.
+
+To define an `Effect`:
+
+```kotlin
+val getUsersEffect = createEffect<LoadUsers, UsersReceived> { actionObservable ->
+    actionObservable.flatMap { (userId) -> userService.getUsers(userId) }
+        .map { users -> UsersReceived(users) }
+}
+```
+
+In this example, the `Effect` responds to a `LoadUsers` action, calls out to `UserService`, and returns a `UsersReceived` 
+action, which the store dispatches out to a `Reducer` to handle. 
+
+__Pro Tip__: Be careful of cyclical `Effect`. If you have two separate effects consume and dispatch each other's effects, 
+you could run into a cycle that consumes your application and might cause it to freeze.
+
+Now group the `Effect` into an `Effects` object:
+
+```kotlin
+val usersEffects = Effects(getUsersEffect)
+```
+
+An `Effects` object manage the scoped lifecycle and binding to the `Store` actions. They efficiently 
+group the bindings together into logical components.
+
+`Effects` are bound to the `Store` in a couple of ways: globally and scoped.
+
+Globally - bind to the `Store` in global scope when the `Store` is created:
+
+```kotlin
+store = createStore(...)
+    .also { usersEffects.bindTo(it) }
+ ```
+
+Or Scope Effect groupings at a smaller level, such as within a particular flow in your application:
+```kotlin
+
+val usersEffects = Effects(getUsersEffect, effect2, effectN)
+
+// bind to store when object in scope
+userEffect.bindTo(store)
+
+// remove subscriptions to Store when out of scope.
+userEffect.clearBindings()
+
+```
+
+### Multiple Actions
+
+`Effects` can return multiple effects at a time in a fan-out fashion. This is very useful 
+when you want keep your actions pure, such as notifying a `Reducer` of a loading state change, while another `Reducer`  
+receives the actual data.
+
+```kotlin
+val multipleDispatchEffect = createEffect<LocationChange, MultiAction> { change ->
+    change.map { (location) -> multipleActionOf(LocationChanged(location.other), LoadStatus.Done) }
+}
+```
+
+All types specified in `Store` are supported as return types in `Effects`.
 
 ## Advanced Features
 
