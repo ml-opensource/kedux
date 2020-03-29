@@ -394,11 +394,20 @@ store.dispatch(userLoadingState.clear)
 store.dispatch(userLoadingState.success(user))
 store.dispatch(userLoadingState.error(error))
 
+// you must use the LoadingModel object to represent it's state.
+data class State(val user: LoadingModel<User> = LoadingModel.empty())
+
+// define selectod
 val userLoadingStateSelector = createSelector { state: State -> state.user }
+// only emits if success is not null
+val userSuccess = userLoadingStateSelector.success()
+val userOptionalSuccess = userLoadingStateSelector.optionalSucces()
+// only emits if error is not null
+val userError = userLoadingStateSelector.error()
+val userOptionalError = userLoadingStateSelector.optionalError()
 
 // convenience extensions on selectors
-store.select(userLoadingStateSelector)
- .success() // also have optionalSuccess, error, optionalError, loading
+store.select(userSuccess)
  .subscribe { success ->
   // only returns if there's a success value
  }
