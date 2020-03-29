@@ -47,6 +47,21 @@ inline fun <reified A : Any> createSilentEffect(crossinline mapper: (ObservableW
         { actions: ObservableWrapper<Any> -> mapper(actions.ofType<A>().wrap()).map { NoAction }.wrap() }
 
 /**
+ * Creates an [Effect], an [Observable] chain that returns an Action or set of [MultiAction] objects that get dispatched back
+ * to the store.
+ *
+ * Usage:
+ * ```kotlin
+ * val effect = createActionTypeEffect<Action<LoadUsers, List<User>>, Action<LoadUsersReceived, List<User>> { actionObservable ->
+ *     actionObservable.flatMap { (userId) -> userService.getUsers(userId) }
+ *      .map { users -> usersReceived(users) }
+ * }
+ * ```
+ */
+inline fun <T, P, R, RP> createActionTypeEffect(crossinline mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>): Effect<Action<R, RP>> =
+        { actions: ObservableWrapper<Any> -> mapper(actions.ofType<Action<T, P>>().wrap()).wrap() }
+
+/**
  * Groups a set of [Effect] into a singular scoped unit. Handles registration to the [Store].
  *
  * Scope Effects groupings globally when at Store creation time:
