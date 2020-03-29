@@ -1,15 +1,15 @@
 import com.badoo.reaktive.observable.toObservable
-import com.fuzz.kedux.Action
 import com.fuzz.kedux.Effects
 import com.fuzz.kedux.KeduxLoader
+import com.fuzz.kedux.LoadingAction
 import com.fuzz.kedux.LoadingModel
 import com.fuzz.kedux.Store
-import com.fuzz.kedux.anyReducer
 import com.fuzz.kedux.createSelector
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.error
 import com.fuzz.kedux.optionalSuccess
 import com.fuzz.kedux.success
+import com.fuzz.kedux.typedReducer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,13 +20,10 @@ data class State(val product: LoadingModel<Product> = LoadingModel.empty())
 
 val initialLoadingState = State()
 
-val loadingProduct = KeduxLoader<Int, Product> { id -> Product(id = id, name = "Product Demo").toObservable() }
+val loadingProduct = KeduxLoader<Int, Product>("product") { id -> Product(id = id, name = "Product Demo").toObservable() }
 
-val reducer = anyReducer { state: State, action: Any ->
-    when (action) {
-        is Action<*, *> -> state.copy(product = loadingProduct.reducer.reduce(state.product, action))
-        else -> state
-    }
+val reducer = typedReducer { state: State, action: LoadingAction<*, *> ->
+    state.copy(product = loadingProduct.reducer.reduce(state.product, action))
 }
 
 val productSelector = createSelector { state: State -> state.product }

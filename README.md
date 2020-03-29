@@ -199,7 +199,7 @@ that a safer consumption occurs. I.e. the reducer only executes when the action 
 ```kotlin
 val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action ->
     when (action) {
-        is StoreTestAction.NameChange -> state.copy(name = action.name)
+        is StoreTestAction.NameChange   -> state.copy(name = action.name)
         is StoreTestAction.Reset -> state
         is StoreTestAction.LocationChange -> state.copy(location = action.location)
         is StoreTestAction.NamedChanged -> state.copy(nameChanged = true)
@@ -371,6 +371,48 @@ Now we can subscribe to the changes via:
 The `fracturedReducer` will loop through each reducer to determine any state changes and update subscribers across the fractured state map. 
 
 Nesting `fracturedReducer` is not supported, though `compose`-ing is supported.
+
+### Loading States
+
+Typically to represent loading state you might create an object to represent success, error, loading, and result.
+
+Kedux provides a convenience object `KeduxLoader` to represent all actions, a reducer to handle state changes, and an effect to coordinate 
+the loading, success, and error states.
+
+Also, `KeduxLoader` supports clearing state via `loader.clear` action type.
+
+```kotlin
+val userLoadingState = KeduxLoader<Int, User>("user") { id -> userService.getUser(id) }
+
+// request action
+store.dispatch(userLoadingState.request(5))
+
+// resets state back to LoadingModel.empty()
+store.dispatch(userLoadingState.clear)
+
+// can manually call if you dont want the default effect
+store.dispatch(userLoadingState.success(user))
+store.dispatch(userLoadingState.error(error))
+
+val userLoadingStateSelector = createSelector { state: State -> state.user }
+
+// convenience extensions on selectors
+store.select(userLoadingStateSelector)
+ .success() // also have optionalSuccess, error, optionalError, loading
+ .subscribe { success ->
+  // only returns if there's a success value
+ }
+ .addTo(disposable)
+```
+
+Since we want to avoid reflection, using the `KeduxLoader` reducer requires a little more magic:
+```kotlin
+val reducer = typedReducer { state: State, action: LoadingAction<*, *> ->
+    state.copy(product = loadingProduct.reducer.reduce(state.product, action))
+}
+```
+
+We need to call the reducer manually in this case.
 
 [badge-android]: http://img.shields.io/badge/platform-android-brightgreen.svg?style=flat
 [badge-ios]: http://img.shields.io/badge/platform-ios-lightgrey.svg?style=flat

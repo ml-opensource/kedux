@@ -63,11 +63,19 @@ data class LoadingModel<T>(
     }
 }
 
-enum class LoadingActionTypes {
-    Request,
-    Success,
-    Error,
-    Clear
+sealed class LoadingActionTypes {
+    data class Request(val name: String) : LoadingActionTypes()
+    data class Success(val name: String) : LoadingActionTypes()
+    data class Error(val name: String) : LoadingActionTypes()
+    data class Clear(val name: String) : LoadingActionTypes()
+}
+
+data class LoadingAction<AT : LoadingActionTypes, P>(
+        override val type: AT,
+        override val payload: P) : Action<AT, P>
+
+internal fun <T : LoadingActionTypes, A> createLoadingAction(type: T): ActionCreator<T, A, A> = { arguments: A ->
+    LoadingAction(type, payload = arguments)
 }
 
 /**
@@ -76,7 +84,7 @@ enum class LoadingActionTypes {
  *
  * Usage:
  * ```kotlin
- * val userLoadingState = KeduxLoader<Int, User> { id -> userService.getUser(id) }
+ * val userLoadingState = KeduxLoader<Int, User>("user") { id -> userService.getUser(id) }
  *
  * store.dispatch(userLoadingState.request(5))
  *
@@ -91,29 +99,30 @@ enum class LoadingActionTypes {
  *  .addTo(disposable)
  * ```
  */
-class KeduxLoader<TRequest, TSuccess>(private val requester: (args: TRequest) -> Observable<TSuccess>) {
+class KeduxLoader<TRequest, TSuccess>(private val name: String, private val requester: (args: TRequest) -> Observable<TSuccess>) {
 
-    val request = createAction(LoadingActionTypes.Request) { arguments: TRequest -> arguments }
+    val request = createLoadingAction<LoadingActionTypes.Request, TRequest>(LoadingActionTypes.Request(name))
 
-    val success = createAction(LoadingActionTypes.Success) { arguments: TSuccess -> arguments }
+    val success = createLoadingAction<LoadingActionTypes.Success, TSuccess>(LoadingActionTypes.Success(name))
 
-    val error = createAction(LoadingActionTypes.Error) { arguments: Error -> arguments }
+    val error = createLoadingAction<LoadingActionTypes.Error, Error>(LoadingActionTypes.Error(name))
 
-    val clear = createAction(LoadingActionTypes.Clear)
+    val clear = LoadingAction(LoadingActionTypes.Clear(name), Unit)
 
     @Suppress("UNCHECKED_CAST")
     val reducer = actionTypeReducer { s: LoadingModel<TSuccess>, action: Action<LoadingActionTypes, *> ->
         when (action.type) {
-            LoadingActionTypes.Request -> s.loading()
-            LoadingActionTypes.Success -> LoadingModel.success(action.payload as TSuccess?)
-            LoadingActionTypes.Clear -> LoadingModel.empty()
-            LoadingActionTypes.Error -> LoadingModel.error(action.payload as Error?,
+            LoadingActionTypes.Request(name) -> s.loading()
+            LoadingActionTypes.Success(name) -> LoadingModel.success(action.payload as TSuccess?)
+            LoadingActionTypes.Clear(name) -> LoadingModel.empty()
+            LoadingActionTypes.Error(name) -> LoadingModel.error(action.payload as Error?,
                     s.optionalSuccess)
+            else -> s
         }
     }
 
-    val effect = createActionTypeEffect<LoadingActionTypes, TRequest, LoadingActionTypes, TSuccess> { action ->
-        action.filter { it.type == LoadingActionTypes.Request }.flatMap { requester(it.payload) }
+    val effect = createActionTypeEffect<LoadingActionTypes.Request, TRequest, LoadingActionTypes.Success, TSuccess> { action ->
+        action.filter { it.type == LoadingActionTypes.Request(name) }.flatMap { requester(it.payload) }
                 .onErrorReturn { error(it) }
                 .map { success(it) }
     }
