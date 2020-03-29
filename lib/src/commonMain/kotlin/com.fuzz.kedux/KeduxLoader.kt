@@ -70,7 +70,28 @@ enum class LoadingActionTypes {
     Clear
 }
 
-class LoadingAction<TRequest, TSuccess>(private val requester: (args: TRequest) -> Observable<TSuccess>) {
+/**
+ * Creates an object that contains an [Effect], [Reducer], and set of actions that represent loading
+ * state in a structured way.
+ *
+ * Usage:
+ * ```kotlin
+ * val userLoadingState = KeduxLoader<Int, User> { id -> userService.getUser(id) }
+ *
+ * store.dispatch(userLoadingState.request(5))
+ *
+ * val userLoadingStateSelector = createSelector { state: State -> state.user }
+ *
+ * // convenience extensions on selectors
+ * store.select(userLoadingStateSelector)
+ *  .success()
+ *  .subscribe { success ->
+ *   // only returns if there's a success value
+ *  }
+ *  .addTo(disposable)
+ * ```
+ */
+class KeduxLoader<TRequest, TSuccess>(private val requester: (args: TRequest) -> Observable<TSuccess>) {
 
     val request = createAction(LoadingActionTypes.Request) { arguments: TRequest -> arguments }
 

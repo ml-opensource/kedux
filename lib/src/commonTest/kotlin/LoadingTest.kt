@@ -1,12 +1,13 @@
 import com.badoo.reaktive.observable.toObservable
 import com.fuzz.kedux.Action
 import com.fuzz.kedux.Effects
-import com.fuzz.kedux.LoadingAction
+import com.fuzz.kedux.KeduxLoader
 import com.fuzz.kedux.LoadingModel
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.anyReducer
 import com.fuzz.kedux.createSelector
 import com.fuzz.kedux.createStore
+import com.fuzz.kedux.error
 import com.fuzz.kedux.optionalSuccess
 import com.fuzz.kedux.success
 import kotlin.test.AfterTest
@@ -19,7 +20,7 @@ data class State(val product: LoadingModel<Product> = LoadingModel.empty())
 
 val initialLoadingState = State()
 
-val loadingProduct = LoadingAction<Int, Product> { id -> Product(id = id, name = "Product Demo").toObservable() }
+val loadingProduct = KeduxLoader<Int, Product> { id -> Product(id = id, name = "Product Demo").toObservable() }
 
 val reducer = anyReducer { state: State, action: Any ->
     when (action) {
@@ -31,6 +32,7 @@ val reducer = anyReducer { state: State, action: Any ->
 val productSelector = createSelector { state: State -> state.product }
 val productSuccessSelector = productSelector.success()
 val productOptionalSuccessSelector = productSelector.optionalSuccess()
+val productErrorSelector = productSelector.error()
 
 val effects = Effects(loadingProduct.effect)
 
@@ -75,6 +77,18 @@ class LoadingTest {
         store.dispatch(loadingProduct.clear)
 
         assertNull(product)
+    }
+
+    @Test
+    fun testErrorState() {
+        var error: Error? = null
+        store.select(productErrorSelector)
+                .subscribe(isThreadLocal = true) { next ->
+                    error = next
+                }
+        val error1 = Error("This is an error")
+        store.dispatch(loadingProduct.error(error1))
+        assertEquals(error1, error)
     }
 
 }
