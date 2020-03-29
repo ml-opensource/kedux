@@ -66,8 +66,8 @@ fun <S : Any, R1 : Any?, R2 : Any?> Selector<S, R1>.compose(
         { observable -> createSelector(selectorFunction)(this(observable)).wrap() }
 
 
-inline fun <S : Any, R1 : Any?, R2 : Any?> Selector<S, R1>.compose(
-        crossinline selectorTransform: ObservableWrapper<R1>.() -> Observable<R1>,
-        noinline selectorFunction: SelectorFunction<R1, R2>
-): Selector<S, R2> =
+inline fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?> Selector<S, R1>.compose(
+        crossinline selectorTransform: ObservableWrapper<R1>.() -> Observable<R2>,
+        noinline selectorFunction: SelectorFunction<R2, R3>
+): Selector<S, R3> =
         { observable -> createSelector(selectorFunction)(this(observable).selectorTransform().wrap()).wrap() }
