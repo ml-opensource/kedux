@@ -11,7 +11,6 @@ import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.observeOn
 import com.badoo.reaktive.observable.subscribe
 import com.badoo.reaktive.observable.subscribeOn
-import com.badoo.reaktive.observable.threadLocal
 import com.badoo.reaktive.observable.wrap
 import com.badoo.reaktive.scheduler.computationScheduler
 import com.badoo.reaktive.scheduler.mainScheduler
@@ -60,5 +59,15 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
 fun <S : Any?, R : Any?> createSelector(selectorFunction: SelectorFunction<S, R>): Selector<S, R> =
         { observable -> SelectorSubject(observable, selectorFunction).wrap() }
 
-fun <S : Any, R1 : Any?, R2 : Any?> Selector<S, R1>.compose(selectorFunction: SelectorFunction<R1, R2>): Selector<S, R2> =
+
+fun <S : Any, R1 : Any?, R2 : Any?> Selector<S, R1>.compose(
+        selectorFunction: SelectorFunction<R1, R2>
+): Selector<S, R2> =
         { observable -> createSelector(selectorFunction)(this(observable)).wrap() }
+
+
+inline fun <S : Any, R1 : Any?, R2 : Any?> Selector<S, R1>.compose(
+        crossinline selectorTransform: ObservableWrapper<R1>.() -> Observable<R1>,
+        noinline selectorFunction: SelectorFunction<R1, R2>
+): Selector<S, R2> =
+        { observable -> createSelector(selectorFunction)(this(observable).selectorTransform().wrap()).wrap() }

@@ -1,0 +1,81 @@
+import com.badoo.reaktive.observable.toObservable
+import com.fuzz.kedux.Action
+import com.fuzz.kedux.Effects
+import com.fuzz.kedux.LoadingAction
+import com.fuzz.kedux.LoadingModel
+import com.fuzz.kedux.Store
+import com.fuzz.kedux.anyReducer
+import com.fuzz.kedux.createSelector
+import com.fuzz.kedux.createStore
+import com.fuzz.kedux.optionalSuccess
+import com.fuzz.kedux.success
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+
+data class State(val product: LoadingModel<Product> = LoadingModel.empty())
+
+val initialLoadingState = State()
+
+val loadingProduct = LoadingAction<Int, Product> { id -> Product(id = id, name = "Product Demo").toObservable() }
+
+val reducer = anyReducer { state: State, action: Any ->
+    when (action) {
+        is Action<*, *> -> state.copy(product = loadingProduct.reducer.reduce(state.product, action))
+        else -> state
+    }
+}
+
+val productSelector = createSelector { state: State -> state.product }
+val productSuccessSelector = productSelector.success()
+val productOptionalSuccessSelector = productSelector.optionalSuccess()
+
+val effects = Effects(loadingProduct.effect)
+
+/**
+ * Description:
+ */
+class LoadingTest {
+
+    private lateinit var store: Store<State>
+
+    @BeforeTest
+    fun beforeTest() {
+        applyTestSchedulers()
+        store = createStore(reducer, initialLoadingState).also { effects.bindTo(it) }
+    }
+
+    @AfterTest
+    fun afterTest() {
+        effects.clearBindings()
+    }
+
+    @Test
+    fun testRequestState() {
+        var product: Product? = null
+        store.select(productSuccessSelector)
+                .subscribe(isThreadLocal = true) { next ->
+                    product = next
+                }
+        store.dispatch(loadingProduct.request(5))
+
+        assertEquals(product, Product(5, "Product Demo"))
+    }
+
+    @Test
+    fun testRequestClear() {
+        var product: Product? = null
+        store.select(productOptionalSuccessSelector)
+                .subscribe(isThreadLocal = true) { next ->
+                    product = next
+                }
+        store.dispatch(loadingProduct.request(5))
+        store.dispatch(loadingProduct.clear)
+
+        assertNull(product)
+    }
+
+}
+

@@ -11,7 +11,7 @@ data class LoadingModel<T>(
         private val hasError: Boolean,
         private val hasSuccess: Boolean,
         private val internalSuccess: T? = null,
-        val error: Error? = null
+        private val internalError: Error? = null
 ) {
     val isSuccess = hasSuccess
 
@@ -19,12 +19,17 @@ data class LoadingModel<T>(
 
     val isEmpty = !isSuccess && !isError
 
-    val optionalSuccess: T? = success
+    val optionalSuccess: T? = internalSuccess
 
     val success: T
         get() = internalSuccess!!
 
-    fun loading(success: T = this.success) =
+    val optionalError: Error? = internalError
+
+    val error: Error
+        get() = internalError!!
+
+    fun loading(success: T? = internalSuccess) =
             LoadingModel(
                     isLoading = true,
                     hasError = false,
@@ -45,7 +50,7 @@ data class LoadingModel<T>(
                 isLoading = false,
                 hasError = true,
                 hasSuccess = false,
-                error = error,
+                internalError = error,
                 internalSuccess = optionalSuccess
         )
 
@@ -65,7 +70,7 @@ enum class LoadingActionTypes {
     Clear
 }
 
-class LoadingAction<TRequest, TSuccess>(private val requester: () -> Observable<TSuccess>) {
+class LoadingAction<TRequest, TSuccess>(private val requester: (args: TRequest) -> Observable<TSuccess>) {
 
     val request = createAction(LoadingActionTypes.Request) { arguments: TRequest -> arguments }
 
@@ -75,6 +80,7 @@ class LoadingAction<TRequest, TSuccess>(private val requester: () -> Observable<
 
     val clear = createAction(LoadingActionTypes.Clear)
 
+    @Suppress("UNCHECKED_CAST")
     val reducer = actionTypeReducer { s: LoadingModel<TSuccess>, action: Action<LoadingActionTypes, *> ->
         when (action.type) {
             LoadingActionTypes.Request -> s.loading()
@@ -86,8 +92,34 @@ class LoadingAction<TRequest, TSuccess>(private val requester: () -> Observable<
     }
 
     val effect = createActionTypeEffect<LoadingActionTypes, TRequest, LoadingActionTypes, TSuccess> { action ->
-        action.filter { it.type == LoadingActionTypes.Request }.flatMap { requester() }
+        action.filter { it.type == LoadingActionTypes.Request }.flatMap { requester(it.payload) }
                 .onErrorReturn { error(it) }
                 .map { success(it) }
     }
+
 }
+
+/**
+ * Compose selector that only emits a computation if theres a [LoadingModel.success] state.
+ */
+fun <S : Any, T> Selector<S, LoadingModel<T>>.success() = compose({ filter { it.optionalSuccess != null } }) { state -> state.success }
+
+/**
+ * Compose selector that returns the [LoadingModel.optionalSuccess] state.
+ */
+fun <S : Any, T> Selector<S, LoadingModel<T>>.optionalSuccess() = compose { state -> state.optionalSuccess }
+
+/**
+ * Compose selector that only emits a computation if theres a [LoadingModel.error] state.
+ */
+fun <S : Any, T> Selector<S, LoadingModel<T>>.error() = compose({ filter { it.optionalError != null } }) { state -> state.error }
+
+/**
+ * Compose selector that returns the [LoadingModel.optionalError] state.
+ */
+fun <S : Any, T> Selector<S, LoadingModel<T>>.optionalError() = compose { state -> state.optionalError }
+
+/**
+ * Compose selector that returns the [LoadingModel.isLoading] value.
+ */
+fun <S : Any, T> Selector<S, LoadingModel<T>>.loading() = compose { state -> state.isLoading }
