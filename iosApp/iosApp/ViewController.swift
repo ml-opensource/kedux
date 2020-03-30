@@ -9,7 +9,7 @@ class MoviesModel: ObservableObject {
     var movies: [Movie] = []
 
     init(store: Store<FracturedState>) {
-        disposable.add(disposable: store.select(selector: SelectorsKt_.moviesSelector as! (ObservableWrapper<FracturedState>) -> ObservableWrapper<AnyObject>)
+        disposable.add(disposable: store.select(listSelector: SelectorsKt_.moviesSelector)
                 .subscribe(isThreadLocal: false, onSubscribe: nil, onError: nil, onComplete: nil) { movies in
                     self.movies = movies as! [Movie]
                 })

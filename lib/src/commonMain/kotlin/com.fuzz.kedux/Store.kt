@@ -50,19 +50,19 @@ class Store<S : Any> internal constructor(
      * [dispatch] overload to be more targeted.
      */
     @JsName("dispatchPair")
-    fun dispatch(action: Pair<Any, Any>) {
-        dispatchActual(action.first)
-        dispatchActual(action.second)
+    fun dispatch(pair: Pair<Any, Any>) {
+        dispatchActual(pair.first)
+        dispatchActual(pair.second)
     }
 
     /**
      * [dispatch] overload to be more targeted.
      */
     @JsName("dispatchTriple")
-    fun dispatch(action: Triple<Any, Any, Any>) {
-        dispatchActual(action.first)
-        dispatchActual(action.second)
-        dispatchActual(action.third)
+    fun dispatch(triple: Triple<Any, Any, Any>) {
+        dispatchActual(triple.first)
+        dispatchActual(triple.second)
+        dispatchActual(triple.third)
     }
 
     /**
@@ -77,8 +77,8 @@ class Store<S : Any> internal constructor(
      * [dispatch] overload to be more targeted.
      */
     @JsName("dispatchTypedAction")
-    fun dispatch(action: Action<*, *>) {
-        dispatchActual(action)
+    fun dispatch(typedAction: Action<*, *>) {
+        dispatchActual(typedAction)
     }
 
     /**
@@ -86,7 +86,7 @@ class Store<S : Any> internal constructor(
      */
     @JsName("dispatchNoAction")
     @Suppress("UNUSED_PARAMETER")
-    fun dispatch(action: NoAction) {
+    fun dispatch(noAction: NoAction) {
         logIfEnabled { "STORE: NoAction received. Ignoring dispatch." }
     }
 
@@ -136,6 +136,8 @@ class Store<S : Any> internal constructor(
     }
 
     fun <R : Any?> select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
+
+    fun <I, R: List<I>> select(listSelector: Selector<S, R>): ObservableWrapper<R> = listSelector(state)
 
     /**
      * Constructs a new effect to perform asynchronous action on the store.
