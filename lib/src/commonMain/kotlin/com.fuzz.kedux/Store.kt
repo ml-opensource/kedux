@@ -12,6 +12,7 @@ import com.badoo.reaktive.scheduler.mainScheduler
 import com.badoo.reaktive.subject.behavior.BehaviorSubject
 import com.badoo.reaktive.utils.atomic.AtomicBoolean
 import kotlin.js.JsName
+import kotlin.jvm.JvmName
 
 @Suppress("UNCHECKED_CAST")
 fun <S : Any> createStore(
@@ -137,6 +138,7 @@ class Store<S : Any> internal constructor(
 
     fun <R : Any?> select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
 
+    @JvmName("selectList")
     fun <I, R: List<I>> select(listSelector: Selector<S, R>): ObservableWrapper<R> = listSelector(state)
 
     /**
