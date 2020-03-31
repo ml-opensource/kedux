@@ -17,19 +17,19 @@ fun <T : Any> ObservableWrapper<Any>.filterInstance(kClass: ObjCClass): Observab
 /**
  * Description: Used to enclose
  */
-class EffectCreator<A : Any>(private val actionKClass: ObjCClass) {
+class EffectCreator<A : Any>(private val ofType: ObjCClass) {
 
     fun <R : Any> createEffect(
             mapper: (ObservableWrapper<A>) -> Observable<R>
     ): Effect<R> =
             { actions: ObservableWrapper<Any> ->
-                mapper(actions.filterInstance<A>(actionKClass).wrap()).wrap()
+                mapper(actions.filterInstance<A>(ofType).wrap()).wrap()
             }
 
     fun createSilentEffect(
             mapper: (ObservableWrapper<A>) -> Observable<Unit>
     ): Effect<NoAction> =
-            { actions: ObservableWrapper<Any> -> mapper(actions.filterInstance<A>(actionKClass).wrap()).map { NoAction }.wrap() }
+            { actions: ObservableWrapper<Any> -> mapper(actions.filterInstance<A>(ofType).wrap()).map { NoAction }.wrap() }
 
 }
 
