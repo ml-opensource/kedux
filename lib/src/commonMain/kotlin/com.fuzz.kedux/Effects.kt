@@ -58,7 +58,7 @@ inline fun <reified A : Any> createSilentEffect(crossinline mapper: (ObservableW
  * }
  * ```
  */
-inline fun <T, P, R, RP> createActionTypeEffect(crossinline mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>): Effect<Action<R, RP>> =
+inline fun <T: Any, P, R: Any, RP> createActionTypeEffect(crossinline mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>): Effect<Action<R, RP>> =
         { actions: ObservableWrapper<Any> -> mapper(actions.ofType<Action<T, P>>().wrap()).wrap() }
 
 /**

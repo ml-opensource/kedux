@@ -2,8 +2,6 @@ import UIKit
 import app
 import SwiftUI
 
-let movieEffect = EffectCreator(ofType: Movie.self).createEffect { (action: ObservableWrapper<MovieActions.AddMovie>) in action }
-
 class MoviesModel: ObservableObject {
     let disposable = CompositeDisposable()
 

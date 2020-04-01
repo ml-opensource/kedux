@@ -1,12 +1,11 @@
+package com.fuzz.kedux
+
 import com.badoo.reaktive.observable.Observable
 import com.badoo.reaktive.observable.ObservableWrapper
 import com.badoo.reaktive.observable.filter
 import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.ofType
 import com.badoo.reaktive.observable.wrap
-import com.fuzz.kedux.Action
-import com.fuzz.kedux.Effect
-import com.fuzz.kedux.NoAction
 import kotlinx.cinterop.ObjCClass
 import kotlinx.cinterop.getOriginalKotlinClass
 
@@ -33,9 +32,9 @@ class EffectCreator<A : Any>(private val ofType: ObjCClass) {
 
 }
 
-class ActionTypeGrouping {
-    inline fun <T, P, R, RP> createActionTypeEffect(
-            crossinline mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>
+class ActionTypeGrouping<T : Any, P, R : Any, RP> {
+    fun createActionTypeEffect(
+            mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>
     ): Effect<Action<R, RP>> =
             { actions: ObservableWrapper<Any> -> mapper(actions.ofType<Action<T, P>>().wrap()).wrap() }
 
