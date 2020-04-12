@@ -8,18 +8,22 @@
 import Foundation
 import app
 
+struct CoolAction {
+    let name: String
+}
+
 let movieEffect = EffectCreator(ofType: Movie.self).createEffect { (action: ObservableWrapper<MovieActions.AddMovie>) in action }
 
-let movieReducer = ReducerCreator<MoviesState>(ofType: MoviesState.self).anyReducer { state, action in
+let movieReducer = KonanReducer<MoviesState>(ofType: MoviesState.self) { state, action in
     switch action.self {
-    case _ as MovieActions.AddMovie:
-        return state
+    case _ as CoolAction:
+        return state.doCopy(movies: state.movies, isMovieAdded: state.isMovieAdded, iosCoolAction:  true)
     default:
         return state
     }
 }
 
-let movieTypedReducer = TypedReducerCreator<MoviesState, MovieActions>(ofType: MoviesState.self, onAction: MovieActions.self).typedReducer { state, action in
+let movieTypedReducer = TypedKonanReducer<MoviesState, MovieActions>(ofType: MoviesState.self, onAction: MovieActions.self) { state, action in
     switch action.self {
     case _ as MovieActions.AddMovie:
         return state
@@ -48,6 +52,8 @@ class SimpleArgs {
 
 let action = ActionCreate(ofType: ExampleType.SimpleType) { (args: SimpleArgs) in args }
 
-let noMapper = ActionCreateNoArgument(ofType: ExampleType.SimpleType) { SimpleArgs(data: "Data") }
-
 let singleAction = SingleAction(type: ExampleType.SimpleType)
+
+let newStore: Store<MoviesState> = Store(reducer: movieReducer, initialState: MoviesState(movies: [], isMovieAdded: false, iosCoolAction: false))
+
+let fracturedStore: Store<FracturedState> = FracturedStore(map: [movieReducer as! Reducer<AnyObject> : MoviesState(movies: [], isMovieAdded: false, iosCoolAction: false)])

@@ -9,6 +9,7 @@ import com.badoo.reaktive.observable.wrap
 import kotlinx.cinterop.ObjCClass
 import kotlinx.cinterop.getOriginalKotlinClass
 
+@Suppress("UNCHECKED_CAST")
 fun <T : Any> ObservableWrapper<Any>.filterInstance(kClass: ObjCClass): Observable<T> =
         filter { it::class.isInstance(getOriginalKotlinClass(kClass)) }
                 .map { it as T }

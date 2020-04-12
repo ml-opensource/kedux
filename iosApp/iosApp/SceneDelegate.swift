@@ -26,7 +26,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             windowScene.titlebar?.titleVisibility = .hidden
             #endif
 
-            let controller = UIHostingController(rootView: HomeView(store: StoreKt_.appGlobalStore()))
+            let store = StoreKt_.appGlobalStore()
+            let controller = UIHostingController(rootView: HomeView(store: store))
 
             window.rootViewController = controller
             self.window = window
