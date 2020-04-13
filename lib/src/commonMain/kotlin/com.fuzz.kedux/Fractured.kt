@@ -4,26 +4,21 @@ package com.fuzz.kedux
 
 import kotlin.reflect.KClass
 
-interface FracturedState {
-    fun getState(valueClass: KClass<Any>): Any
-
-    fun <R : Any> fromReducer(reducer: Reducer<R>): R
-}
 
 /**
  * Represents a fractured state map, allowing different reducers on difference pieces of state.
  */
-data class FracturedStateImpl(internal val map: Map<KClass<out Any>, Any>) : FracturedState {
-    override fun <R : Any> fromReducer(reducer: Reducer<R>): R =
+data class FracturedState(private val map: Map<KClass<out Any>, Any>) {
+    fun <R : Any> fromReducer(reducer: Reducer<R>): R =
             map.getValue(reducer.stateClass) as R
 
-    override fun getState(valueClass: KClass<Any>): Any = map.getValue(valueClass)
+    fun getState(valueClass: KClass<Any>): Any = map.getValue(valueClass)
 }
 
 @Suppress("UNCHECKED_CAST")
 internal fun createFracturedState(
         vararg pairs: Pair<KClass<out Any>, Any>
-) = FracturedStateImpl(mapOf(*pairs))
+) = FracturedState(mapOf(*pairs))
 
 class ReducerMap(
         reducers: List<Reducer<Any>>
@@ -39,7 +34,7 @@ class ReducerMap(
         reducerMap.forEach { (valueClass, value) ->
             map[valueClass] = value.reduce(state.getState(valueClass), action)
         }
-        return FracturedStateImpl(map)
+        return FracturedState(map)
     }
 }
 
