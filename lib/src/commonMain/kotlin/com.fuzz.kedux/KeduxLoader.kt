@@ -70,12 +70,12 @@ sealed class LoadingActionTypes {
     data class Clear(val name: String) : LoadingActionTypes()
 }
 
-data class LoadingAction<AT : LoadingActionTypes, P>(
+data class LoadingAction<AT : LoadingActionTypes, P : Any?>(
         override val type: AT,
         override val payload: P) : Action<AT, P>
 
-internal fun <T : LoadingActionTypes, A> createLoadingAction(type: T): ActionCreator<T, A, A> = { arguments: A ->
-    LoadingAction(type, payload = arguments)
+internal fun <T : LoadingActionTypes, A : Any?> createLoadingAction(type: T): ActionCreator<T, A, A> = object : ActionCreator<T, A, A>() {
+    override fun create(arguments: A): Action<T, A> = LoadingAction(type, payload = arguments)
 }
 
 /**
@@ -99,7 +99,7 @@ internal fun <T : LoadingActionTypes, A> createLoadingAction(type: T): ActionCre
  *  .addTo(disposable)
  * ```
  */
-class KeduxLoader<TRequest, TSuccess>(private val name: String, private val requester: (args: TRequest) -> Observable<TSuccess>) {
+class KeduxLoader<TRequest : Any, TSuccess : Any>(private val name: String, private val requester: (args: TRequest) -> Observable<TSuccess>) {
 
     val request = createLoadingAction<LoadingActionTypes.Request, TRequest>(LoadingActionTypes.Request(name))
 

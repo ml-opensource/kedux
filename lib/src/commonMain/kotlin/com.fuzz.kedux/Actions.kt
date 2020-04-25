@@ -30,19 +30,35 @@ interface Action<T : Any, P : Any?> {
     val payload: P
 }
 
-typealias ActionCreator<T, A, P> = (arguments: A) -> Action<T, P>
+abstract class ActionCreator<T : Any, A : Any?, P : Any?> {
 
-/**
- * Creates an [ActionCreator] based on [type] and supplied [payloadCreator].
- */
-inline fun <T : Any, A, P> createAction(type: T, crossinline payloadCreator: (arguments: A) -> P): ActionCreator<T, A, P> = { arguments: A ->
-    object : Action<T, P> {
-        override val type: T = type
+    abstract fun create(arguments: A): Action<T, P>
+
+    operator fun invoke(arguments: A) = create(arguments)
+}
+
+class TypedActionCreator<T : Any, A : Any?, P : Any?>(
+        private val ofType: T,
+        private val payloadCreator: (arguments: A) -> P) : ActionCreator<T, A, P>() {
+    override fun create(arguments: A): Action<T, P> = object : Action<T, P> {
+        override val type: T = ofType
         override val payload: P = payloadCreator(arguments)
     }
 }
 
+class SingleAction<T : Any>(override val type: T) : Action<T, Unit> {
+    override val payload: Unit = Unit
+}
+
+/**
+ * Creates an [ActionCreator] based on [type] and supplied [payloadCreator].
+ */
+fun <T : Any, A : Any, P : Any?> createAction(
+        type: T,
+        payloadCreator: (arguments: A) -> P
+): ActionCreator<T, A, P> = TypedActionCreator(type, payloadCreator)
+
 /**
  * Creates an [Action] based on [type] without any payload or arguments.
  */
-fun <T : Any> createAction(type: T): Action<T, Unit> = createAction<T, Unit, Unit>(type) {}(Unit)
+fun <T : Any> createAction(type: T): Action<T, Unit> = SingleAction(type)
