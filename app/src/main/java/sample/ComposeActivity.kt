@@ -2,8 +2,8 @@ package sample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.ui.core.Text
 import androidx.ui.core.setContent
+import androidx.ui.foundation.Text
 
 /**
  * Description:
