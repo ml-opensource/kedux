@@ -50,10 +50,13 @@ class SimpleArgs {
     }
 }
 
-let action = ActionCreate(ofType: ExampleType.SimpleType) { (args: SimpleArgs) in args }
+let action = TypedActionCreator(ofType: ExampleType.SimpleType) { (args: SimpleArgs?) in args }
 
 let singleAction = SingleAction(type: ExampleType.SimpleType)
 
 let newStore: Store<MoviesState> = Store(reducer: movieReducer, initialState: MoviesState(movies: [], isMovieAdded: false, iosCoolAction: false))
 
+// sample fractured store
 let fracturedStore: Store<FracturedState> = FracturedStore(map: [movieReducer as! Reducer<AnyObject> : MoviesState(movies: [], isMovieAdded: false, iosCoolAction: false)])
+
+let moviesSelector = SelectorCreator<MoviesState, NSArray> { state in state.movies as NSArray }

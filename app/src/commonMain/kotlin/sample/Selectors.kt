@@ -2,7 +2,6 @@ package sample
 
 import com.fuzz.kedux.FracturedState
 import com.fuzz.kedux.Selector
-import com.fuzz.kedux.compose
 import com.fuzz.kedux.fracturedSelector
 
 /**

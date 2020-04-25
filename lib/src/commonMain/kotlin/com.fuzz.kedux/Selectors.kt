@@ -18,7 +18,19 @@ import com.badoo.reaktive.subject.Subject
 import com.badoo.reaktive.subject.behavior.BehaviorSubject
 
 typealias SelectorFunction<S, R> = (state: S) -> R
-typealias Selector<S, R> = SelectorFunction<ObservableWrapper<S>, ObservableWrapper<R>>
+
+abstract class Selector<S : Any, R : Any?> {
+
+    abstract operator fun invoke(state: ObservableWrapper<S>): ObservableWrapper<R>
+
+    fun <R2 : Any?> compose(composeFunction: SelectorFunction<R, R2>): ComposeSelectorCreator<S, R, R, R2> =
+            ComposeSelectorCreator(this, composeFunction) { this }
+
+    fun <T : Any?, R2 : Any?> compose(
+            selectorTransform: ObservableWrapper<R>.() -> Observable<T>,
+            composeFunction: SelectorFunction<T, R2>): ComposeSelectorCreator<S, R, T, R2> =
+            ComposeSelectorCreator(this, composeFunction, selectorTransform)
+}
 
 class SelectorSubject<S : Any?, R : Any?> internal constructor(
         private val state: Observable<S>,
@@ -56,18 +68,22 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
             .observeOn(mainScheduler)
 }
 
-fun <S : Any?, R : Any?> createSelector(selectorFunction: SelectorFunction<S, R>): Selector<S, R> =
-        { observable -> SelectorSubject(observable, selectorFunction).wrap() }
+class SelectorCreator<S : Any, R : Any?>(
+        private val selectorFunction: SelectorFunction<S, R>) : Selector<S, R>() {
+    override fun invoke(state: ObservableWrapper<S>): ObservableWrapper<R> =
+            SelectorSubject(state, selectorFunction).wrap()
+}
 
+class ComposeSelectorCreator<S : Any, T : Any?, R1 : Any?, R2 : Any?>
+internal constructor(
+        private val selectorCreator: Selector<S, T>,
+        private val selectorFunction: SelectorFunction<R1, R2>,
+        private val selectorTransform: ObservableWrapper<T>.() -> Observable<R1>
+) : Selector<S, R2>() {
+    override fun invoke(state: ObservableWrapper<S>): ObservableWrapper<R2> {
+        return selectorCreator.invoke(state).selectorTransform().map(selectorFunction).wrap()
+    }
+}
 
-fun <S : Any, R1 : Any?, R2 : Any?> Selector<S, R1>.compose(
-        selectorFunction: SelectorFunction<R1, R2>
-): Selector<S, R2> =
-        { observable -> createSelector(selectorFunction)(this(observable)).wrap() }
-
-
-inline fun <S : Any, R1 : Any?, R2 : Any?, R3 : Any?> Selector<S, R1>.compose(
-        crossinline selectorTransform: ObservableWrapper<R1>.() -> Observable<R2>,
-        noinline selectorFunction: SelectorFunction<R2, R3>
-): Selector<S, R3> =
-        { observable -> createSelector(selectorFunction)(this(observable).selectorTransform().wrap()).wrap() }
+fun <S : Any, R : Any?> createSelector(selectorFunction: SelectorFunction<S, R>): SelectorCreator<S, R> =
+        SelectorCreator(selectorFunction)
