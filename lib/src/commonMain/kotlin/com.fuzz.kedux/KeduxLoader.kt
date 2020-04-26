@@ -7,76 +7,149 @@ import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.onErrorReturn
 import com.badoo.reaktive.utils.printStack
 
-data class LoadingModel<T>(
+/**
+ * Data representation of a loading state. Useful for network requests.
+ *
+ * Do not construct this object directly. Use one of the helper methods [LoadingModel.success],
+ * [LoadingModel.error], [LoadingModel.empty], or [loading]
+ */
+data class LoadingModel<T>
+internal constructor(
         val isLoading: Boolean,
-        private val hasError: Boolean,
-        private val hasSuccess: Boolean,
-        private val internalSuccess: T? = null,
-        private val internalError: Throwable? = null
+        val isError: Boolean,
+        val isSuccess: Boolean,
+        val optionalSuccess: T? = null,
+        val optionalError: Throwable? = null
 ) {
-    val isSuccess = hasSuccess
+    /**
+     * This object is considered empty if it has no success, error, or is not loading.
+     */
+    val isEmpty = !isSuccess && !isError && !isLoading
 
-    val isError = hasError
-
-    val isEmpty = !isSuccess && !isError
-
-    val optionalSuccess: T? = internalSuccess
-
+    /**
+     * Returns the non-null [T], using force unwrapping.
+     */
     val success: T
-        get() = internalSuccess!!
+        get() = optionalSuccess!!
 
-    val optionalError: Throwable? = internalError
-
+    /**
+     * Returns the non-null [Throwable], using force unwrapping.
+     */
     val error: Throwable
-        get() = internalError!!
+        get() = optionalError!!
 
-    fun loading(success: T? = internalSuccess) =
+    /**
+     * Returns a new [LoadingModel] instance that is set to trigger loading.
+     *
+     * This wipes out any errors and keeps the previous [optionalSuccess]. If you wish to clear it,
+     * call loading(null). This is useful when using a pull to refresh callback, or reloading newer
+     * information in the UI.
+     */
+    fun loading(success: T? = optionalSuccess) =
             LoadingModel(
                     isLoading = true,
-                    hasError = false,
-                    hasSuccess = this.hasSuccess,
-                    internalSuccess = success
+                    isError = false,
+                    isSuccess = this.isSuccess,
+                    optionalSuccess = success
             )
 
     companion object {
 
+        /**
+         * Constructs a new [LoadingModel] with a success value. May pass null here.
+         */
         fun <T> success(success: T?) = LoadingModel(
                 isLoading = false,
-                hasError = false,
-                hasSuccess = true,
-                internalSuccess = success
+                isError = false,
+                isSuccess = true,
+                optionalSuccess = success
         )
 
+        /**
+         * Constructs a new [LoadingModel] with an error value. May pass null here. Also,
+         * can supply an [optionalSuccess] if you wish to preserve the last successful data, or provide
+         * fallback data in the case something uses this object to display its success criteria.
+         */
         fun <T> error(error: Throwable?, optionalSuccess: T? = null) = LoadingModel<T>(
                 isLoading = false,
-                hasError = true,
-                hasSuccess = false,
-                internalError = error,
-                internalSuccess = optionalSuccess
+                isError = true,
+                isSuccess = false,
+                optionalError = error,
+                optionalSuccess = optionalSuccess
         )
 
+        /**
+         * Constructs a new, default empty version of the model with no success or error information.
+         * This is useful for default redux state, or to signify data has not tried to load yet.
+         *
+         * Empty also represents the state when data gets cleared.
+         */
         fun <T> empty() = LoadingModel<T>(
                 isLoading = false,
-                hasSuccess = false,
-                hasError = false
+                isSuccess = false,
+                isError = false
         )
 
     }
 }
 
+/**
+ * The set of loading action types that [KeduxLoader] generate.
+ */
 sealed class LoadingActionTypes {
+
+    /**
+     * Represents the action type for when a [KeduxLoader] requests data, to trigger a [LoadingModel.loading]
+     * state.
+     *
+     * @param name - The unique ID of the [KeduxLoader] action.
+     */
     data class Request(val name: String) : LoadingActionTypes()
+
+    /**
+     * A successful response type.
+     *
+     * @param name - The unique ID of the [KeduxLoader] action.
+     */
     data class Success(val name: String) : LoadingActionTypes()
+
+    /**
+     * An error occurred.
+     * @param name - The unique ID of the [KeduxLoader] action.
+     */
     data class Error(val name: String) : LoadingActionTypes()
+
+    /**
+     * Represents the action type for when a [KeduxLoader] requests to clear data.
+     * Triggers a [LoadingModel.empty].
+     * @param name - The unique ID of the [KeduxLoader] action.
+     */
     data class Clear(val name: String) : LoadingActionTypes()
 }
 
+/**
+ * Represents an action type that uses the [LoadingActionTypes] with a specified payload. The data
+ * in redux is backed by a [LoadingModel].
+ */
 data class LoadingAction<AT : LoadingActionTypes, P : Any?>(
         override val type: AT,
         override val payload: P) : Action<AT, P>
 
+/**
+ * Creates a new action generator that allows the specified [A] payload argument type.
+ */
 internal fun <T : LoadingActionTypes, A : Any?> createLoadingAction(type: T): ActionCreator<T, A, A> = object : ActionCreator<T, A, A>() {
     override fun create(arguments: A): Action<T, A> = LoadingAction(type, payload = arguments)
+}
+
+/**
+ * Creates a new action generator that allows the specified [A] payload argument type that generates
+ * the payload with the specified [payloadCreator].
+ */
+internal fun <T : LoadingActionTypes, A : Any?, P : Any?> createLoadingAction(
+        type: T,
+        payloadCreator: (arguments: A) -> P): ActionCreator<T, A, P> = object : ActionCreator<T, A, P>() {
+    override fun create(arguments: A): Action<T, P> = LoadingAction(type, payload = payloadCreator(arguments))
 }
 
 /**
@@ -100,7 +173,9 @@ internal fun <T : LoadingActionTypes, A : Any?> createLoadingAction(type: T): Ac
  *  .addTo(disposable)
  * ```
  */
-class KeduxLoader<TRequest : Any, TSuccess : Any>(private val name: String, private val requester: (args: TRequest) -> Observable<TSuccess>) {
+class KeduxLoader<TRequest : Any, TSuccess : Any>(
+        private val name: String,
+        private val requester: (args: TRequest) -> Observable<TSuccess>) {
 
     val request = createLoadingAction<LoadingActionTypes.Request, TRequest>(LoadingActionTypes.Request(name))
 
