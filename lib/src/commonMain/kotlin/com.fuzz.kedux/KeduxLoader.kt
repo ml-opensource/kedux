@@ -5,13 +5,14 @@ import com.badoo.reaktive.observable.filter
 import com.badoo.reaktive.observable.flatMap
 import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.onErrorReturn
+import com.badoo.reaktive.utils.printStack
 
 data class LoadingModel<T>(
         val isLoading: Boolean,
         private val hasError: Boolean,
         private val hasSuccess: Boolean,
         private val internalSuccess: T? = null,
-        private val internalError: Error? = null
+        private val internalError: Throwable? = null
 ) {
     val isSuccess = hasSuccess
 
@@ -24,9 +25,9 @@ data class LoadingModel<T>(
     val success: T
         get() = internalSuccess!!
 
-    val optionalError: Error? = internalError
+    val optionalError: Throwable? = internalError
 
-    val error: Error
+    val error: Throwable
         get() = internalError!!
 
     fun loading(success: T? = internalSuccess) =
@@ -46,7 +47,7 @@ data class LoadingModel<T>(
                 internalSuccess = success
         )
 
-        fun <T> error(error: Error?, optionalSuccess: T? = null) = LoadingModel<T>(
+        fun <T> error(error: Throwable?, optionalSuccess: T? = null) = LoadingModel<T>(
                 isLoading = false,
                 hasError = true,
                 hasSuccess = false,
@@ -105,7 +106,7 @@ class KeduxLoader<TRequest : Any, TSuccess : Any>(private val name: String, priv
 
     val success = createLoadingAction<LoadingActionTypes.Success, TSuccess>(LoadingActionTypes.Success(name))
 
-    val error = createLoadingAction<LoadingActionTypes.Error, Error>(LoadingActionTypes.Error(name))
+    val error = createLoadingAction<LoadingActionTypes.Error, Throwable>(LoadingActionTypes.Error(name))
 
     val clear = LoadingAction(LoadingActionTypes.Clear(name), Unit)
 
@@ -115,16 +116,21 @@ class KeduxLoader<TRequest : Any, TSuccess : Any>(private val name: String, priv
             LoadingActionTypes.Request(name) -> s.loading()
             LoadingActionTypes.Success(name) -> LoadingModel.success(action.payload as TSuccess?)
             LoadingActionTypes.Clear(name) -> LoadingModel.empty()
-            LoadingActionTypes.Error(name) -> LoadingModel.error(action.payload as Error?,
+            LoadingActionTypes.Error(name) -> LoadingModel.error(action.payload as Throwable?,
                     s.optionalSuccess)
             else -> s
         }
     }
 
-    val effect = createActionTypeEffect<LoadingActionTypes.Request, TRequest, LoadingActionTypes.Success, TSuccess> { action ->
-        action.filter { it.type == LoadingActionTypes.Request(name) }.flatMap { requester(it.payload) }
-                .onErrorReturn { error(it) }
+    @Suppress("UNCHECKED_CAST")
+    val effect = createActionTypeEffect<LoadingActionTypes, TRequest, LoadingActionTypes, Any> { action ->
+        action.filter { it.type == LoadingActionTypes.Request(name) }
+                .flatMap { request -> requester(request.payload) }
                 .map { success(it) }
+                .onErrorReturn {
+                    it.printStack()
+                    this.error(it)
+                } as Observable<Action<LoadingActionTypes, Any>>
     }
 
 }

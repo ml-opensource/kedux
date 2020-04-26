@@ -20,7 +20,6 @@ sealed class StoreTestAction {
 }
 
 val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action ->
-    println("Action received ${action}")
     when (action) {
         is StoreTestAction.NameChange -> state.copy(name = action.name)
         is StoreTestAction.Reset -> state

@@ -4,13 +4,30 @@ package com.fuzz.kedux
 
 import kotlin.reflect.KClass
 
+/**
+ * The main function of state. This class represents a function off [S] to change state.
+ */
 abstract class Reducer<S : Any> {
     abstract val stateClass: KClass<S>
     abstract fun reduce(state: S, action: Any): S
 }
 
+/**
+ * Expect declaration so that Native targets to point to class with constructor that takes in non-KClass
+ * arguments, for better Swift / ObjC APIs.
+ */
 expect class TypedReducer<S : Any, A : Any> : Reducer<S>
+
+/**
+ * Expect declaration so that Native targets to point to class with constructor that takes in non-KClass
+ * arguments, for better Swift / ObjC APIs.
+ */
 expect class AnyReducer<S : Any> : Reducer<S>
+
+/**
+ * Expect declaration so that Native targets to point to class with constructor that takes in non-KClass
+ * arguments, for better Swift / ObjC APIs.
+ */
 expect class ActionTypeReducer<S : Any, T : Any> : Reducer<S>
 
 class TypedReducerClass<S : Any, A : Any>(
