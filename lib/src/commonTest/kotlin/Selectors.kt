@@ -1,4 +1,3 @@
-import com.fuzz.kedux.compose
 import com.fuzz.kedux.createSelector
 
 val nameSelector = createSelector<GlobalState, String> { state -> state.name }

@@ -1,9 +1,6 @@
-import com.badoo.reaktive.scheduler.overrideSchedulers
-import com.badoo.reaktive.test.scheduler.TestScheduler
 import com.badoo.reaktive.utils.atomic.AtomicReference
 import com.fuzz.kedux.FracturedState
 import com.fuzz.kedux.Store
-import com.fuzz.kedux.compose
 import com.fuzz.kedux.createFracturedStore
 import com.fuzz.kedux.fracturedSelector
 import com.fuzz.kedux.reduce

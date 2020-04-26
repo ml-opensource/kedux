@@ -14,7 +14,7 @@ struct CoolAction {
 
 let movieEffect = EffectCreator(ofType: Movie.self).createEffect { (action: ObservableWrapper<MovieActions.AddMovie>) in action }
 
-let movieReducer = KonanReducer<MoviesState>(ofType: MoviesState.self) { state, action in
+let movieReducer = AnyReducer<MoviesState>(ofType: MoviesState.self) { state, action in
     switch action {
     case _ as CoolAction:
         return state.doCopy(movies: state.movies, isMovieAdded: state.isMovieAdded, iosCoolAction:  true)
@@ -31,7 +31,7 @@ let movieReducer = KonanReducer<MoviesState>(ofType: MoviesState.self) { state, 
     }
 }
 
-let movieTypedReducer = TypedKonanReducer<MoviesState, MovieActions>(ofType: MoviesState.self, onAction: MovieActions.self) { state, action in
+let movieTypedReducer = TypedReducer<MoviesState, MovieActions>(ofType: MoviesState.self, onAction: MovieActions.self) { state, action in
     switch action.self {
     case _ as MovieActions.AddMovie:
         return state
