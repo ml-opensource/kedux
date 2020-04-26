@@ -177,14 +177,69 @@ class KeduxLoader<TRequest : Any, TSuccess : Any>(
         private val name: String,
         private val requester: (args: TRequest) -> Observable<TSuccess>) {
 
+    /**
+     * Request action creator. Use it to dispatch on the store.
+     *
+     * Usage:
+     *
+     * request(TRequest) returns Action<LoadingActionTypes.Request, TRequest>
+     *
+     * store.dispatch(loader.request(requestPayload))
+     */
     val request = createLoadingAction<LoadingActionTypes.Request, TRequest>(LoadingActionTypes.Request(name))
 
+    /**
+     * Request success creator. Use it to dispatch on the store.
+     *
+     * Usage:
+     *
+     * success(TSuccess) returns Action<LoadingActionTypes.Success, TSuccess>
+     *
+     * store.dispatch(loader.success(successPayload))
+     */
     val success = createLoadingAction<LoadingActionTypes.Success, TSuccess>(LoadingActionTypes.Success(name))
 
+
+    /**
+     * Request error creator. Use it to dispatch on the store.
+     *
+     * Usage:
+     *
+     * error(Throwable) returns Action<LoadingActionTypes.Error, Throwable>
+     *
+     * store.dispatch(loader.error(e))
+     */
     val error = createLoadingAction<LoadingActionTypes.Error, Throwable>(LoadingActionTypes.Error(name))
 
+    /**
+     * Clear action. Use it to dispatch on the store. Only one is necessary as it takes no arguments
+     * on clearing data. Clearing is a complete wipe of the [KeduxLoader] data.
+     *
+     * Usage:
+     *
+     * store.dispatch(loader.clear)
+     */
     val clear = LoadingAction(LoadingActionTypes.Clear(name), Unit)
 
+    /**
+     * The generated reducer that does all of the work for you. Place this reducer as part of a [FracturedState]
+     * or as part of another reducer to automate data handling.
+     *
+     * Usage:
+     * ```kotlin
+     * val reducer = anyReducer { state: State, action: Any ->
+     *   when(action) {
+     *     // catch all Loading action types here and modify state.
+     *     is LoadingAction<*, *> -> {
+     *       state.copy(
+     *          product = loader.reducer.reduce(state.product, action),
+     *          otherLoading = otherLoader.reducer.reduce(state.otherLoading, action),
+     *       )
+     *     }
+     *   }
+     * }
+     * ```
+     */
     @Suppress("UNCHECKED_CAST")
     val reducer = actionTypeReducer { s: LoadingModel<TSuccess>, action: Action<LoadingActionTypes, *> ->
         when (action.type) {
@@ -197,6 +252,10 @@ class KeduxLoader<TRequest : Any, TSuccess : Any>(
         }
     }
 
+    /**
+     * Apply this generated effect into the application [Effects] class. This will coordinate request,
+     * success, and errors using the [requester] supplied in the loader.
+     */
     @Suppress("UNCHECKED_CAST")
     val effect = createActionTypeEffect<LoadingActionTypes, TRequest, LoadingActionTypes, Any> { action ->
         action.filter { it.type == LoadingActionTypes.Request(name) }
@@ -211,7 +270,7 @@ class KeduxLoader<TRequest : Any, TSuccess : Any>(
 }
 
 /**
- * Compose selector that only emits a computation if theres a [LoadingModel.success] state.
+ * Compose selector that only emits a computation if there's a [LoadingModel.success] state.
  */
 fun <S : Any, T> Selector<S, LoadingModel<T>>.success() = compose({ filter { it.optionalSuccess != null } }) { state -> state.success }
 

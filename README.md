@@ -416,8 +416,16 @@ store.select(userSuccess)
 
 Since we want to avoid reflection, using the `KeduxLoader` reducer requires a little more magic:
 ```kotlin
-val reducer = typedReducer { state: State, action: LoadingAction<*, *> ->
-    state.copy(product = loadingProduct.reducer.reduce(state.product, action))
+val reducer = anyReducer { state: State, action: Any ->
+  when(action) {
+    // catch all Loading action types here and modify state.
+    is LoadingAction<*, *> -> {
+      state.copy(
+         product = loader.reducer.reduce(state.product, action),
+         otherLoading = otherLoader.reducer.reduce(state.otherLoading, action),
+      )
+    }
+  }
 }
 ```
 
