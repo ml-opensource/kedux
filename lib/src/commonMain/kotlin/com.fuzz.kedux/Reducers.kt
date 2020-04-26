@@ -10,14 +10,15 @@ abstract class Reducer<S : Any> {
 }
 
 expect class TypedReducer<S : Any, A : Any> : Reducer<S>
-expect class AnyReducer<S: Any>: Reducer<S>
-expect class ActionTypeReducer<S: Any, T: Any>: Reducer<S>
+expect class AnyReducer<S : Any> : Reducer<S>
+expect class ActionTypeReducer<S : Any, T : Any> : Reducer<S>
 
 class TypedReducerClass<S : Any, A : Any>(
         override val stateClass: KClass<S>,
+        private val actionClass: KClass<A>,
         private val fn: (state: S, action: A) -> S) : Reducer<S>() {
 
-    override fun reduce(state: S, action: Any): S = when (stateClass.isInstance(action)) {
+    override fun reduce(state: S, action: Any): S = when (actionClass.isInstance(action)) {
         true -> fn(state, action as A)
         else -> state
     }
@@ -36,8 +37,8 @@ inline fun <reified S : Any> anyReducer(noinline fn: (state: S, action: Any) -> 
 /**
  * Constructs a typesafe action that only accepts the type argument [A] as an action. Useful for sealed classes.
  */
-inline fun <reified S : Any, A : Any> typedReducer(noinline fn: (state: S, action: A) -> S): Reducer<S> =
-        TypedReducerClass(S::class, fn)
+inline fun <reified S : Any, reified A : Any> typedReducer(noinline fn: (state: S, action: A) -> S): Reducer<S> =
+        TypedReducerClass(S::class, A::class, fn)
 
 class ActionTypeReducerClass<S : Any, T : Any>(
         override val stateClass: KClass<S>,
