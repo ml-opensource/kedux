@@ -25,7 +25,6 @@ val multipleDispatchEffect = createEffect<LocationChange, MultiAction> { change 
     change.map { (location) -> multipleActionOf(LocationChanged(location.other), Reset) }
 }
 
-
 class EffectsTest {
 
     private lateinit var store: Store<GlobalState>

@@ -60,7 +60,7 @@ interface Dispatcher {
     }
 
     /**
-     * Dispatches an Action on the store. The action gets passed to a [Reducer] and [Effect] for data processing.
+     * Dispatches an Action on the store. The action gets passed to a [Reducer] and [EffectFn] for data processing.
      */
     fun dispatch(action: Any) {
         // handle different action types just in case.
@@ -151,7 +151,7 @@ open class Store<S : Any>(
     /**
      * Constructs a new effect to perform asynchronous action on the store.
      */
-    fun <A : Any> effect(effect: Effect<A>): ObservableWrapper<A> = effect(actions)
+    fun <A : Any> effect(effect: EffectFn<A>): ObservableWrapper<A> = effect(actions)
 
     companion object {
         /**

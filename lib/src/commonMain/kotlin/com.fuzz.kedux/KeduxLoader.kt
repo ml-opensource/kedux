@@ -80,7 +80,7 @@ internal fun <T : LoadingActionTypes, A : Any?> createLoadingAction(type: T): Ac
 }
 
 /**
- * Creates an object that contains an [Effect], [Reducer], and set of actions that represent loading
+ * Creates an object that contains an [EffectFn], [Reducer], and set of actions that represent loading
  * state in a structured way.
  *
  * Usage:

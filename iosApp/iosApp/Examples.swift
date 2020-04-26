@@ -12,7 +12,7 @@ struct CoolAction {
     let name: String
 }
 
-let movieEffect = EffectCreator(ofType: Movie.self).createEffect { (action: ObservableWrapper<MovieActions.AddMovie>) in action }
+let movieEffect = Effect<MovieActions.AddMovie, MovieActions.AddMovie>(ofType: MovieActions.AddMovie.self) { action in action }
 
 let movieReducer = AnyReducer<MoviesState>(ofType: MoviesState.self) { state, action in
     switch action {
