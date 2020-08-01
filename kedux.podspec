@@ -6,10 +6,10 @@ Pod::Spec.new do |s|
                           
                     DESC
   
-    s.homepage = "https://squareup.com/help/us/en/article/6190"
+    s.homepage = "https://fuzz.pro"
     s.license = 'MIT'
     s.author = { "Nick Trienens" => "nick@fuzzproductions.com" }
-    s.source = { :git => "git@github.com:fuzz-productions/ticketSocket-SquareFramework.git", :tag => s.version.to_s }
+    s.source = { :git => "git@github.com:monstar-lab-oss/kedux.git", :tag => s.version.to_s }
   
     s.ios.frameworks = 'UIKit', 'Foundation'
     s.ios.deployment_target  = '11.0'
