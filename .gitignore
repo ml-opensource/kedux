@@ -2,3 +2,5 @@
 build
 node_modules
 *.iml
+/iosApp/.DS_Store
+/iosApp/iosApp.xcworkspace/xcuserdata/nhtrienens.xcuserdatad
