@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
     s.version = "0.0.1"
     s.summary = "amazeballs libaray"
     s.description = <<-DESC
-                          
+                          this is a test for integrations with KMP code bases
                     DESC
   
     s.homepage = "https://fuzz.pro"
@@ -17,10 +17,10 @@ Pod::Spec.new do |s|
     s.default_subspecs = "development"
   
     s.subspec 'development' do |dev|
-      dev.vendored_frameworks = 'debug/app.framework'
+      dev.vendored_frameworks = 'podsource/debug/*'
     end
     s.subspec 'release' do |dev|
-        dev.vendored_frameworks = 'release/app.framework'
+        dev.vendored_frameworks = 'podsource/release/app.framework'
       end
   end
   
