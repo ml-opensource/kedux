@@ -74,7 +74,16 @@ kotlin {
                 implementation "com.badoo.reaktive:reaktive-testing:${reaktiveVersion}"
             }
         }
+        nonNative {
+            dependsOn commonMain
+        }
+        nativeMain {
+            dependsOn commonMain
+        }
+        iosMain.dependsOn(nativeMain)
+        macosMain.dependsOn(nativeMain)
         jvmMain {
+            dependsOn nonNative
             dependencies {
                 api kotlin('stdlib-jdk8')
             }
@@ -86,6 +95,7 @@ kotlin {
             }
         }
         androidMain {
+            dependsOn jvmMain
             dependencies {
                 api kotlin('stdlib')
             }
@@ -97,6 +107,7 @@ kotlin {
             }
         }
         jsMain {
+            dependsOn nonNative
             dependencies {
                 api kotlin('stdlib-js')
             }
@@ -106,19 +117,20 @@ kotlin {
                 implementation kotlin('test-js')
             }
         }
-        macos {
-            dependencies {
-            }
-        }
-        macosTest {
-            dependencies {
-            }
-        }
+
         ios {
             dependencies {
             }
         }
         iosTest {
+            dependencies {
+            }
+        }
+        macos {
+            dependencies {
+            }
+        }
+        macosTest {
             dependencies {
             }
         }

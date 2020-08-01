@@ -78,7 +78,7 @@ class LoadingTest {
 
     @Test
     fun testErrorState() {
-        var error: Error? = null
+        var error: Throwable? = null
         store.select(productErrorSelector)
                 .subscribe(isThreadLocal = true) { next ->
                     error = next

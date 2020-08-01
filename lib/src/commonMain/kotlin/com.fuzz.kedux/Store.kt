@@ -14,39 +14,7 @@ import com.badoo.reaktive.utils.atomic.AtomicBoolean
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
 
-@Suppress("UNCHECKED_CAST")
-fun <S : Any> createStore(
-        reducer: Reducer<S>,
-        initialState: S,
-        enhancer: Enhancer<S> = emptyEnhancer()
-) =
-        Store(reducer, initialState, enhancer)
-
-class Store<S : Any> internal constructor(
-        /**
-         * The main reducer on this store. See Reducers.kt
-         */
-        private var reducer: Reducer<S>,
-
-        /**
-         * Provide a default state for the application store.
-         */
-        initialState: S,
-
-        /**
-         * Used to enhance
-         */
-        private val enhancer: Enhancer<S> = emptyEnhancer()
-) {
-    private val _state = BehaviorSubject(initialState)
-    private val _actions: BehaviorSubject<Optional<Any>> = BehaviorSubject(Optional.None())
-
-    val state: ObservableWrapper<S>
-        get() = _state.observeOn(mainScheduler).wrap()
-
-    val actions: ObservableWrapper<Any>
-        get() = _actions.observeOn(mainScheduler).safeUnwrap().wrap()
-
+interface Dispatcher {
     /**
      * [dispatch] overload to be more targeted.
      */
@@ -88,11 +56,11 @@ class Store<S : Any> internal constructor(
     @JsName("dispatchNoAction")
     @Suppress("UNUSED_PARAMETER")
     fun dispatch(noAction: NoAction) {
-        logIfEnabled { "STORE: NoAction received. Ignoring dispatch." }
+        Store.logIfEnabled { "STORE: NoAction received. Ignoring dispatch." }
     }
 
     /**
-     * Dispatches an Action on the store. The action gets passed to a [Reducer] and [Effect] for data processing.
+     * Dispatches an Action on the store. The action gets passed to a [Reducer] and [EffectFn] for data processing.
      */
     fun dispatch(action: Any) {
         // handle different action types just in case.
@@ -113,7 +81,46 @@ class Store<S : Any> internal constructor(
         }
     }
 
-    private fun dispatchActual(action: Any) {
+    fun dispatchActual(action: Any)
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <S : Any> createStore(
+        reducer: Reducer<S>,
+        initialState: S,
+        enhancer: Enhancer<S> = emptyEnhancer()
+) =
+        Store(reducer, initialState, enhancer)
+
+open class Store<S : Any>(
+        /**
+         * The main reducer on this store. See Reducers.kt
+         */
+        private var reducer: Reducer<S>,
+
+        /**
+         * Provide a default state for the application store.
+         */
+        initialState: S,
+
+        /**
+         * Used to enhance
+         */
+        private val enhancer: Enhancer<S> = emptyEnhancer()
+) : Dispatcher {
+    private val _state = BehaviorSubject(initialState)
+    private val _actions: BehaviorSubject<Optional<Any>> = BehaviorSubject(Optional.None())
+
+    val state: ObservableWrapper<S>
+        get() = _state.observeOn(mainScheduler).wrap()
+
+    val actions: ObservableWrapper<Any>
+        get() = _actions.observeOn(mainScheduler).safeUnwrap().wrap()
+
+    // required for Kotlin Native, does not support default arguments.
+    constructor(reducer: Reducer<S>, initialState: S) : this(reducer, initialState, emptyEnhancer())
+
+    override fun dispatchActual(action: Any) {
         logIfEnabled { "dispatch -> $action" }
         val dispatcher = { enhancedAction: Any ->
             if (enhancedAction is NoAction) {
@@ -139,12 +146,12 @@ class Store<S : Any> internal constructor(
     fun <R : Any?> select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
 
     @JvmName("selectList")
-    fun <I, R: List<I>> select(listSelector: Selector<S, R>): ObservableWrapper<R> = listSelector(state)
+    fun <I, R : List<I>> select(listSelector: Selector<S, R>): ObservableWrapper<R> = listSelector(state)
 
     /**
      * Constructs a new effect to perform asynchronous action on the store.
      */
-    fun <A : Any> effect(effect: Effect<A>): ObservableWrapper<A> = effect(actions)
+    fun <A : Any> effect(effect: EffectFn<A>): ObservableWrapper<A> = effect(actions)
 
     companion object {
         /**

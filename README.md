@@ -14,6 +14,14 @@ on Android, iOS, MacOS, and JS utilizing [Reaktive](https://github.com/badoo/Rea
 
 ## Getting Started
 
+This library provides it's "best" API for each translated platform as much as possible. The following guides provide getting started for 
+users of other platforms including common Kotlin code as a dependency.
+
+[Swift Guide](/docs/Swift.md)
+
+[Typescript Guide](/docs/Typescript.md) (TBD)
+
+
 ### State
 
 State in Kedux should be immutable. This means utilizing `data class`, `List`, `Map`, and 
@@ -416,8 +424,16 @@ store.select(userSuccess)
 
 Since we want to avoid reflection, using the `KeduxLoader` reducer requires a little more magic:
 ```kotlin
-val reducer = typedReducer { state: State, action: LoadingAction<*, *> ->
-    state.copy(product = loadingProduct.reducer.reduce(state.product, action))
+val reducer = anyReducer { state: State, action: Any ->
+  when(action) {
+    // catch all Loading action types here and modify state.
+    is LoadingAction<*, *> -> {
+      state.copy(
+         product = loader.reducer.reduce(state.product, action),
+         otherLoading = otherLoader.reducer.reduce(state.otherLoading, action),
+      )
+    }
+  }
 }
 ```
 

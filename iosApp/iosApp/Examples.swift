@@ -8,18 +8,30 @@
 import Foundation
 import app
 
-let movieEffect = EffectCreator(ofType: Movie.self).createEffect { (action: ObservableWrapper<MovieActions.AddMovie>) in action }
+struct CoolAction {
+    let name: String
+}
 
-let movieReducer = ReducerCreator<MoviesState>(ofType: MoviesState.self).anyReducer { state, action in
-    switch action.self {
-    case _ as MovieActions.AddMovie:
-        return state
+let movieEffect = Effect<MovieActions.AddMovie, MovieActions.AddMovie>(ofType: MovieActions.AddMovie.self) { action in action }
+
+let movieReducer = AnyReducer<MoviesState>(ofType: MoviesState.self) { state, action in
+    switch action {
+    case _ as CoolAction:
+        return state.doCopy(movies: state.movies, isMovieAdded: state.isMovieAdded, iosCoolAction:  true)
+    case let a as MovieActions.AddMovie:
+        var movies = state.movies
+        movies.append(a.movie)
+        return state.doCopy(movies: movies, isMovieAdded: state.isMovieAdded, iosCoolAction: state.iosCoolAction)
+    case let a as MovieActions.RemoveMovie:
+        var movies = state.movies
+        movies.removeAll {  $0.isEqual(a.movie) }
+        return state.doCopy(movies: movies, isMovieAdded: state.isMovieAdded, iosCoolAction: state.iosCoolAction)
     default:
         return state
     }
 }
 
-let movieTypedReducer = TypedReducerCreator<MoviesState, MovieActions>(ofType: MoviesState.self, onAction: MovieActions.self).typedReducer { state, action in
+let movieTypedReducer = TypedReducer<MoviesState, MovieActions>(ofType: MoviesState.self, onAction: MovieActions.self) { state, action in
     switch action.self {
     case _ as MovieActions.AddMovie:
         return state
@@ -46,8 +58,13 @@ class SimpleArgs {
     }
 }
 
-let action = ActionCreate(ofType: ExampleType.SimpleType) { (args: SimpleArgs) in args }
-
-let noMapper = ActionCreateNoArgument(ofType: ExampleType.SimpleType) { SimpleArgs(data: "Data") }
+let action = TypedActionCreator(ofType: ExampleType.SimpleType) { (args: SimpleArgs?) in args }
 
 let singleAction = SingleAction(type: ExampleType.SimpleType)
+
+let newStore: Store<MoviesState> = Store(reducer: movieReducer, initialState: MoviesState(movies: [], isMovieAdded: false, iosCoolAction: false))
+
+// sample fractured store
+let fracturedStore: Store<FracturedState> = FracturedStore(map: [movieReducer as! Reducer<AnyObject> : MoviesState(movies: [], isMovieAdded: false, iosCoolAction: false)])
+
+let moviesSelector = SelectorCreator<MoviesState, NSArray> { state in state.movies as NSArray }

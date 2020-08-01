@@ -4,12 +4,15 @@ package com.fuzz.kedux
 
 import kotlin.reflect.KClass
 
+
 /**
  * Represents a fractured state map, allowing different reducers on difference pieces of state.
  */
-data class FracturedState(internal val map: Map<KClass<out Any>, Any>) {
+data class FracturedState(private val map: Map<KClass<out Any>, Any>) {
     fun <R : Any> fromReducer(reducer: Reducer<R>): R =
             map.getValue(reducer.stateClass) as R
+
+    fun getState(valueClass: KClass<Any>): Any = map.getValue(valueClass)
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -18,28 +21,40 @@ internal fun createFracturedState(
 ) = FracturedState(mapOf(*pairs))
 
 class ReducerMap(
-        vararg reducers: Reducer<Any>,
-        override val stateClass: KClass<FracturedState> = FracturedState::class
+        reducers: List<Reducer<Any>>
 ) : Reducer<FracturedState>() {
+
+    override val stateClass: KClass<FracturedState> = FracturedState::class
+
     private val reducerMap: Map<KClass<Any>, Reducer<Any>> =
             reducers.map { it.stateClass to it }.toMap()
 
     override fun reduce(state: FracturedState, action: Any): FracturedState {
         val map: MutableMap<KClass<out Any>, Any> = mutableMapOf()
         reducerMap.forEach { (valueClass, value) ->
-            map[valueClass] = value.reduce(state.map.getValue(valueClass), action)
+            map[valueClass] = value.reduce(state.getState(valueClass), action)
         }
         return FracturedState(map)
     }
 }
 
 fun fracturedReducer(vararg reducers: Reducer<out Any>) =
-        ReducerMap(*reducers as Array<out Reducer<Any>>)
+        ReducerMap(reducers.toList() as List<Reducer<Any>>)
 
 /**
  * Used to provide typesafety between reducer and state it consumes.
  */
 infix fun <R : Any> Reducer<R>.reduce(data: R) = Pair(this, data)
+
+class FracturedStore(
+        map: Map<out Reducer<out Any>, Any>,
+        enhancer: Enhancer<FracturedState>
+) : Store<FracturedState>(fracturedReducer(*map.keys.toTypedArray()),
+        createFracturedState(*map.map { (key, value) -> key.stateClass to value }.toTypedArray()),
+        enhancer) {
+    constructor(map: Map<out Reducer<out Any>, Any>) : this(map, emptyEnhancer())
+}
+
 
 /**
  * Creates a Fractured store using the passed reducer to state pairings.
@@ -47,9 +62,8 @@ infix fun <R : Any> Reducer<R>.reduce(data: R) = Pair(this, data)
 fun createFracturedStore(
         vararg pairs: Pair<Reducer<out Any>, Any>,
         enhancer: Enhancer<FracturedState> = emptyEnhancer()
-) = createStore(
-        fracturedReducer(*pairs.map { it.first }.toTypedArray()),
-        createFracturedState(*pairs.map { it.first.stateClass to it.second }.toTypedArray()),
+) = FracturedStore(
+        pairs.toMap(),
         enhancer
 )
 

@@ -1,12 +1,16 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.fuzz.kedux
 
 import com.badoo.reaktive.disposable.CompositeDisposable
 import com.badoo.reaktive.disposable.addTo
 import com.badoo.reaktive.observable.Observable
 import com.badoo.reaktive.observable.ObservableWrapper
+import com.badoo.reaktive.observable.filter
 import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.ofType
 import com.badoo.reaktive.observable.wrap
+import kotlin.reflect.KClass
 
 /**
  * Typealias to a function that takes in an [ObservableWrapper] representing the streams of actions from the [Store] and
@@ -15,10 +19,39 @@ import com.badoo.reaktive.observable.wrap
  * Effects are side-effects to actions dispatched onto the [Store]. They usually return a new Action, [Pair] of Actions,
  * [Triple] of Actions, [MultiAction], or [].
  */
-typealias Effect<R> = (actions: ObservableWrapper<Any>) -> ObservableWrapper<R>
+abstract class EffectFn<R> {
+    abstract operator fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<R>
+}
+
+expect class Effect<A : Any, R : Any> : EffectFn<R>
+expect class SilentEffect<A : Any> : EffectFn<NoAction>
+expect class ActionTypeEffect<T : Any, P, R : Any, RP> : EffectFn<Action<R, RP>>
+
+class EffectClass<A : Any, R : Any>(
+        private val actionClass: KClass<A>,
+        private val mapper: (ObservableWrapper<A>) -> Observable<R>
+) : EffectFn<R>() {
+    override fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<R> =
+            mapper(actions.filter { actionClass.isInstance(it) }.map { it as A }.wrap()).wrap()
+}
+
+class SilentEffectClass<A : Any>(
+        private val actionClass: KClass<A>,
+        private val mapper: (ObservableWrapper<A>) -> Observable<Unit>
+) : EffectFn<NoAction>() {
+    override fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<NoAction> =
+            mapper(actions.filter { actionClass.isInstance(it) }.map { it as A }.wrap()).map { NoAction }.wrap()
+}
+
+class ActionTypeEffectClass<T : Any, P, R : Any, RP>(
+        private val mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>
+) : EffectFn<Action<R, RP>>() {
+    override fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<Action<R, RP>> =
+            mapper(actions.ofType<Action<T, P>>().wrap()).wrap()
+}
 
 /**
- * Creates an [Effect], an [Observable] chain that returns an Action or set of [MultiAction] objects that get dispatched back
+ * Creates an [EffectFn], an [Observable] chain that returns an Action or set of [MultiAction] objects that get dispatched back
  * to the store.
  *
  * Usage:
@@ -29,11 +62,11 @@ typealias Effect<R> = (actions: ObservableWrapper<Any>) -> ObservableWrapper<R>
  * }
  * ```
  */
-inline fun <reified A : Any, R : Any> createEffect(crossinline mapper: (ObservableWrapper<A>) -> Observable<R>): Effect<R> =
-        { actions: ObservableWrapper<Any> -> mapper(actions.ofType<A>().wrap()).wrap() }
+inline fun <reified A : Any, R : Any> createEffect(noinline mapper: (ObservableWrapper<A>) -> Observable<R>): EffectFn<R> =
+        EffectClass(A::class, mapper)
 
 /**
- * Creates an [Effect] that does not dispatch back to the [Store]. These kind of [Effect] are useful for pure side effects
+ * Creates an [EffectFn] that does not dispatch back to the [Store]. These kind of [EffectFn] are useful for pure side effects
  * such as logging, or one-shot calls to other dependencies.
  *
  * Usage:
@@ -43,11 +76,11 @@ inline fun <reified A : Any, R : Any> createEffect(crossinline mapper: (Observab
  * }
  * ```
  */
-inline fun <reified A : Any> createSilentEffect(crossinline mapper: (ObservableWrapper<A>) -> Observable<Unit>): Effect<NoAction> =
-        { actions: ObservableWrapper<Any> -> mapper(actions.ofType<A>().wrap()).map { NoAction }.wrap() }
+inline fun <reified A : Any> createSilentEffect(noinline mapper: (ObservableWrapper<A>) -> Observable<Unit>): EffectFn<NoAction> =
+        SilentEffectClass(A::class, mapper)
 
 /**
- * Creates an [Effect], an [Observable] chain that returns an Action or set of [MultiAction] objects that get dispatched back
+ * Creates an [EffectFn], an [Observable] chain that returns an Action or set of [MultiAction] objects that get dispatched back
  * to the store.
  *
  * Usage:
@@ -58,11 +91,11 @@ inline fun <reified A : Any> createSilentEffect(crossinline mapper: (ObservableW
  * }
  * ```
  */
-inline fun <T: Any, P, R: Any, RP> createActionTypeEffect(crossinline mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>): Effect<Action<R, RP>> =
-        { actions: ObservableWrapper<Any> -> mapper(actions.ofType<Action<T, P>>().wrap()).wrap() }
+fun <T : Any, P, R : Any, RP> createActionTypeEffect(mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>): EffectFn<Action<R, RP>> =
+        ActionTypeEffectClass(mapper)
 
 /**
- * Groups a set of [Effect] into a singular scoped unit. Handles registration to the [Store].
+ * Groups a set of [EffectFn] into a singular scoped unit. Handles registration to the [Store].
  *
  * Scope Effects groupings globally when at Store creation time:
  * ```kotlin
@@ -87,7 +120,7 @@ inline fun <T: Any, P, R: Any, RP> createActionTypeEffect(crossinline mapper: (O
  *
  * ```
  */
-class Effects(vararg effectArgs: Effect<out Any>) {
+class Effects(vararg effectArgs: EffectFn<out Any>) {
 
     private val effects = effectArgs
 
@@ -99,7 +132,7 @@ class Effects(vararg effectArgs: Effect<out Any>) {
     }
 
     /**
-     * Binds all [Effect] to the specified store. Will ignore [createSilentEffect] classes or [Effect] that return
+     * Binds all [EffectFn] to the specified store. Will ignore [createSilentEffect] classes or [EffectFn] that return
      * [NoAction].
      */
     fun bindTo(store: Store<*>) {
