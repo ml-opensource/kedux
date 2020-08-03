@@ -68,7 +68,18 @@ kotlin {
     }
     // This is for iPhone emulator
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
-    iosX64("ios") {
+    iosX64("iosSim") {
+        binaries {
+            framework {
+                freeCompilerArgs += "-Xobjc-generics"
+                export project(':lib')
+                transitiveExport = true
+            }
+        }
+    }
+    // This is for iPhone Devices
+    // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
+    iosArm64("ios") {
         binaries {
             framework {
                 freeCompilerArgs += "-Xobjc-generics"
@@ -175,8 +186,29 @@ task copyFramework {
     }
 }
 
+
+// task packForXcode {
+//     val targetDir = File(buildDir, "xcode-frameworks")
+
+//     /// selecting the right configuration for the iOS 
+//     /// framework depending on the environment
+//     /// variables set by Xcode build
+//     val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
+//     val framework = kotlin.targets
+//                           .getByName<KotlinNativeTarget>("ios")
+//                           .binaries.getFramework(mode)
+//     inputs.property("mode", mode)
+//     dependsOn(framework.linkTask)
+
+//     from({ framework.outputDirectory })
+//     into(targetDir)
+
+// }
+
+
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
         jvmTarget = "1.8"
     }
 }
+//.dependsOn(packForXcode)

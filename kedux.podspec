@@ -17,9 +17,12 @@ Pod::Spec.new do |s|
     s.default_subspecs = "development"
   
     s.subspec 'development' do |dev|
-      dev.vendored_frameworks = 'podsource/debug/*'
+        dev.preserve_paths      = 'app.framework', 'app.framework.DSYM'
+
+      dev.vendored_frameworks = 'podsource/debug/**'
     end
     s.subspec 'release' do |dev|
+        dev.preserve_paths      = 'app.framework', 'app.framework.DSYM'
         dev.vendored_frameworks = 'podsource/release/app.framework'
       end
   end
