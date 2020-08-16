@@ -2,6 +2,10 @@ package com.fuzz.kedux.js_react
 
 import com.fuzz.kedux.Selector
 import com.fuzz.kedux.Store
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import react.useContext
 import react.useEffectWithCleanup
 
@@ -25,10 +29,10 @@ fun <S : Any, R : Any> useSelector(setValue: (value: R) -> Unit, selector: Selec
     val store = useStore<S>()
     useEffectWithCleanup(listOf(store, setValue, selector)) {
         val observable = store.select(selector) // only emit if changed.
-                .subscribe {
+                .onEach {
                     setValue(it)
-                }
-        return@useEffectWithCleanup { observable.dispose() }
+                }.launchIn(CoroutineScope(Dispatchers.Main))
+        return@useEffectWithCleanup { observable.cancel() }
     }
 }
 

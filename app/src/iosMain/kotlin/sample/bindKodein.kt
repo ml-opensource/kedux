@@ -1,6 +1,6 @@
 package sample
 
-import org.kodein.di.Kodein
+import org.kodein.di.DI
 
-actual fun Kodein.MainBuilder.bindKodein() {
+actual fun DI.MainBuilder.bindKodein() {
 }

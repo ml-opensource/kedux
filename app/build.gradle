@@ -3,7 +3,7 @@ plugins {
 }
 
 ext {
-    kodeinVersion = "6.5.5"
+    kodeinVersion = "7.0.0"
     compose_version = "0.1.0-dev16"
 }
 apply plugin: 'com.android.application'
@@ -61,7 +61,6 @@ kotlin {
     iosX64("ios") {
         binaries {
             framework {
-                freeCompilerArgs += "-Xobjc-generics"
                 export project(':lib')
                 transitiveExport = true
             }
@@ -73,7 +72,7 @@ kotlin {
 
         compilations.all {
             kotlinOptions {
-                languageVersion = "1.3"
+                languageVersion = "1.4"
                 moduleKind = "commonjs"
                 sourceMap = true
                 sourceMapEmbedSources = "always"
@@ -84,9 +83,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation kotlin('stdlib-common')
                 api project(':lib')
-                implementation "org.kodein.di:kodein-di-erased:$kodeinVersion"
+                implementation "org.kodein.di:kodein-di:$kodeinVersion"
             }
         }
         commonTest {
@@ -97,8 +95,6 @@ kotlin {
         }
         androidMain {
             dependencies {
-                implementation kotlin('stdlib')
-                implementation "org.kodein.di:kodein-di-erased-jvm:$kodeinVersion"
                 implementation "androidx.compose.runtime:runtime:$compose_version"
                 implementation "androidx.compose.ui:ui:$compose_version"
                 implementation "androidx.compose.foundation:foundation-layout:$compose_version"
@@ -124,10 +120,6 @@ kotlin {
             }
         }
         iosMain {
-            dependencies {
-                implementation kotlin('stdlib')
-                implementation "org.kodein.di:kodein-di-erased-iosx64:$kodeinVersion"
-            }
         }
         iosTest {
         }
@@ -136,8 +128,6 @@ kotlin {
                 implementation project(':js-react')
 
                 implementation(npm("core-js", "^2.0.0"))
-
-                implementation kotlin('stdlib-js')
                 implementation deps.react
                 implementation deps.react_dom
                 implementation(npm("react", reactVersion))
