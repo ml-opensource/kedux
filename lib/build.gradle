@@ -26,10 +26,6 @@ android {
     }
 }
 
-dependencies {
-}
-
-
 kotlin {
     jvm()
     android()
@@ -44,7 +40,7 @@ kotlin {
     // For MacOS, should be changed to e.g. macosX64
     // For Windows, should be changed to e.g. mingwX64
     macosX64("macos")
-    ios("ios")
+    ios()
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kedux is a kotlin-multiplatform state management library."
@@ -55,23 +51,21 @@ kotlin {
                 .findAll { it instanceof org.jetbrains.kotlin.gradle.plugin.mpp.Framework }
                 .every {
                     it.baseName = "Kedux"
-                    it.freeCompilerArgs += "-Xobjc-generics"
                 }
     }
 
     sourceSets {
         commonMain {
             dependencies {
-                api kotlin('stdlib-common')
-                api "com.badoo.reaktive:reaktive:${reaktiveVersion}"
-                api "com.badoo.reaktive:utils:${reaktiveVersion}"
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-1.4.0-rc")
+                api "org.jetbrains.kotlinx:atomicfu:$atomicfu_version"
             }
         }
         commonTest {
             dependencies {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
-                implementation "com.badoo.reaktive:reaktive-testing:${reaktiveVersion}"
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.8'
             }
         }
         nonNative {
@@ -80,42 +74,28 @@ kotlin {
         nativeMain {
             dependsOn commonMain
         }
+        nativeTest {
+            dependsOn commonTest
+            dependsOn nativeMain
+        }
         iosMain.dependsOn(nativeMain)
+        iosTest.dependsOn(nativeTest)
         macosMain.dependsOn(nativeMain)
+        macosTest.dependsOn(nativeTest)
         jvmMain {
             dependsOn nonNative
-            dependencies {
-                api kotlin('stdlib-jdk8')
-            }
         }
         jvmTest {
-            dependencies {
-                implementation kotlin('test')
-                implementation kotlin('test-junit')
-            }
         }
         androidMain {
             dependsOn jvmMain
-            dependencies {
-                api kotlin('stdlib')
-            }
         }
         androidTest {
-            dependencies {
-                implementation kotlin('test')
-                implementation kotlin('test-junit')
-            }
         }
         jsMain {
             dependsOn nonNative
-            dependencies {
-                api kotlin('stdlib-js')
-            }
         }
         jsTest {
-            dependencies {
-                implementation kotlin('test-js')
-            }
         }
 
         ios {

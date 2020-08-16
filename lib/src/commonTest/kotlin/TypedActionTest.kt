@@ -1,6 +1,8 @@
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createStore
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -18,43 +20,40 @@ class TypedActionTest {
     }
 
     @Test
-    fun testTypedReducer() {
+    fun testTypedReducer() = runBlocking {
         var name: String? = null
         store.select(nameSelector)
-                .subscribe(isThreadLocal = true) {
+                .onEach {
                     name = it
-                }.use {
-                    store.dispatch(nameChange("NEW NAME"))
-                    assertEquals("NEW NAME", name)
-                }
+                }.launchIn(this)
+        store.dispatch(nameChange("NEW NAME"))
+        assertEquals("NEW NAME", name)
     }
 
     @Test
-    fun testLocationChangeReducer() {
+    fun testLocationChangeReducer() = runBlocking {
         var location: Location? = null
         store.select(locationSelector)
-                .subscribe(isThreadLocal = true) {
+                .onEach {
                     location = it
-                }.use {
-                    val updatedLocation = Location(5, "Other")
-                    store.dispatch(locationChange(updatedLocation))
-                    assertEquals(updatedLocation, location)
-                }
+                }.launchIn(this)
+        val updatedLocation = Location(5, "Other")
+        store.dispatch(locationChange(updatedLocation))
+        assertEquals(updatedLocation, location)
     }
 
     @Test
-    fun testResetActionType() {
+    fun testResetActionType() = runBlocking {
         var location: Location? = null
         store.select(locationSelector)
-                .subscribe(isThreadLocal = true) {
+                .onEach {
                     location = it
-                }.use {
-                    val updatedLocation = Location(5, "Other")
-                    store.dispatch(locationChange(updatedLocation))
-                    assertEquals(updatedLocation, location)
+                }.launchIn(this)
+        val updatedLocation = Location(5, "Other")
+        store.dispatch(locationChange(updatedLocation))
+        assertEquals(updatedLocation, location)
 
-                    store.dispatch(resetAction)
-                    assertEquals(initialState.location, location)
-                }
+        store.dispatch(resetAction)
+        assertEquals(initialState.location, location)
     }
 }

@@ -3,9 +3,6 @@ import StoreTestAction.LocationChanged
 import StoreTestAction.NameChange
 import StoreTestAction.NamedChanged
 import StoreTestAction.Reset
-import com.badoo.reaktive.observable.map
-import com.badoo.reaktive.observable.subscribe
-import com.badoo.reaktive.observable.take
 import com.fuzz.kedux.Effects
 import com.fuzz.kedux.MultiAction
 import com.fuzz.kedux.Store
@@ -13,6 +10,10 @@ import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createEffect
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.multipleActionOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,22 +48,22 @@ class EffectsTest {
     }
 
     @Test
-    fun canChangeNameEffect() {
+    fun canChangeNameEffect() = runBlocking {
         store.dispatch(NameChange("New Name"))
 
         store.select(namedChangedSelector)
                 .take(1)
-                .subscribe {
+                .onEach {
                     assertTrue(it)
-                }
+                }.launchIn(this)
     }
 
     @Test
-    fun changeDispatchMultipleActionsInEffect() {
+    fun changeDispatchMultipleActionsInEffect() = runBlocking {
         val actionsList = mutableListOf<Any>()
-        store.actions.subscribe(isThreadLocal = true) {
+        store.actions.onEach {
             actionsList += it
-        }
+        }.launchIn(this)
 
         store.dispatch(LocationChange(Location(55, "OTHER NAME")))
         assertEquals(LocationChanged("OTHER NAME"), actionsList[1])

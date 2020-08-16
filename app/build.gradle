@@ -3,8 +3,8 @@ plugins {
 }
 
 ext {
-    kodeinVersion = "6.5.3"
-    compose_version = "0.1.0-dev09"
+    kodeinVersion = "6.5.5"
+    compose_version = "0.1.0-dev16"
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
@@ -40,12 +40,15 @@ android {
     }
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check"]
+    }
+}
+
 dependencies {
-    implementation("androidx.compose:compose-runtime:$compose_version")
-    implementation("androidx.ui:ui-framework:$compose_version")
     implementation("androidx.ui:ui-tooling:$compose_version")
-    implementation("androidx.ui:ui-layout:$compose_version")
-    implementation("androidx.ui:ui-material:$compose_version")
     implementation('androidx.appcompat:appcompat:1.1.0')
     implementation('androidx.activity:activity-ktx:1.1.0')
     implementation "androidx.core:core-ktx:1.2.0"
@@ -53,7 +56,6 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 
-    androidTestImplementation("androidx.ui:ui-platform:$compose_version")
     androidTestImplementation("androidx.ui:ui-test:$compose_version")
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
 }

@@ -2,7 +2,23 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/kedux.iml" filepath="$PROJECT_DIR$/.idea/kedux.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.androidAndroidTestRelease~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.androidAndroidTestRelease~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.commonMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.commonMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.commonTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.commonTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosArm64Main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosArm64Main~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosArm64Test~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosArm64Test~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosX64Main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosX64Main~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosX64Test~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.iosX64Test~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.ios~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.ios~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jsMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jsMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jsTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jsTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jvmMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jvmMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jvmTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.jvmTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.macosMain~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.macosMain~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.macosTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.macosTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/kedux.lib.macos~1.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/kedux.lib.macos~1.iml" />
     </modules>
   </component>
 </project>

@@ -2,17 +2,13 @@
 
 package com.fuzz.kedux
 
-import com.badoo.reaktive.observable.ObservableWrapper
-import com.badoo.reaktive.observable.observeOn
-import com.badoo.reaktive.observable.subscribe
-import com.badoo.reaktive.observable.take
-import com.badoo.reaktive.observable.wrap
-import com.badoo.reaktive.scheduler.computationScheduler
-import com.badoo.reaktive.scheduler.mainScheduler
-import com.badoo.reaktive.subject.behavior.BehaviorSubject
-import com.badoo.reaktive.utils.atomic.AtomicBoolean
+import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
+import kotlin.native.concurrent.ThreadLocal
+
 
 interface Dispatcher {
     /**
@@ -92,6 +88,9 @@ fun <S : Any> createStore(
 ) =
         Store(reducer, initialState, enhancer)
 
+@ThreadLocal
+private var internalLoggingEnabled = atomic(false)
+
 open class Store<S : Any>(
         /**
          * The main reducer on this store. See Reducers.kt
@@ -108,14 +107,14 @@ open class Store<S : Any>(
          */
         private val enhancer: Enhancer<S> = emptyEnhancer()
 ) : Dispatcher {
-    private val _state = BehaviorSubject(initialState)
-    private val _actions: BehaviorSubject<Optional<Any>> = BehaviorSubject(Optional.None())
+    private val _state = MutableStateFlow(initialState)
+    private val _actions: MutableStateFlow<Optional<Any>> = MutableStateFlow(Optional.None())
 
-    val state: ObservableWrapper<S>
-        get() = _state.observeOn(mainScheduler).wrap()
+    val state: CFlow<S>
+        get() = _state.wrap()
 
-    val actions: ObservableWrapper<Any>
-        get() = _actions.observeOn(mainScheduler).safeUnwrap().wrap()
+    val actions: CFlow<Any>
+        get() = _actions.safeUnwrap().wrap()
 
     // required for Kotlin Native, does not support default arguments.
     constructor(reducer: Reducer<S>, initialState: S) : this(reducer, initialState, emptyEnhancer())
@@ -126,14 +125,11 @@ open class Store<S : Any>(
             if (enhancedAction is NoAction) {
                 logIfEnabled { "STORE: NoAction received. Ignoring dispatch." }
             } else {
-                _state.take(1)
-                        .observeOn(computationScheduler)
-                        .subscribe { state ->
-                            val value = reducer.reduce(state, enhancedAction)
-                            logIfEnabled { "state -> $value" }
-                            _state.onNext(value)
-                            _actions.onNext(Optional.Some(enhancedAction))
-                        }
+                val state = _state.value;
+                val value = reducer.reduce(state, enhancedAction)
+                logIfEnabled { "state -> $value" }
+                _state.value = value
+                _actions.value = Optional.Some(enhancedAction)
             }
         }
         enhancer(this@Store)(dispatcher)(action)
@@ -143,21 +139,20 @@ open class Store<S : Any>(
         this.reducer = reducer
     }
 
-    fun <R : Any?> select(selector: Selector<S, R>): ObservableWrapper<R> = selector(state)
+    fun <R : Any?> select(selector: Selector<S, R>): Flow<R> = selector(state)
 
     @JvmName("selectList")
-    fun <I, R : List<I>> select(listSelector: Selector<S, R>): ObservableWrapper<R> = listSelector(state)
+    fun <I, R : List<I>> select(listSelector: Selector<S, R>): CFlow<R> = listSelector(state).wrap()
 
     /**
      * Constructs a new effect to perform asynchronous action on the store.
      */
-    fun <A : Any> effect(effect: EffectFn<A>): ObservableWrapper<A> = effect(actions)
+    fun <A : Any> effect(effect: EffectFn<A>): CFlow<A> = effect(actions).wrap()
 
     companion object {
         /**
          * If true, everything is logged to the native console.
          */
-        private var internalLoggingEnabled: AtomicBoolean = AtomicBoolean(false)
 
         var loggingEnabled: Boolean
             get() = internalLoggingEnabled.value

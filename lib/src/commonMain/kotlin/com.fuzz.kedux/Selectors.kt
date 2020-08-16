@@ -2,61 +2,55 @@
 
 package com.fuzz.kedux
 
-import com.badoo.reaktive.disposable.CompositeDisposable
-import com.badoo.reaktive.disposable.addTo
-import com.badoo.reaktive.observable.Observable
-import com.badoo.reaktive.observable.ObservableWrapper
-import com.badoo.reaktive.observable.distinctUntilChanged
-import com.badoo.reaktive.observable.map
-import com.badoo.reaktive.observable.observeOn
-import com.badoo.reaktive.observable.subscribe
-import com.badoo.reaktive.observable.subscribeOn
-import com.badoo.reaktive.observable.wrap
-import com.badoo.reaktive.scheduler.computationScheduler
-import com.badoo.reaktive.scheduler.mainScheduler
-import com.badoo.reaktive.subject.Subject
-import com.badoo.reaktive.subject.behavior.BehaviorSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
-typealias SelectorFunction<S, R> = (state: S) -> R
+typealias SelectorFunction<S, R> = suspend (state: S) -> R
 
 abstract class Selector<S : Any, R : Any?> {
 
-    abstract operator fun invoke(state: ObservableWrapper<S>): ObservableWrapper<R>
+    abstract operator fun invoke(state: CFlow<S>): Flow<R>
 
     fun <R2 : Any?> compose(composeFunction: SelectorFunction<R, R2>): ComposeSelectorCreator<S, R, R, R2> =
             ComposeSelectorCreator(this, composeFunction) { this }
 
     fun <T : Any?, R2 : Any?> compose(
-            selectorTransform: ObservableWrapper<R>.() -> Observable<T>,
+            selectorTransform: Flow<R>.() -> Flow<T>,
             composeFunction: SelectorFunction<T, R2>): ComposeSelectorCreator<S, R, T, R2> =
             ComposeSelectorCreator(this, composeFunction, selectorTransform)
 }
 
+@ExperimentalCoroutinesApi
 class SelectorSubject<S : Any?, R : Any?> internal constructor(
-        private val state: Observable<S>,
+        private val state: Flow<S>,
         private val selectorFunction: SelectorFunction<S, R>,
-        private val _stateSubject: Subject<Optional<R>> = BehaviorSubject(Optional.None())
-) : Observable<R> by _stateSubject.safeUnwrap() {
+        private val _stateSubject: MutableStateFlow<Optional<R>> = MutableStateFlow(Optional.None())
+) : Flow<R> by _stateSubject.safeUnwrap() {
 
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val scope = backgroundScope()
 
     init {
 
         // subscribe happens indefinitely.
         stateChange()
-                .subscribe { value -> _stateSubject.onNext(value) }
-                .addTo(compositeDisposable)
+                .onEach { value -> _stateSubject.value = value }
+                .launchIn(scope)
     }
 
     /**
      * Disposes of the subscription to the [Store]. Use this when you don't want the selector running anymore.
      */
     fun dispose() {
-        compositeDisposable.dispose()
+        scope.cancel()
     }
 
-    private fun stateChange(): Observable<Optional<R>> = state
-            .subscribeOn(computationScheduler)
+    private fun stateChange(): Flow<Optional<R>> = state
             .distinctUntilChanged()
             .map { state ->
                 Store.logIfEnabled { "CONSUMING STATE $state" }
@@ -65,23 +59,23 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
                 return@map Optional.Some(value)
             }
             .distinctUntilChanged()
-            .observeOn(mainScheduler)
 }
 
 class SelectorCreator<S : Any, R : Any?>(
         private val selectorFunction: SelectorFunction<S, R>) : Selector<S, R>() {
-    override fun invoke(state: ObservableWrapper<S>): ObservableWrapper<R> =
-            SelectorSubject(state, selectorFunction).wrap()
+    @ExperimentalCoroutinesApi
+    override fun invoke(state: CFlow<S>): Flow<R> =
+            SelectorSubject(state, selectorFunction)
 }
 
 class ComposeSelectorCreator<S : Any, T : Any?, R1 : Any?, R2 : Any?>
 internal constructor(
         private val selectorCreator: Selector<S, T>,
         private val selectorFunction: SelectorFunction<R1, R2>,
-        private val selectorTransform: ObservableWrapper<T>.() -> Observable<R1>
+        private val selectorTransform: Flow<T>.() -> Flow<R1>
 ) : Selector<S, R2>() {
-    override fun invoke(state: ObservableWrapper<S>): ObservableWrapper<R2> {
-        return selectorCreator.invoke(state).selectorTransform().map(selectorFunction).wrap()
+    override fun invoke(state: CFlow<S>): Flow<R2> {
+        return selectorCreator.invoke(state).selectorTransform().map(selectorFunction)
     }
 }
 
