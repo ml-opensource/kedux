@@ -57,7 +57,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-1.4.0-rc")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-native-mt-1.4.0-rc")
                 api "org.jetbrains.kotlinx:atomicfu:$atomicfu_version"
             }
         }
@@ -86,11 +86,19 @@ kotlin {
             dependsOn nonNative
         }
         jvmTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation kotlin('test-junit')
+            }
         }
         androidMain {
             dependsOn jvmMain
         }
         androidTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation kotlin('test-junit')
+            }
         }
         jsMain {
             dependsOn nonNative
@@ -104,6 +112,7 @@ kotlin {
         }
         iosTest {
             dependencies {
+                implementation kotlin('test-js')
             }
         }
         macos {

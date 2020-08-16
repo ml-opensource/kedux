@@ -62,10 +62,11 @@ class LoadingTest {
         store.select(productSuccessSelector)
                 .onEach { next ->
                     product = next
-                }.launchIn(this)
-        store.dispatch(loadingProduct.request(5))
+                }.launchIn(this).use {
+                    store.dispatch(loadingProduct.request(5))
 
-        assertEquals(product, Product(5, "Product Demo"))
+                    assertEquals(product, Product(5, "Product Demo"))
+                }
     }
 
     @Test
@@ -74,11 +75,12 @@ class LoadingTest {
         store.select(productOptionalSuccessSelector)
                 .onEach { next ->
                     product = next
-                }.launchIn(this)
-        store.dispatch(loadingProduct.request(5))
-        store.dispatch(loadingProduct.clear)
+                }.launchIn(this).use {
+                    store.dispatch(loadingProduct.request(5))
+                    store.dispatch(loadingProduct.clear)
 
-        assertNull(product)
+                    assertNull(product)
+                }
     }
 
     @Test
@@ -87,10 +89,11 @@ class LoadingTest {
         store.select(productErrorSelector)
                 .onEach { next ->
                     error = next
-                }.launchIn(this)
-        val error1 = Error("This is an error")
-        store.dispatch(loadingProduct.error(error1))
-        assertEquals(error1, error)
+                }.launchIn(this).use {
+                    val error1 = Error("This is an error")
+                    store.dispatch(loadingProduct.error(error1))
+                    assertEquals(error1, error)
+                }
     }
 
 }

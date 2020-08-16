@@ -25,9 +25,10 @@ class TypedActionTest {
         store.select(nameSelector)
                 .onEach {
                     name = it
-                }.launchIn(this)
-        store.dispatch(nameChange("NEW NAME"))
-        assertEquals("NEW NAME", name)
+                }.launchIn(this).use {
+                    store.dispatch(nameChange("NEW NAME"))
+                    assertEquals("NEW NAME", name)
+                }
     }
 
     @Test
@@ -36,10 +37,11 @@ class TypedActionTest {
         store.select(locationSelector)
                 .onEach {
                     location = it
-                }.launchIn(this)
-        val updatedLocation = Location(5, "Other")
-        store.dispatch(locationChange(updatedLocation))
-        assertEquals(updatedLocation, location)
+                }.launchIn(this).use {
+                    val updatedLocation = Location(5, "Other")
+                    store.dispatch(locationChange(updatedLocation))
+                    assertEquals(updatedLocation, location)
+                }
     }
 
     @Test
@@ -48,12 +50,13 @@ class TypedActionTest {
         store.select(locationSelector)
                 .onEach {
                     location = it
-                }.launchIn(this)
-        val updatedLocation = Location(5, "Other")
-        store.dispatch(locationChange(updatedLocation))
-        assertEquals(updatedLocation, location)
+                }.launchIn(this).use {
+                    val updatedLocation = Location(5, "Other")
+                    store.dispatch(locationChange(updatedLocation))
+                    assertEquals(updatedLocation, location)
 
-        store.dispatch(resetAction)
-        assertEquals(initialState.location, location)
+                    store.dispatch(resetAction)
+                    assertEquals(initialState.location, location)
+                }
     }
 }

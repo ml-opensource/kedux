@@ -53,8 +53,9 @@ class StoreTest {
     fun noAction() = runBlocking {
         store.actions.onEach {
             fail("Action called $it, when it's not expected.")
-        }.launchIn(this)
-        store.dispatch(NoAction)
+        }.launchIn(this).use {
+            store.dispatch(NoAction)
+        }
     }
 
     @Test
@@ -64,11 +65,12 @@ class StoreTest {
         val actionsList = mutableListOf<Any>()
         store.actions.onEach {
             actionsList += it
-        }.launchIn(this)
-        store.dispatch(action1 to action2)
-        assertEquals(2, actionsList.count())
-        assertEquals(actionsList[0], action1)
-        assertEquals(actionsList[1], action2)
+        }.launchIn(this).use {
+            store.dispatch(action1 to action2)
+            assertEquals(2, actionsList.count())
+            assertEquals(actionsList[0], action1)
+            assertEquals(actionsList[1], action2)
+        }
     }
 
     @Test
@@ -79,12 +81,13 @@ class StoreTest {
         val actionsList = mutableListOf<Any>()
         store.actions.onEach {
             actionsList += it
-        }.launchIn(this)
-        store.dispatch(Triple(action1, action2, action3))
-        assertEquals(3, actionsList.count())
-        assertEquals(actionsList[0], action1)
-        assertEquals(actionsList[1], action2)
-        assertEquals(actionsList[2], action3)
+        }.launchIn(this).use {
+            store.dispatch(Triple(action1, action2, action3))
+            assertEquals(3, actionsList.count())
+            assertEquals(actionsList[0], action1)
+            assertEquals(actionsList[1], action2)
+            assertEquals(actionsList[2], action3)
+        }
     }
 
     @Test
@@ -96,12 +99,13 @@ class StoreTest {
         val actionsList = mutableListOf<Any>()
         store.actions.onEach {
             actionsList += it
-        }.launchIn(this)
-        val multiAction = multipleActionOf(action1, action2, action3, action4)
-        store.dispatch(multiAction)
-        assertEquals(multiAction.actions.count(), actionsList.count())
-        multiAction.actions.forEachIndexed { index, action ->
-            assertEquals(action, actionsList[index])
+        }.launchIn(this).use {
+            val multiAction = multipleActionOf(action1, action2, action3, action4)
+            store.dispatch(multiAction)
+            assertEquals(multiAction.actions.count(), actionsList.count())
+            multiAction.actions.forEachIndexed { index, action ->
+                assertEquals(action, actionsList[index])
+            }
         }
     }
 }

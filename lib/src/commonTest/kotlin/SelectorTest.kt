@@ -27,12 +27,14 @@ class SelectorTest {
                     name = it
                     count++
                 }.launchIn(this)
-        repeat(3) {
-            store.dispatch(StoreTestAction.NameChange("Name$it"))
-            store.dispatch(StoreTestAction.NameChange("Name2-$it"))
-        }
-        assertEquals(name, "Name2-2")
-        assertEquals(7, count)
+                .use {
+                    repeat(3) {
+                        store.dispatch(StoreTestAction.NameChange("Name$it"))
+                        store.dispatch(StoreTestAction.NameChange("Name2-$it"))
+                    }
+                    assertEquals(name, "Name2-2")
+                    assertEquals(7, count)
+                }
     }
 
     @Test
@@ -42,13 +44,14 @@ class SelectorTest {
         store.select(nameSelector).onEach {
             count.value = count.value + 1
             name.value = it
-        }.launchIn(this)
-        repeat(3) {
-            store.dispatch(StoreTestAction.NameChange("Name$it"))
-            store.dispatch(StoreTestAction.NameChange("Name$it"))
+        }.launchIn(this).use {
+            repeat(3) {
+                store.dispatch(StoreTestAction.NameChange("Name$it"))
+                store.dispatch(StoreTestAction.NameChange("Name$it"))
+            }
+            assertEquals("Name2", name.value)
+            assertEquals(4, count.value)
         }
-        assertEquals("Name2", name.value)
-        assertEquals(4, count.value)
     }
 
     @Test
@@ -58,14 +61,15 @@ class SelectorTest {
         store.select(locationIdSelector).onEach {
             count++
             value = it
-        }.launchIn(this)
-        repeat(3) {
-            store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
-            store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
-            store.dispatch(StoreTestAction.NameChange("New Name"))
+        }.launchIn(this).use {
+            repeat(3) {
+                store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
+                store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
+                store.dispatch(StoreTestAction.NameChange("New Name"))
+            }
+            assertEquals(5, value)
+            assertEquals(2, count)
         }
-        assertEquals(5, value)
-        assertEquals(2, count)
     }
 
     @Test
@@ -77,30 +81,33 @@ class SelectorTest {
                     count++
                     value = next
                 }.launchIn(this)
-        repeat(3) {
-            store.dispatch(
-                    StoreTestAction.LocationChange(
-                            Location(
-                                    5,
-                                    "1",
-                                    product = Product(5, "Burger")
-                            )
-                    )
-            )
-            store.dispatch(
-                    StoreTestAction.LocationChange(
-                            Location(
-                                    5,
-                                    "1",
-                                    product = Product(5, "Burger")
-                            )
-                    )
-            )
-            store.dispatch(StoreTestAction.NameChange("New Name"))
-        }
+                .use {
+                    repeat(3) {
+                        store.dispatch(
+                                StoreTestAction.LocationChange(
+                                        Location(
+                                                5,
+                                                "1",
+                                                product = Product(5, "Burger")
+                                        )
+                                )
+                        )
+                        store.dispatch(
+                                StoreTestAction.LocationChange(
+                                        Location(
+                                                5,
+                                                "1",
+                                                product = Product(5, "Burger")
+                                        )
+                                )
+                        )
+                        store.dispatch(StoreTestAction.NameChange("New Name"))
+                    }
 
-        assertEquals(5, value)
-        assertEquals(2, count)
+                    assertEquals(5, value)
+                    assertEquals(2, count)
+
+                }
     }
 }
 
