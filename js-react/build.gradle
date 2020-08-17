@@ -17,7 +17,6 @@ kotlin {
         commonMain {
             dependencies {
                 api project(':lib')
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-native-mt-1.4.0-rc")
             }
         }
         commonTest {
@@ -30,8 +29,6 @@ kotlin {
             dependencies {
                 api deps.react
                 api deps.react_dom
-                implementation(npm("react", reactVersion))
-                implementation(npm("react-dom", reactVersion))
             }
         }
         jsTest {

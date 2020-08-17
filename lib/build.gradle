@@ -40,7 +40,7 @@ kotlin {
     // For Linux, should be changed to e.g. linuxX64
     // For MacOS, should be changed to e.g. macosX64
     // For Windows, should be changed to e.g. mingwX64
-    macosX64("macos")
+    //macosX64("macos")
     ios()
     cocoapods {
         // Configure fields required by CocoaPods.
@@ -81,8 +81,8 @@ kotlin {
         }
         iosMain.dependsOn(nativeMain)
         iosTest.dependsOn(nativeTest)
-        macosMain.dependsOn(nativeMain)
-        macosTest.dependsOn(nativeTest)
+        //macosMain.dependsOn(nativeMain)
+        //macosTest.dependsOn(nativeTest)
         jvmMain {
             dependsOn nonNative
         }
@@ -116,13 +116,13 @@ kotlin {
                 implementation kotlin('test-js')
             }
         }
-        macos {
+        /*macos {
             dependencies {
             }
         }
         macosTest {
             dependencies {
             }
-        }
+        }*/
     }
 }
