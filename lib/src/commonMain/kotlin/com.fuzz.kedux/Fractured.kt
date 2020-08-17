@@ -1,7 +1,6 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package com.fuzz.kedux
 
+import kotlin.js.JsName
 import kotlin.reflect.KClass
 
 
@@ -52,6 +51,7 @@ class FracturedStore(
 ) : Store<FracturedState>(fracturedReducer(*map.keys.toTypedArray()),
         createFracturedState(*map.map { (key, value) -> key.stateClass to value }.toTypedArray()),
         enhancer) {
+    @JsName("initWithMap")
     constructor(map: Map<out Reducer<out Any>, Any>) : this(map, emptyEnhancer())
 }
 

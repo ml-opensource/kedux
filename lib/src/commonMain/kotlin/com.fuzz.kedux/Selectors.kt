@@ -17,12 +17,12 @@ abstract class Selector<S : Any, R : Any?> {
 
     abstract operator fun invoke(state: CFlow<S>): Flow<R>
 
-    fun <R2 : Any?> compose(composeFunction: SelectorFunction<R, R2>): ComposeSelectorCreator<S, R, R, R2> =
+    fun <R2 : Any?> compose(composeFunction: SelectorFunction<R, R2>): Selector<S, R2> =
             ComposeSelectorCreator(this, composeFunction) { this }
 
     fun <T : Any?, R2 : Any?> compose(
-            selectorTransform: Flow<R>.() -> Flow<T>,
-            composeFunction: SelectorFunction<T, R2>): ComposeSelectorCreator<S, R, T, R2> =
+            selectorTransform: CFlow<R>.() -> Flow<T>,
+            composeFunction: SelectorFunction<T, R2>): Selector<S, R2> =
             ComposeSelectorCreator(this, composeFunction, selectorTransform)
 }
 
@@ -72,10 +72,10 @@ class ComposeSelectorCreator<S : Any, T : Any?, R1 : Any?, R2 : Any?>
 internal constructor(
         private val selectorCreator: Selector<S, T>,
         private val selectorFunction: SelectorFunction<R1, R2>,
-        private val selectorTransform: Flow<T>.() -> Flow<R1>
+        private val selectorTransform: CFlow<T>.() -> Flow<R1>
 ) : Selector<S, R2>() {
     override fun invoke(state: CFlow<S>): Flow<R2> {
-        return selectorCreator.invoke(state).selectorTransform().map(selectorFunction)
+        return selectorCreator.invoke(state).wrap().selectorTransform().map(selectorFunction)
     }
 }
 

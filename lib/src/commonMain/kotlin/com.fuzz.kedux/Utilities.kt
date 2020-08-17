@@ -22,7 +22,7 @@ inline fun <reified R> Flow<Any?>.ofType(): Flow<R> = filter {
 }.map { it as R }
 
 
-fun backgroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Default)
+internal fun backgroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Default)
 
-fun foregroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Main)
+internal fun foregroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Main)
 
