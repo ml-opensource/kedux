@@ -1,7 +1,8 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package com.fuzz.kedux
 
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
@@ -89,7 +90,6 @@ fun <S : Any> createStore(
 @ThreadLocal
 private var internalLoggingEnabled = atomic(false)
 
-@ExperimentalCoroutinesApi
 open class Store<S : Any>(
         /**
          * The main reducer on this store. See Reducers.kt
