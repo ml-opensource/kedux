@@ -8,6 +8,7 @@ import kotlin.reflect.KClass
  * Represents a fractured state map, allowing different reducers on difference pieces of state.
  */
 data class FracturedState(private val map: Map<KClass<out Any>, Any>) {
+    @Suppress("UNCHECKED_CAST")
     fun <R : Any> fromReducer(reducer: Reducer<R>): R =
             map.getValue(reducer.stateClass) as R
 
@@ -37,6 +38,7 @@ class ReducerMap(
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 fun fracturedReducer(vararg reducers: Reducer<out Any>) =
         ReducerMap(reducers.toList() as List<Reducer<Any>>)
 
