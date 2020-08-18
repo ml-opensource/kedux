@@ -1,9 +1,17 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
     id("com.android.application")
     id("kotlin-android-extensions")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + listOf("-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check")
+        jvmTarget = "1.8"
+    }
 }
 
 kotlin {
@@ -34,6 +42,10 @@ kotlin {
         }
     }
     sourceSets {
+        all {
+            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.FlowPreview")
+        }
         val commonMain by getting {
             dependencies {
                 api(project(":lib"))
