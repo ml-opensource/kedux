@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fuzz.kedux.FracturedState
 import com.fuzz.kedux.Store
-import org.kodein.di.erased.instance
+import org.kodein.di.instance
 import sample.databinding.ActivityMainBinding
 import sample.databinding.ListItemMovieBinding
 import androidx.lifecycle.lifecycleScope
