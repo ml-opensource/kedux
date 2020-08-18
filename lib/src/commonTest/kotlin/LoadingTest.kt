@@ -9,7 +9,6 @@ import com.fuzz.kedux.error
 import com.fuzz.kedux.optionalSuccess
 import com.fuzz.kedux.success
 import com.fuzz.kedux.typedReducer
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -34,13 +33,11 @@ val productSuccessSelector = productSelector.success()
 val productOptionalSuccessSelector = productSelector.optionalSuccess()
 val productErrorSelector = productSelector.error()
 
-@FlowPreview
 val effects = Effects(loadingProduct.effect)
 
 /**
  * Description:
  */
-@FlowPreview
 class LoadingTest {
 
     private lateinit var store: Store<State>

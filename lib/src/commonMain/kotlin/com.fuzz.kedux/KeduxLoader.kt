@@ -1,6 +1,5 @@
 package com.fuzz.kedux
 
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
@@ -256,7 +255,6 @@ class KeduxLoader<TRequest : Any, TSuccess : Any>(
      * Apply this generated effect into the application [Effects] class. This will coordinate request,
      * success, and errors using the [requester] supplied in the loader.
      */
-    @FlowPreview
     @Suppress("UNCHECKED_CAST")
     val effect = createActionTypeEffect<LoadingActionTypes, TRequest, LoadingActionTypes, Any> { action ->
         action.filter { it.type == LoadingActionTypes.Request(name) }
