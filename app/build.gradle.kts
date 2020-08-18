@@ -6,9 +6,6 @@ plugins {
     id("kotlin-android-extensions")
 }
 
-val kodeinVersion = "7.1.0-master-80"
-val compose_version = "0.1.0-dev16"
-
 kotlin {
     android()
     jvm()

@@ -13,7 +13,7 @@ buildscript {
 }
 
 plugins {
-    kotlin("multiplatform") version "$kotlin_version" apply false
+    kotlin("multiplatform") version kotlin_version apply false
 }
 
 subprojects {

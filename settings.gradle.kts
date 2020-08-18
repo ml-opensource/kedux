@@ -10,4 +10,4 @@ pluginManagement {
 rootProject.name = "kedux"
 
 include(":lib", ":app", ":js-react")
-
+enableFeaturePreview("GRADLE_METADATA")

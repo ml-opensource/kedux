@@ -22,25 +22,28 @@ kotlin {
     // For MacOS, should be changed to e.g. macosX64
     // For Windows, should be changed to e.g. mingwX64
     //macosX64("macos")
-    ios()
+    ios {
+        binaries {
+            executable {
+                baseName = "Kedux"
+            }
+        }
+    }
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kedux is a kotlin-multiplatform state management library."
         homepage = "Link to a Kotlin/Native module homepage"
     }
-    listOf(targets["iosX64"], targets["iosArm64"]).forEach {
-        /*it.binaries
-                .findAll { it is org.jetbrains.kotlin.gradle.plugin.mpp.Framework }
-                .every {
-                    it.baseName = "Kedux"
-                }*/
-    }
 
     sourceSets {
+        all {
+            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.FlowPreview")
+        }
         val commonMain by getting {
             dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8-native-mt-1.4.0-rc")
-                api("org.jetbrains.kotlinx:atomicfu:$atomicfu_version")
+                api(Dependencies.Coroutines)
+                api(Dependencies.AtomicFu)
             }
         }
         val commonTest by getting {
