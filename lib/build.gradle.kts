@@ -37,6 +37,14 @@ kotlin {
             }
         }
     }
+    val hostOs = System.getProperty("os.name")
+    val isMingwX64 = hostOs.startsWith("Windows")
+    val nativeTarget = when {
+        hostOs == "Mac OS X" -> macosX64("desktop")
+        hostOs == "Linux" -> linuxX64("desktop")
+        isMingwX64 -> mingwX64("desktop")
+        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    }
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "Kedux is a kotlin-multiplatform state management library."
@@ -75,8 +83,11 @@ kotlin {
         iosMain.dependsOn(nativeMain)
         val iosTest by getting
         iosTest.dependsOn(nativeTest)
-        //macosMain.dependsOn(nativeMain)
-        //macosTest.dependsOn(nativeTest)
+
+        val desktopMain by getting
+        desktopMain.dependsOn(nativeMain)
+        val desktopTest by getting
+        desktopTest.dependsOn(nativeTest)
         val jvmMain by getting {
             dependsOn(nonNative)
         }
@@ -99,15 +110,6 @@ kotlin {
             dependsOn(nonNative)
         }
         val jsTest by getting
-
-        /*macos {
-            dependencies {
-            }
-        }
-        macosTest {
-            dependencies {
-            }
-        }*/
     }
 }
 
