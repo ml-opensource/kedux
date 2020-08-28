@@ -6,7 +6,7 @@ import kotlinx.css.body
 import kotlinx.css.margin
 import kotlinx.css.padding
 import kotlinx.css.px
-import styled.StyledComponents
+import styled.createGlobalStyle
 
 object GlobalStyles {
     fun inject() {
@@ -17,6 +17,6 @@ object GlobalStyles {
             }
         }
 
-        StyledComponents.createGlobalStyle(styles.toString())
+        createGlobalStyle(styles.toString())
     }
 }

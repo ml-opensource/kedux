@@ -7,15 +7,6 @@ plugins {
     id("kotlin-android-extensions")
 }
 
-configurations {
-    create("composeCompiler") {
-        isCanBeConsumed = false
-    }
-}
-dependencies {
-    "composeCompiler"("androidx.compose:compose-compiler:$compose_version")
-}
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + listOf("-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check")
@@ -90,21 +81,21 @@ kotlin {
             dependencies {
                 implementation(project(":js-react"))
 
-                /* implementation(npm("core-js", "^2.0.0"))
+                //implementation(npm("core-js", "^2.0.0"))
                  implementation(Dependencies.React)
                  implementation(Dependencies.ReactDom)
-                 implementation(npm("react", reactVersion))
-                 implementation(npm("react-dom", reactVersion))
-                 implementation(npm("react-is", reactVersion))
+                 //implementation(npm("react", reactVersion))
+                 //implementation(npm("react-dom", reactVersion))
+                 //implementation(npm("react-is", reactVersion))
 
                  val css_version = "1.0.0-pre.91"
                  val kotlinext_version = "1.0.1-pre.91"
                  implementation("org.jetbrains:kotlin-styled:1.0.0-pre.111-kotlin-1.4.0")
-                 implementation(npm("@jetbrains/kotlin-css", "^$css_version"))
-                 implementation(npm("@jetbrains/kotlin-css-js", "^$css_version"))
-                 implementation(npm("@jetbrains/kotlin-extensions", "^$kotlinext_version"))
-                 implementation(npm("@jetbrains/kotlin-styled", "^$css_version"))
-                 implementation(npm("inline-style-prefixer", "^5.1.2"))*/
+                 //implementation(npm("@jetbrains/kotlin-css", "^$css_version"))
+                 //implementation(npm("@jetbrains/kotlin-css-js", "^$css_version"))
+                 //implementation(npm("@jetbrains/kotlin-extensions", "^$kotlinext_version"))
+                 //implementation(npm("@jetbrains/kotlin-styled", "^$css_version"))
+                 //implementation(npm("inline-style-prefixer", "^5.1.2"))
             }
         }
     }
@@ -152,14 +143,7 @@ android {
         kotlinCompilerExtensionVersion = compose_version
     }
 
-    afterEvaluate {
-        val composeCompilerJar =
-                configurations["composeCompiler"]
-                        .resolve()
-                        .singleOrNull()
-                        ?: error("Please add \"androidx.compose:compose-compiler\" (and only that) as a \"composeCompiler\" dependency")
-        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-            kotlinOptions.freeCompilerArgs += listOf("-Xuse-ir", "-Xplugin=$composeCompilerJar")
-        }
+    lintOptions {
+        isAbortOnError = false
     }
 }
