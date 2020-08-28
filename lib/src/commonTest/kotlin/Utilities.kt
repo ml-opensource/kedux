@@ -1,9 +1,14 @@
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
-fun applyTestSchedulers() {
-}
+expect fun applyTestSchedulers()
+expect fun teardownSchedulers()
 
-fun Job.use(fn: () -> Unit) {
+val testScope: CoroutineScope by lazy { CoroutineScope(Dispatchers.Main + CoroutineName("TEST SCOPE")) }
+
+suspend fun Job.use(fn: suspend () -> Unit) {
     fn()
     cancel()
 }

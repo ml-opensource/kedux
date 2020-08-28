@@ -2,6 +2,7 @@
 
 package com.fuzz.kedux
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.js.JsName
 
 typealias SelectorFunction<S, R> = (state: S) -> R
 
@@ -30,10 +32,9 @@ abstract class Selector<S : Any, R : Any?> {
 class SelectorSubject<S : Any?, R : Any?> internal constructor(
         private val state: Flow<S>,
         private val selectorFunction: SelectorFunction<S, R>,
-        private val _stateSubject: MutableStateFlow<Optional<R>> = MutableStateFlow(Optional.None())
+        private val scope: CoroutineScope,
+        private val _stateSubject: MutableStateFlow<Optional<R>> = MutableStateFlow(Optional.None()),
 ) : Flow<R> by _stateSubject.safeUnwrap() {
-
-    private val scope = backgroundScope()
 
     init {
 
@@ -62,10 +63,11 @@ class SelectorSubject<S : Any?, R : Any?> internal constructor(
 }
 
 class SelectorCreator<S : Any, R : Any?>(
-        private val selectorFunction: SelectorFunction<S, R>) : Selector<S, R>() {
+        private val selectorFunction: SelectorFunction<S, R>,
+        private val scope: CoroutineScope) : Selector<S, R>() {
     @ExperimentalCoroutinesApi
     override fun invoke(state: CFlow<S>): Flow<R> =
-            SelectorSubject(state, selectorFunction)
+            SelectorSubject(state, selectorFunction, scope)
 }
 
 class ComposeSelectorCreator<S : Any, T : Any?, R1 : Any?, R2 : Any?>
@@ -79,5 +81,12 @@ internal constructor(
     }
 }
 
-fun <S : Any, R : Any?> createSelector(selectorFunction: SelectorFunction<S, R>): SelectorCreator<S, R> =
-        SelectorCreator(selectorFunction)
+@JsName("createSelectorWithScope")
+fun <S : Any, R : Any?> createSelector(
+        scope: CoroutineScope = backgroundScope(),
+        selectorFunction: SelectorFunction<S, R>): SelectorCreator<S, R> =
+        SelectorCreator(selectorFunction, scope)
+
+fun <S : Any, R : Any?> createSelector(
+        selectorFunction: SelectorFunction<S, R>): SelectorCreator<S, R> =
+        SelectorCreator(selectorFunction, backgroundScope())

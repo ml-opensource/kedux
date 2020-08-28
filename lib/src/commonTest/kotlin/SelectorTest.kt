@@ -7,13 +7,12 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SelectorTest {
+class SelectorTest: BaseTest() {
 
     private lateinit var store: Store<GlobalState>
 
     @BeforeTest
     fun constructStore() {
-        applyTestSchedulers()
         Store.loggingEnabled = true
         store = createStore(sampleReducer, initialState)
     }

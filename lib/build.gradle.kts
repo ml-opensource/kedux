@@ -108,6 +108,9 @@ kotlin {
         }
         val jsMain by getting {
             dependsOn(nonNative)
+            dependencies {
+                implementation(kotlin("test-js"))
+            }
         }
         val jsTest by getting
     }

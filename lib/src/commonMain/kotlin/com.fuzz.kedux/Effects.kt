@@ -2,12 +2,14 @@
 
 package com.fuzz.kedux
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.js.JsName
 import kotlin.reflect.KClass
 
 /**
@@ -118,11 +120,16 @@ fun <T : Any, P, R : Any, RP> createActionTypeEffect(mapper: (Flow<Action<T, P>>
  *
  * ```
  */
-class Effects(vararg effectArgs: EffectFn<out Any>) {
+class Effects(vararg effectArgs: EffectFn<out Any>,
+              private val scope: CoroutineScope = backgroundScope()) {
 
     private val effects = effectArgs
 
-    private val scope = backgroundScope()
+    /**
+     * Required for iOS interop, as they don't support default parameters yet.
+     */
+    @JsName("initWithoutScope")
+    constructor(vararg effectArgs: EffectFn<out Any>) : this(effectArgs = *effectArgs, backgroundScope())
 
     private fun dispatch(store: Store<*>, action: Any) {
         store.dispatch(action)
