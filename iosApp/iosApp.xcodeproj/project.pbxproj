@@ -10,6 +10,7 @@
 		0125DB02234B042C410957EC /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EF2BCD4E30D59E8262874C6 /* Pods_iosApp.framework */; };
 		1F5BF343E3DCD3CD1E2A6B06 /* Pods_iosAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 231B4F5DF78C1877D2ACA893 /* Pods_iosAppTests.framework */; };
 		2B0308722426CE66006B5766 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0308712426CE66006B5766 /* SceneDelegate.swift */; };
+		2B9F7DC724F8856F00677476 /* KotlinHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9F7DC624F8856F00677476 /* KotlinHelpers.swift */; };
 		2BB7AA362433DDE300D62D6F /* Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB7AA352433DDE300D62D6F /* Examples.swift */; };
 		2BE6F79A24297CF700824240 /* PropertyWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE6F79924297CF700824240 /* PropertyWrappers.swift */; };
 		BDB5702BE3113F1358548576 /* Pods_app.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB03EACE2BE8D7DBC9D079E3 /* Pods_app.framework */; };
@@ -17,8 +18,6 @@
 		F861D7E3207FA40F0085E80D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F861D7E2207FA40F0085E80D /* ViewController.swift */; };
 		F861D7EB207FA4100085E80D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F861D7E9207FA4100085E80D /* LaunchScreen.storyboard */; };
 		F861D7F6207FA4100085E80D /* iosAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F861D7F5207FA4100085E80D /* iosAppTests.swift */; };
-		F861D80C207FA4200085E80D /* app.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F861D805207FA4200085E80D /* app.framework */; };
-		F861D80D207FA4200085E80D /* app.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F861D805207FA4200085E80D /* app.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,34 +28,15 @@
 			remoteGlobalIDString = F861D7DC207FA40F0085E80D;
 			remoteInfo = iosApp;
 		};
-		F861D80A207FA4200085E80D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F861D7D5207FA40F0085E80D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F861D804207FA4200085E80D;
-			remoteInfo = app;
-		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		F861D811207FA4200085E80D /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				F861D80D207FA4200085E80D /* app.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0069021D361057C5472F3C88 /* Pods-iosAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosAppTests.release.xcconfig"; path = "Target Support Files/Pods-iosAppTests/Pods-iosAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		225F6FC38BACBD39680BC970 /* Pods-iosAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosAppTests.debug.xcconfig"; path = "Target Support Files/Pods-iosAppTests/Pods-iosAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		231B4F5DF78C1877D2ACA893 /* Pods_iosAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B0308712426CE66006B5766 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		2B9F7DC424F883FB00677476 /* app.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = app.framework; path = "../app/build/xcode-frameworks/app.framework"; sourceTree = "<group>"; };
+		2B9F7DC624F8856F00677476 /* KotlinHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KotlinHelpers.swift; sourceTree = "<group>"; };
 		2BB7AA352433DDE300D62D6F /* Examples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples.swift; sourceTree = "<group>"; };
 		2BE6F79924297CF700824240 /* PropertyWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyWrappers.swift; sourceTree = "<group>"; };
 		2EF2BCD4E30D59E8262874C6 /* Pods_iosApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -90,7 +70,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F861D80C207FA4200085E80D /* app.framework in Frameworks */,
 				0125DB02234B042C410957EC /* Pods_iosApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,6 +101,7 @@
 		DE50BAFA811B65206AD84D47 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2B9F7DC424F883FB00677476 /* app.framework */,
 				BB03EACE2BE8D7DBC9D079E3 /* Pods_app.framework */,
 				2EF2BCD4E30D59E8262874C6 /* Pods_iosApp.framework */,
 				231B4F5DF78C1877D2ACA893 /* Pods_iosAppTests.framework */,
@@ -154,6 +134,7 @@
 		F861D7DF207FA40F0085E80D /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				2B9F7DC624F8856F00677476 /* KotlinHelpers.swift */,
 				F861D7E0207FA40F0085E80D /* AppDelegate.swift */,
 				F861D7E2207FA40F0085E80D /* ViewController.swift */,
 				F861D7E9207FA4100085E80D /* LaunchScreen.storyboard */,
@@ -185,12 +166,10 @@
 				F861D7D9207FA40F0085E80D /* Sources */,
 				F861D7DA207FA40F0085E80D /* Frameworks */,
 				F861D7DB207FA40F0085E80D /* Resources */,
-				F861D811207FA4200085E80D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F861D80B207FA4200085E80D /* PBXTargetDependency */,
 			);
 			name = iosApp;
 			productName = iosApp;
@@ -370,7 +349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"$SRCROOT/../gradlew\" -p \"$SRCROOT/../app\" copyFramework \\\n-Pconfiguration.build.dir=\"$CONFIGURATION_BUILD_DIR\"          \\\n-Pkotlin.build.type=\"$KOTLIN_BUILD_TYPE\"                      \\\n-Pkotlin.target=\"$KOTLIN_TARGET\"\n";
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :app:packForXcode \\\n-PXCODE_CONFIGURATION=${CONFIGURATION} \\\n-Pconfiguration.build.dir=\"$CONFIGURATION_BUILD_DIR\"          \\\n-Pkotlin.build.type=\"$KOTLIN_BUILD_TYPE\"                      \\\n-Pkotlin.target=\"$KOTLIN_TARGET\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -379,6 +358,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B9F7DC724F8856F00677476 /* KotlinHelpers.swift in Sources */,
 				F861D7E3207FA40F0085E80D /* ViewController.swift in Sources */,
 				F861D7E1207FA40F0085E80D /* AppDelegate.swift in Sources */,
 				2BE6F79A24297CF700824240 /* PropertyWrappers.swift in Sources */,
@@ -402,11 +382,6 @@
 			isa = PBXTargetDependency;
 			target = F861D7DC207FA40F0085E80D /* iosApp */;
 			targetProxy = F861D7F2207FA4100085E80D /* PBXContainerItemProxy */;
-		};
-		F861D80B207FA4200085E80D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F861D804207FA4200085E80D /* app */;
-			targetProxy = F861D80A207FA4200085E80D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -546,7 +521,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = EUR8GE96BE;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../app/build/xcode-frameworks/**";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = iosApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -554,7 +532,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-v";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.iosApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fuzz.kedux.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -568,7 +546,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = EUR8GE96BE;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../app/build/xcode-frameworks/**";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = iosApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -576,7 +557,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-v";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.iosApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fuzz.kedux.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

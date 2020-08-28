@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fuzz.kedux.FracturedState
 import com.fuzz.kedux.Store
-import org.kodein.di.instance
 import sample.databinding.ActivityMainBinding
 import sample.databinding.ListItemMovieBinding
 import androidx.lifecycle.lifecycleScope
@@ -24,12 +23,11 @@ import kotlinx.coroutines.flow.take
 
 class MainActivity : AppCompatActivity() {
 
-    private val store: Store<FracturedState> by kodein.instance()
-    private val viewModelFactory: ViewModelProvider.Factory by kodein.instance()
+    private val store: Store<FracturedState> = appGlobalStore()
 
     private val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+    private val viewModel = MainViewModel(store)
 
     private val movieAdapter = MovieAdapter()
 

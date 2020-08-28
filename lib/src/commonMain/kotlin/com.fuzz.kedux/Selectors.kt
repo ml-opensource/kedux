@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
-typealias SelectorFunction<S, R> = suspend (state: S) -> R
+typealias SelectorFunction<S, R> = (state: S) -> R
 
 abstract class Selector<S : Any, R : Any?> {
 
@@ -75,7 +75,7 @@ internal constructor(
         private val selectorTransform: CFlow<T>.() -> Flow<R1>
 ) : Selector<S, R2>() {
     override fun invoke(state: CFlow<S>): Flow<R2> {
-        return selectorCreator.invoke(state).wrap().selectorTransform().map(selectorFunction)
+        return selectorCreator.invoke(state).wrap().selectorTransform().map { selectorFunction(it) }
     }
 }
 

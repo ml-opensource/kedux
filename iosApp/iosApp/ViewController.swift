@@ -1,18 +1,19 @@
 import UIKit
 import app
 import SwiftUI
+import Combine
 
 class MoviesModel: ObservableObject {
-    let disposable = CompositeDisposable()
-
+    var disposable = Set<AnyCancellable>()
+    
     @Published
     var movies: [Movie] = []
 
     init(store: Store<FracturedState>) {
-        disposable.add(disposable: store.select(listSelector: SelectorsKt_.moviesSelector)
-                .subscribe(isThreadLocal: false, onSubscribe: nil, onError: nil, onComplete: nil) { movies in
-                    self.movies = movies as! [Movie]
-                })
+        disposable.insert(createPublisher(flow: store.select(listSelector: SelectorsKt_.moviesSelector))
+            .sink(receiveCompletion: {_ in }) { movies in
+                self.movies = movies as! [Movie]
+        })
     }
 }
 
@@ -69,16 +70,15 @@ struct HomeView: View {
 }
 
 class MoviesModel2: ObservableObject {
-    let disposable = CompositeDisposable()
+    var disposable = Set<AnyCancellable>()
 
     @Published
     var movies: [Movie] = []
 
     init(store: Store<MoviesState>) {
-        disposable.add(disposable: store.select(listSelector: moviesSelector)
-                .subscribe(isThreadLocal: false, onSubscribe: nil, onError: nil, onComplete: nil) { movies in
-                    self.movies = movies as! [Movie]
-                })
+        disposable.insert(createPublisher(flow: store.select(listSelector: moviesSelector)).sink(receiveCompletion: { _ in }) { movies in
+            self.movies = movies as! [Movie]
+        })
     }
 }
 

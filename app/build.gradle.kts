@@ -1,8 +1,8 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
+    id("co.touchlab.native.cocoapods")
     id("com.android.application")
     id("kotlin-android-extensions")
 }
@@ -28,14 +28,7 @@ kotlin {
     jvm()
     // This is for iPhone emulator
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
-    iosX64("ios") {
-        binaries {
-            framework {
-                export(project(":lib"))
-                transitiveExport = true
-            }
-        }
-    }
+    ios()
     js {
         browser()
         useCommonJs()
@@ -58,7 +51,6 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":lib"))
-                implementation("org.kodein.di:kodein-di:$kodeinVersion")
             }
         }
         val commonTest by getting {
@@ -116,6 +108,17 @@ kotlin {
             }
         }
     }
+
+    cocoapodsext {
+        summary = "Common app library for Kedux"
+        homepage = "https://github.com/monstar-lab-oss/kedux"
+        framework {
+            isStatic = false
+            export(project(":lib"))
+            transitiveExport = true
+        }
+    }
+
 }
 
 android {
@@ -160,15 +163,3 @@ android {
         }
     }
 }
-
-val packForXcode by tasks.creating(Sync::class) {
-    group = "build"
-    val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
-    val framework = kotlin.targets.getByName<KotlinNativeTarget>("ios").binaries.getFramework(mode)
-    inputs.property("mode", mode)
-    dependsOn(framework.linkTask)
-    val targetDir = File(buildDir, "xcode-frameworks")
-    from({ framework.outputDirectory })
-    into(targetDir)
-}
-tasks.getByName("build").dependsOn(packForXcode)
