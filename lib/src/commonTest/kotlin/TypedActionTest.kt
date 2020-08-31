@@ -4,10 +4,10 @@ import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createStore
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import logAssertEquals as assertEquals
 
 
-class TypedActionTest: BaseTest() {
+class TypedActionTest : BaseTest() {
 
     private lateinit var store: Store<GlobalState>
 

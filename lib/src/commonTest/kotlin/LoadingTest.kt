@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import logAssertEquals as assertEquals
 import kotlin.test.assertNull
 
 data class State(val product: LoadingModel<Product> = LoadingModel.empty())

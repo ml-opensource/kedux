@@ -3,7 +3,7 @@ import com.fuzz.kedux.Store
 import com.fuzz.kedux.createStore
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import logAssertEquals as assertEquals
 
 class SelectorTest : BaseTest() {
 

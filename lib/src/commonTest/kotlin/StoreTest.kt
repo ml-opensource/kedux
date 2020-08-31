@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import logAssertEquals as assertEquals
 import kotlin.test.fail
 
 class StoreTest : BaseTest() {

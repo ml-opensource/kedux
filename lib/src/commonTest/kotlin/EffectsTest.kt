@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.take
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import logAssertEquals as assertEquals
 import kotlin.test.assertTrue
 
 val nameChangeEffect = createEffect<NameChange, NamedChanged> { change -> change.map { (name) -> NamedChanged(name) } }
