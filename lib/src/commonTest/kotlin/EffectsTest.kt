@@ -12,7 +12,6 @@ import com.fuzz.kedux.createEffect
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.multipleActionOf
 import kotlinx.coroutines.flow.map
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import logAssertEquals as assertEquals
@@ -30,36 +29,43 @@ class EffectsTest : BaseTest() {
 
     private lateinit var nameEffects: Effects
 
+    /**
+     * Binding to effects are active and require blocking runs.
+     */
+    private fun bindEffects() {
+        store.also { nameEffects.bindTo(it) }
+    }
+
+    private fun clearEffects() {
+        nameEffects.clearBindings()
+    }
 
     @BeforeTest
     fun setupTest() {
         Store.loggingEnabled = true
         nameEffects = Effects(nameChangeEffect, multipleDispatchEffect, scope = getTestScope())
         store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
-                .also { nameEffects.bindTo(it) }
-    }
-
-    @AfterTest
-    fun teardownTest() {
-        nameEffects.clearBindings()
     }
 
     @Test
     fun canChangeNameEffect() = runBlocking {
+        bindEffects()
         store.select(namedChangedSelector)
                 .test {
                     store.dispatch(NameChange("New Name"))
                     assertTrue(expectItem())
                 }
+        clearEffects()
     }
 
     @Test
     fun changeDispatchMultipleActionsInEffect() = runBlocking {
+        bindEffects()
         store.actions.test {
             store.dispatch(LocationChange(Location(55, "OTHER NAME")))
             assertEquals(LocationChanged("OTHER NAME"), expectItem())
             assertEquals(Reset, expectItem())
         }
-
+        clearEffects()
     }
 }
