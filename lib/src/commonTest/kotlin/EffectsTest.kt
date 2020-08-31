@@ -11,6 +11,7 @@ import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createEffect
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.multipleActionOf
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -32,8 +33,8 @@ class EffectsTest : BaseTest() {
     /**
      * Binding to effects are active and require blocking runs.
      */
-    private fun bindEffects() {
-        store.also { nameEffects.bindTo(it) }
+    private fun CoroutineScope.bindEffects() {
+        store.also { nameEffects.bindTo(it, this) }
     }
 
     private fun clearEffects() {
@@ -43,7 +44,7 @@ class EffectsTest : BaseTest() {
     @BeforeTest
     fun setupTest() {
         Store.loggingEnabled = true
-        nameEffects = Effects(nameChangeEffect, multipleDispatchEffect, scope = getTestScope())
+        nameEffects = Effects(nameChangeEffect, multipleDispatchEffect)
         store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
     }
 
@@ -62,7 +63,9 @@ class EffectsTest : BaseTest() {
     fun changeDispatchMultipleActionsInEffect() = runBlocking {
         bindEffects()
         store.actions.test {
-            store.dispatch(LocationChange(Location(55, "OTHER NAME")))
+            val originalAction = LocationChange(Location(55, "OTHER NAME"))
+            store.dispatch(originalAction)
+            assertEquals(originalAction, expectItem())
             assertEquals(LocationChanged("OTHER NAME"), expectItem())
             assertEquals(Reset, expectItem())
         }

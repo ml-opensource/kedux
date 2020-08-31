@@ -3,7 +3,7 @@
 package com.fuzz.kedux
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
@@ -120,29 +120,28 @@ fun <T : Any, P, R : Any, RP> createActionTypeEffect(mapper: (Flow<Action<T, P>>
  *
  * ```
  */
-class Effects(vararg effectArgs: EffectFn<out Any>,
-              private val scope: CoroutineScope = backgroundScope()) {
+class Effects(vararg effectArgs: EffectFn<out Any>) {
 
     private val effects = effectArgs
 
-    /**
-     * Required for iOS interop, as they don't support default parameters yet.
-     */
-    @JsName("initWithoutScope")
-    constructor(vararg effectArgs: EffectFn<out Any>) : this(effectArgs = effectArgs, backgroundScope())
+    private val jobList = mutableListOf<Job>()
 
     private fun dispatch(store: Store<*>, action: Any) {
         Store.logIfEnabled { "dispatch (effects) -> $action" }
         store.dispatch(action)
     }
 
+    fun bindTo(store: Store<*>) = bindTo(store, backgroundScope())
+
     /**
      * Binds all [EffectFn] to the specified store. Will ignore [createSilentEffect] classes or [EffectFn] that return
      * [NoAction].
      */
-    fun bindTo(store: Store<*>) {
+    @JsName("bindToWithScope")
+    fun bindTo(store: Store<*>,
+               scope: CoroutineScope = backgroundScope()) {
         effects.forEach { effect ->
-            effect(store.actions)
+            jobList += effect(store.actions)
                     .onEach { action -> dispatch(store, action) }
                     .launchIn(scope)
         }
@@ -152,6 +151,6 @@ class Effects(vararg effectArgs: EffectFn<out Any>,
      * Clears out bindings to this [Effects] object. Useful for when Effects are scoped to a smaller subset of your application.
      */
     fun clearBindings() {
-        scope.cancel()
+        jobList.forEach { it.cancel() }
     }
 }
