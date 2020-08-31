@@ -139,12 +139,23 @@ open class Store<S : Any>(
         this.reducer = reducer
     }
 
+    @JsName("selectWithScope")
     fun <R : Any?> select(
             selector: Selector<S, R>,
             scope: CoroutineScope = backgroundScope()): CFlow<R> = selector(scope, state).wrap()
 
+    /**
+     * Used mostly for Objective C compatibility
+     */
+    fun <R : Any?> select(selector: Selector<S, R>) = selector(backgroundScope(), state).wrap()
+
+
     @JvmName("selectList")
-    @JsName("selectList")
+    fun <I, R : List<I>> select(
+            listSelector: Selector<S, R>): CFlow<R> = listSelector(backgroundScope(), state).wrap()
+
+    @JvmName("selectListWithScope")
+    @JsName("selectListWithScope")
     fun <I, R : List<I>> select(
             listSelector: Selector<S, R>,
             scope: CoroutineScope = backgroundScope()): CFlow<R> = listSelector(scope, state).wrap()

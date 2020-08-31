@@ -29,8 +29,8 @@ abstract class Selector<S : Any, R : Any?> {
 }
 
 class SelectorCreator<S : Any, R : Any?>(
-        private val selectorFunction: SelectorFunction<S, R>,
-        private val scope: CoroutineScope) : Selector<S, R>() {
+        private val selectorFunction: SelectorFunction<S, R>) : Selector<S, R>() {
+
     @ExperimentalCoroutinesApi
     override fun invoke(scope: CoroutineScope, state: CFlow<S>): Flow<R> {
         val stateSubject: MutableStateFlow<Optional<R>> = MutableStateFlow(Optional.None())
@@ -63,4 +63,4 @@ internal constructor(
 
 fun <S : Any, R : Any?> createSelector(
         selectorFunction: SelectorFunction<S, R>): SelectorCreator<S, R> =
-        SelectorCreator(selectorFunction, backgroundScope())
+        SelectorCreator(selectorFunction)
