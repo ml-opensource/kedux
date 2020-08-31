@@ -95,7 +95,7 @@ Preferrably this is set only on development builds.
 
 ### Selectors
 
-Selectors are pure `Observable` functions that accept state and emit changes to the state.
+Selectors are pure `CFlow` functions that accept state and emit changes to the state.
 
 Selectors _only_ emit when their output is distinct. 
 
@@ -109,18 +109,51 @@ To observe changes on the store, subscribe to its state:
 
 ```swift 
 let nameSelector = SelectorCreator<GlobalState, String>  { state in state.name }
-let disposable = CompositeDisposable()
 
 // subscribe to store updates
-disposable.add(store.select(selector: nameSelector)
-    .subscribe(isThreadLocal: false, onSubscribe: nil, onError: nil, onComplete: nil) { movies in
+let subscription = store.select(selector: nameSelector)
+    .watch { movies in
           // do something with name
-    })
+    }
+
+// invoke subscription to cancel
+subscription()
 ```
 
-Please **Note**: Reaktive does not play nicely with Swift as much as this library can. You may 
-need to wrap common RX operators such as `map` within static calls `MapKt.map`. Though using selectors 
-remove the need for doing so directly. 
+`watch` is a convenience method for Swift callers to provide a friendly interface for watching changes. It runs on the 
+`DispatchQueue.main` thread.
 
-It's important to ensure you add the store subscription to `compositeDisposable` in scope, 
-so that you do not introduce memory leaks.
+Please **Note**: Flow does not play nicely with Swift as much as this library can. 
+
+For use with Combine, you should wrap the returned `Flow` object into a construct like:
+```
+func createPublisher<T : AnyObject>(flow: CFlow<T>) -> FlowPublisher<T, Swift.Error> {
+   return FlowPublisher(flow: flow)
+}
+
+
+class FlowPublisher<Output : AnyObject, Failure: Swift.Error> : Publisher, Cancellable {
+    
+    let flow: CFlow<Output>
+    private var watchBlock: (() -> Void)?
+    
+    init(flow: CFlow<Output>) {
+        self.flow = flow;
+    }
+    
+    func receive<S>(subscriber: S) where S : Subscriber, Failure == S.Failure, Output == S.Input {
+        self.watchBlock = flow.watch { value in
+            if let value = value {
+                subscriber.receive(value)
+            }
+        }
+    }
+    
+    func cancel() {
+        if let watchBlock = self.watchBlock {
+            watchBlock()
+        }
+    }
+    
+}
+```

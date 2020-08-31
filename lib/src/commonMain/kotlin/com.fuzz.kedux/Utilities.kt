@@ -1,8 +1,11 @@
 package com.fuzz.kedux
 
-import com.badoo.reaktive.observable.Observable
-import com.badoo.reaktive.observable.filter
-import com.badoo.reaktive.observable.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 
 internal sealed class Optional<T> {
@@ -10,6 +13,16 @@ internal sealed class Optional<T> {
     class None<T> : Optional<T>()
 }
 
-internal fun <R> Observable<Optional<R>>.safeUnwrap() = filter {
+internal fun <R> Flow<Optional<R>>.safeUnwrap() = filter {
     it is Optional.Some
 }.map { (it as Optional.Some).value }
+
+inline fun <reified R> Flow<Any?>.ofType(): Flow<R> = filter {
+    it is R
+}.map { it as R }
+
+
+internal fun backgroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Default)
+
+internal fun foregroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Main)
+

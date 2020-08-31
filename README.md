@@ -7,8 +7,7 @@
 ![badge][badge-mac]
 
 Kedux is a Kotlin-multiplatform implementation of [redux](redux.js.org) that works 
-on Android, iOS, MacOS, and JS utilizing [Reaktive](https://github.com/badoo/Reaktive)
- to provide the RX plumbing on all platforms.
+on Android, iOS, MacOS, and JS utilizing Coroutines + Flow :heart:
  
  __NOTE: This library is currently in development preview. Please check back later when it's ready for release.__
 
@@ -109,12 +108,12 @@ To observe changes on the store, subscribe to its state:
 val nameSelector = createSelector<GlobalState, String> { state -> state.name }
 
 // subscribe to store updates
-store.select(nameSelector).subscribe { name ->
+store.select(nameSelector).onEach { name ->
   // do something with name
-}.addTo(compositeDisposable) 
+}.launchIn(scope) 
 ```
 
-It's important to ensure you add the store subscription to `compositeDisposable` in scope, 
+It's important to ensure you add the subscription to a `CoroutineScope`, 
 so that you do not introduce memory leaks.
 
 ## Features
@@ -123,21 +122,22 @@ This library has a few features. TBD on full descriptions.
 
 ## Store
 
-`Store` is an object that exposes an `Observable<State>` in which subscribers can listen to state changes. 
+`Store` is an object that exposes a `state: Flow<State>` in which subscribers can listen to state changes, and an actions stream
+ `action: Flow<Action>` that logs all actions coming through. 
 
-`createStore`: creates the store with a global `reducer`, initialState (required), `enhancer` (more on these later), 
-and `loggingEnabled`.
-
+`createStore`: creates the store with a global `reducer`, initialState (required), and `enhancer` (more on these later).
+ 
 `Store.dispatch`: **asynchronously** dispatches actions to the `state`. Selection happens on the `computationScheduler`, 
 and then returns the result object on the `mainScheduler` thread of the platform.
 
-__Note__: Kotlin Native targets should be wary of frozen objects. Using Reaktive's `threadLocal` method, we can mostly 
-get around this, but its not perfect and please be forewarned. `State` in any sense should be immutable, so in theory this 
-will not be much of an issue. 
+`Store.loggingEnabled`: a global value to turn on or off logging on the store for all actions and effects.
+
+__Note__: Kotlin Native targets should be wary of frozen objects when passing between threads. By design, state should be 
+immutable in this library's constructs to prevent `InvalidMutabilityException` errors.
 
 ### Supported Action Types
 
-You can `dispatch` special objects on the `Store` if you wish.
+Outside of plain objects, you can also `dispatch` special objects on the `Store` if you wish.
 
 Supported types:
 
@@ -169,7 +169,7 @@ store.dispatch(when(name) {
 })
 ```
 
-`5`. `Action<T>` - actions based on a type argument to distinguish them. Rather instead of using Action `data class`, 
+`5`. `Action<T>` - actions based on a type argument to distinguish them. Rather instead of using plain Action `data class` objects, 
 you can create actions as functions:
 
 ```kotlin
@@ -240,11 +240,14 @@ They are useful for heavy calculations such as retrieving an object out of a lis
 
 Creating a selector is easy:
 ```kotlin
+// declare a global field, selectors are just functions
 val fieldSelector = createSelector<GlobalState, Field> { state -> state.field }
-store.select(fieldSelector).subscribe { value  ->
+
+// subscribe to the selector to gain new values
+store.select(fieldSelector).onEach { value  ->
   // do something
 }
-.addTo(compositeDisposable)
+.launchIn(scope)
 ```
 
 Selectors can be composed. Each nested level only recomputes when its outer state changes. It's best practice 
@@ -256,7 +259,7 @@ val nameSelector = createSelector<GlobalState, Location?> { state -> state.locat
     .compose { state -> state.product}
     .compose { state -> state.name }
 
-// preferred
+// preferred defining them top-level and chaining them, just in case you need more :)
 val locationSelector = createSelector<GlobalState, Location?>  { state -> state.location }
 val productSelector = locationSelector.compose { state -> state.product }
 val productNameSelector = productSelector.compose { state -> state.name }
@@ -266,7 +269,7 @@ By composing selectors in separate fields, they become more reusable.
 
 ## Effects / Sagas
 
-Effects are `Observable` chains that respond to a particular action, or set of actions and return with 
+Effects are `Flow` chains that occur after an action is dispatched on the store, and return with 
 another action, set of actions (`MultiAction`), or `NoAction`.
 
 To define an `Effect`:
@@ -371,9 +374,9 @@ val productReducer = typedReducer<Product, ProductActions> { state, action ->
 Now we can subscribe to the changes via:
 ```kotlin
  store.select(fracturedSelector(productReducer))
-  .subscribe { value ->
+  .onEach { value ->
    // do something with Product                 
- }.addTo(compositeDisposable)
+ }.launchIn(scope)
 ```
 
 The `fracturedReducer` will loop through each reducer to determine any state changes and update subscribers across the fractured state map. 
@@ -416,10 +419,10 @@ val userOptionalError = userLoadingStateSelector.optionalError()
 
 // convenience extensions on selectors
 store.select(userSuccess)
- .subscribe { success ->
+ .onEach { success ->
   // only returns if there's a success value
  }
- .addTo(disposable)
+ .launchIn(scope)
 ```
 
 Since we want to avoid reflection, using the `KeduxLoader` reducer requires a little more magic:

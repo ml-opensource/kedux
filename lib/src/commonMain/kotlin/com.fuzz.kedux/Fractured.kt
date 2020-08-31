@@ -1,7 +1,6 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package com.fuzz.kedux
 
+import kotlin.js.JsName
 import kotlin.reflect.KClass
 
 
@@ -9,6 +8,7 @@ import kotlin.reflect.KClass
  * Represents a fractured state map, allowing different reducers on difference pieces of state.
  */
 data class FracturedState(private val map: Map<KClass<out Any>, Any>) {
+    @Suppress("UNCHECKED_CAST")
     fun <R : Any> fromReducer(reducer: Reducer<R>): R =
             map.getValue(reducer.stateClass) as R
 
@@ -38,6 +38,7 @@ class ReducerMap(
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 fun fracturedReducer(vararg reducers: Reducer<out Any>) =
         ReducerMap(reducers.toList() as List<Reducer<Any>>)
 
@@ -52,6 +53,7 @@ class FracturedStore(
 ) : Store<FracturedState>(fracturedReducer(*map.keys.toTypedArray()),
         createFracturedState(*map.map { (key, value) -> key.stateClass to value }.toTypedArray()),
         enhancer) {
+    @JsName("initWithMap")
     constructor(map: Map<out Reducer<out Any>, Any>) : this(map, emptyEnhancer())
 }
 

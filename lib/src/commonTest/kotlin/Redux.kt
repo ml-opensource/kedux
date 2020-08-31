@@ -22,7 +22,7 @@ sealed class StoreTestAction {
 val sampleReducer = typedReducer<GlobalState, StoreTestAction> { state, action ->
     when (action) {
         is StoreTestAction.NameChange -> state.copy(name = action.name)
-        is StoreTestAction.Reset -> state
+        is StoreTestAction.Reset -> initialState
         is StoreTestAction.LocationChange -> state.copy(location = action.location)
         is StoreTestAction.NamedChanged -> state.copy(nameChanged = true)
         is StoreTestAction.LocationChanged -> state

@@ -2,9 +2,9 @@ package sample
 
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.js_react.StoreProvider
+import kotlinx.browser.document
 import react.child
 import react.dom.render
-import kotlin.browser.document
 
 val store = appGlobalStore()
 

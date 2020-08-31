@@ -1,11 +1,10 @@
 package com.fuzz.kedux
 
-import com.badoo.reaktive.observable.Observable
-import com.badoo.reaktive.observable.filter
-import com.badoo.reaktive.observable.flatMap
-import com.badoo.reaktive.observable.map
-import com.badoo.reaktive.observable.onErrorReturn
-import com.badoo.reaktive.utils.printStack
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 /**
  * Data representation of a loading state. Useful for network requests.
@@ -175,7 +174,7 @@ internal fun <T : LoadingActionTypes, A : Any?, P : Any?> createLoadingAction(
  */
 class KeduxLoader<TRequest : Any, TSuccess : Any>(
         private val name: String,
-        private val requester: (args: TRequest) -> Observable<TSuccess>) {
+        private val requester: (args: TRequest) -> Flow<TSuccess>) {
 
     /**
      * Request action creator. Use it to dispatch on the store.
@@ -259,12 +258,12 @@ class KeduxLoader<TRequest : Any, TSuccess : Any>(
     @Suppress("UNCHECKED_CAST")
     val effect = createActionTypeEffect<LoadingActionTypes, TRequest, LoadingActionTypes, Any> { action ->
         action.filter { it.type == LoadingActionTypes.Request(name) }
-                .flatMap { request -> requester(request.payload) }
+                .flatMapConcat { request -> requester(request.payload) }
                 .map { success(it) }
-                .onErrorReturn {
-                    it.printStack()
-                    this.error(it)
-                } as Observable<Action<LoadingActionTypes, Any>>
+                .catch { cause ->
+                    cause.printStackTrace()
+                    this@KeduxLoader.error(cause)
+                } as Flow<Action<LoadingActionTypes, Any>>
     }
 
 }

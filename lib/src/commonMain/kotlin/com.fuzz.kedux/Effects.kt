@@ -2,14 +2,14 @@
 
 package com.fuzz.kedux
 
-import com.badoo.reaktive.disposable.CompositeDisposable
-import com.badoo.reaktive.disposable.addTo
-import com.badoo.reaktive.observable.Observable
-import com.badoo.reaktive.observable.ObservableWrapper
-import com.badoo.reaktive.observable.filter
-import com.badoo.reaktive.observable.map
-import com.badoo.reaktive.observable.ofType
-import com.badoo.reaktive.observable.wrap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlin.js.JsName
 import kotlin.reflect.KClass
 
 /**
@@ -19,8 +19,8 @@ import kotlin.reflect.KClass
  * Effects are side-effects to actions dispatched onto the [Store]. They usually return a new Action, [Pair] of Actions,
  * [Triple] of Actions, [MultiAction], or [].
  */
-abstract class EffectFn<R> {
-    abstract operator fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<R>
+abstract class EffectFn<R : Any> {
+    abstract operator fun invoke(actions: CFlow<Any>): Flow<R>
 }
 
 expect class Effect<A : Any, R : Any> : EffectFn<R>
@@ -29,29 +29,29 @@ expect class ActionTypeEffect<T : Any, P, R : Any, RP> : EffectFn<Action<R, RP>>
 
 class EffectClass<A : Any, R : Any>(
         private val actionClass: KClass<A>,
-        private val mapper: (ObservableWrapper<A>) -> Observable<R>
+        private val mapper: (CFlow<A>) -> Flow<R>
 ) : EffectFn<R>() {
-    override fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<R> =
-            mapper(actions.filter { actionClass.isInstance(it) }.map { it as A }.wrap()).wrap()
+    override fun invoke(actions: CFlow<Any>): Flow<R> =
+            mapper(actions.filter { actionClass.isInstance(it) }.map { it as A }.wrap())
 }
 
 class SilentEffectClass<A : Any>(
         private val actionClass: KClass<A>,
-        private val mapper: (ObservableWrapper<A>) -> Observable<Unit>
+        private val mapper: (CFlow<A>) -> Flow<Unit>
 ) : EffectFn<NoAction>() {
-    override fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<NoAction> =
-            mapper(actions.filter { actionClass.isInstance(it) }.map { it as A }.wrap()).map { NoAction }.wrap()
+    override fun invoke(actions: CFlow<Any>): Flow<NoAction> =
+            mapper(actions.filter { actionClass.isInstance(it) }.map { it as A }.wrap()).map { NoAction }
 }
 
 class ActionTypeEffectClass<T : Any, P, R : Any, RP>(
-        private val mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>
+        private val mapper: (CFlow<Action<T, P>>) -> Flow<Action<R, RP>>
 ) : EffectFn<Action<R, RP>>() {
-    override fun invoke(actions: ObservableWrapper<Any>): ObservableWrapper<Action<R, RP>> =
-            mapper(actions.ofType<Action<T, P>>().wrap()).wrap()
+    override fun invoke(actions: CFlow<Any>): Flow<Action<R, RP>> =
+            mapper(actions.ofType<Action<T, P>>().wrap())
 }
 
 /**
- * Creates an [EffectFn], an [Observable] chain that returns an Action or set of [MultiAction] objects that get dispatched back
+ * Creates an [EffectFn], an [ObservingDef] chain that returns an Action or set of [MultiAction] objects that get dispatched back
  * to the store.
  *
  * Usage:
@@ -62,7 +62,7 @@ class ActionTypeEffectClass<T : Any, P, R : Any, RP>(
  * }
  * ```
  */
-inline fun <reified A : Any, R : Any> createEffect(noinline mapper: (ObservableWrapper<A>) -> Observable<R>): EffectFn<R> =
+inline fun <reified A : Any, R : Any> createEffect(noinline mapper: (Flow<A>) -> Flow<R>): EffectFn<R> =
         EffectClass(A::class, mapper)
 
 /**
@@ -76,11 +76,11 @@ inline fun <reified A : Any, R : Any> createEffect(noinline mapper: (ObservableW
  * }
  * ```
  */
-inline fun <reified A : Any> createSilentEffect(noinline mapper: (ObservableWrapper<A>) -> Observable<Unit>): EffectFn<NoAction> =
+inline fun <reified A : Any> createSilentEffect(noinline mapper: (Flow<A>) -> Flow<Unit>): EffectFn<NoAction> =
         SilentEffectClass(A::class, mapper)
 
 /**
- * Creates an [EffectFn], an [Observable] chain that returns an Action or set of [MultiAction] objects that get dispatched back
+ * Creates an [EffectFn], an [ObservingDef] chain that returns an Action or set of [MultiAction] objects that get dispatched back
  * to the store.
  *
  * Usage:
@@ -91,7 +91,7 @@ inline fun <reified A : Any> createSilentEffect(noinline mapper: (ObservableWrap
  * }
  * ```
  */
-fun <T : Any, P, R : Any, RP> createActionTypeEffect(mapper: (ObservableWrapper<Action<T, P>>) -> Observable<Action<R, RP>>): EffectFn<Action<R, RP>> =
+fun <T : Any, P, R : Any, RP> createActionTypeEffect(mapper: (Flow<Action<T, P>>) -> Flow<Action<R, RP>>): EffectFn<Action<R, RP>> =
         ActionTypeEffectClass(mapper)
 
 /**
@@ -120,15 +120,20 @@ fun <T : Any, P, R : Any, RP> createActionTypeEffect(mapper: (ObservableWrapper<
  *
  * ```
  */
-class Effects(vararg effectArgs: EffectFn<out Any>) {
+class Effects(vararg effectArgs: EffectFn<out Any>,
+              private val scope: CoroutineScope = backgroundScope()) {
 
     private val effects = effectArgs
 
-    private val compositeDisposable = CompositeDisposable()
+    /**
+     * Required for iOS interop, as they don't support default parameters yet.
+     */
+    @JsName("initWithoutScope")
+    constructor(vararg effectArgs: EffectFn<out Any>) : this(effectArgs = effectArgs, backgroundScope())
 
     private fun dispatch(store: Store<*>, action: Any) {
+        Store.logIfEnabled { "dispatch (effects) -> $action" }
         store.dispatch(action)
-        Store.logIfEnabled { "EFFECTS: Dispatching New Action $action" }
     }
 
     /**
@@ -138,8 +143,8 @@ class Effects(vararg effectArgs: EffectFn<out Any>) {
     fun bindTo(store: Store<*>) {
         effects.forEach { effect ->
             effect(store.actions)
-                    .subscribe { action -> dispatch(store, action) }
-                    .addTo(compositeDisposable)
+                    .onEach { action -> dispatch(store, action) }
+                    .launchIn(scope)
         }
     }
 
@@ -147,6 +152,6 @@ class Effects(vararg effectArgs: EffectFn<out Any>) {
      * Clears out bindings to this [Effects] object. Useful for when Effects are scoped to a smaller subset of your application.
      */
     fun clearBindings() {
-        compositeDisposable.clear(dispose = false)
+        scope.cancel()
     }
 }

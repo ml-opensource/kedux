@@ -1,10 +1,10 @@
 import com.fuzz.kedux.createSelector
 
-val nameSelector = createSelector<GlobalState, String> { state -> state.name }
+val nameSelector = createSelector<GlobalState, String>() { state -> state.name }
 
-val namedChangedSelector = createSelector<GlobalState, Boolean> { state -> state.nameChanged }
+val namedChangedSelector = createSelector<GlobalState, Boolean>() { state -> state.nameChanged }
 
-val locationSelector = createSelector<GlobalState, Location?> { state -> state.location }
+val locationSelector = createSelector<GlobalState, Location?>() { state -> state.location }
 
 val locationIdSelector = locationSelector.compose { state -> state?.id }
 

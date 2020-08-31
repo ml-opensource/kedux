@@ -1,60 +1,58 @@
+import app.cash.turbine.test
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createStore
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import logAssertEquals as assertEquals
 
 
-class TypedActionTest {
+class TypedActionTest : BaseTest() {
 
     private lateinit var store: Store<GlobalState>
 
     @BeforeTest
     fun constructStore() {
-        applyTestSchedulers()
         Store.loggingEnabled = true
         store = createStore(combineReducers(sampleTypedReducer), initialState)
     }
 
     @Test
-    fun testTypedReducer() {
-        var name: String? = null
-        store.select(nameSelector)
-                .subscribe(isThreadLocal = true) {
-                    name = it
-                }.use {
-                    store.dispatch(nameChange("NEW NAME"))
-                    assertEquals("NEW NAME", name)
-                }
+    fun testTypedReducer() = runBlocking {
+        store.select(nameSelector).test {
+            // initial state
+            assertEquals("", expectItem())
+
+            store.dispatch(nameChange("NEW NAME"))
+            assertEquals("NEW NAME", expectItem())
+        }
     }
 
     @Test
-    fun testLocationChangeReducer() {
-        var location: Location? = null
-        store.select(locationSelector)
-                .subscribe(isThreadLocal = true) {
-                    location = it
-                }.use {
-                    val updatedLocation = Location(5, "Other")
-                    store.dispatch(locationChange(updatedLocation))
-                    assertEquals(updatedLocation, location)
-                }
+    fun testLocationChangeReducer() = runBlocking {
+        store.select(locationSelector).test {
+            // initial state
+            assertEquals(null, expectItem())
+
+            val updatedLocation = Location(5, "Other")
+            store.dispatch(locationChange(updatedLocation))
+            assertEquals(updatedLocation, expectItem())
+        }
     }
 
     @Test
-    fun testResetActionType() {
-        var location: Location? = null
+    fun testResetActionType() = runBlocking {
         store.select(locationSelector)
-                .subscribe(isThreadLocal = true) {
-                    location = it
-                }.use {
+                .test {
+                    // initial state
+                    assertEquals(null, expectItem())
+
                     val updatedLocation = Location(5, "Other")
                     store.dispatch(locationChange(updatedLocation))
-                    assertEquals(updatedLocation, location)
+                    assertEquals(updatedLocation, expectItem())
 
                     store.dispatch(resetAction)
-                    assertEquals(initialState.location, location)
+                    assertEquals(initialState.location, expectItem())
                 }
     }
 }

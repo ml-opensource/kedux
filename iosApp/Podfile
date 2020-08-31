@@ -1,16 +1,14 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '13.0'
 
-target 'app' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-end
+install! 'cocoapods', :deterministic_uuids => false
 
 target 'iosApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
   # Pods for iosApp
+  pod 'app', :path => '../app/'
 
   target 'iosAppTests' do
     inherit! :search_paths
