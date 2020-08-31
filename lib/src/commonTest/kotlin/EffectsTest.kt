@@ -24,51 +24,50 @@ val multipleDispatchEffect = createEffect<LocationChange, MultiAction> { change 
     change.map { (location) -> multipleActionOf(LocationChanged(location.other), Reset) }
 }
 
+class EffectTester<S : Any>(private val effects: Effects,
+                            private val store: Store<S>) {
+
+    suspend fun use(scope: CoroutineScope, fn: suspend () -> Unit) {
+        effects.bindTo(store, scope)
+        fn()
+        effects.clearBindings()
+    }
+}
+
 class EffectsTest : BaseTest() {
 
     private lateinit var store: Store<GlobalState>
 
-    private lateinit var nameEffects: Effects
-
-    /**
-     * Binding to effects are active and require blocking runs.
-     */
-    private fun CoroutineScope.bindEffects() {
-        store.also { nameEffects.bindTo(it, this) }
-    }
-
-    private fun clearEffects() {
-        nameEffects.clearBindings()
-    }
+    private lateinit var nameEffects: EffectTester<GlobalState>
 
     @BeforeTest
     fun setupTest() {
         Store.loggingEnabled = true
-        nameEffects = Effects(nameChangeEffect, multipleDispatchEffect)
         store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
+        nameEffects = EffectTester(Effects(nameChangeEffect, multipleDispatchEffect), store)
     }
 
     @Test
     fun canChangeNameEffect() = runBlocking {
-        bindEffects()
-        store.select(namedChangedSelector)
-                .test {
-                    store.dispatch(NameChange("New Name"))
-                    assertTrue(expectItem())
-                }
-        clearEffects()
+        nameEffects.use(this) {
+            store.select(namedChangedSelector)
+                    .test {
+                        store.dispatch(NameChange("New Name"))
+                        assertTrue(expectItem())
+                    }
+        }
     }
 
     @Test
     fun changeDispatchMultipleActionsInEffect() = runBlocking {
-        bindEffects()
-        store.actions.test {
-            val originalAction = LocationChange(Location(55, "OTHER NAME"))
-            store.dispatch(originalAction)
-            assertEquals(originalAction, expectItem())
-            assertEquals(LocationChanged("OTHER NAME"), expectItem())
-            assertEquals(Reset, expectItem())
+        nameEffects.use(this) {
+            store.actions.test {
+                val originalAction = LocationChange(Location(55, "OTHER NAME"))
+                store.dispatch(originalAction)
+                assertEquals(originalAction, expectItem())
+                assertEquals(LocationChanged("OTHER NAME"), expectItem())
+                assertEquals(Reset, expectItem())
+            }
         }
-        clearEffects()
     }
 }

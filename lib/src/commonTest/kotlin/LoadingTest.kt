@@ -11,7 +11,6 @@ import com.fuzz.kedux.optionalSuccess
 import com.fuzz.kedux.success
 import com.fuzz.kedux.typedReducer
 import kotlinx.coroutines.flow.flowOf
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNull
@@ -39,50 +38,51 @@ val productErrorSelector = productSelector.error()
 class LoadingTest : BaseTest() {
 
     private lateinit var store: Store<State>
-    private lateinit var effects: Effects
+    private lateinit var effects: EffectTester<State>
 
     @BeforeTest
     fun beforeTest() {
-        effects = Effects(loadingProduct.effect)
-        store = createStore(reducer, initialLoadingState).also { effects.bindTo(it) }
-    }
-
-    @AfterTest
-    fun afterTest() {
-        effects.clearBindings()
+        store = createStore(reducer, initialLoadingState)
+        effects = EffectTester(Effects(loadingProduct.effect), store)
     }
 
     @Test
     fun testRequestState() = runBlocking {
-        store.select(productSuccessSelector)
-                .test {
-                    store.dispatch(loadingProduct.request(5))
-                    assertEquals(Product(5, "Product Demo"), expectItem())
-                }
+        effects.use(this) {
+            store.select(productSuccessSelector)
+                    .test {
+                        store.dispatch(loadingProduct.request(5))
+                        assertEquals(Product(5, "Product Demo"), expectItem())
+                    }
+        }
     }
 
     @Test
     fun testRequestClear() = runBlocking {
-        store.select(productOptionalSuccessSelector)
-                .test {
-                    assertNull(expectItem())
+        effects.use(this) {
+            store.select(productOptionalSuccessSelector)
+                    .test {
+                        assertNull(expectItem())
 
-                    store.dispatch(loadingProduct.request(5))
-                    assertNull(expectItem())
+                        store.dispatch(loadingProduct.request(5))
+                        assertNull(expectItem())
 
-                    store.dispatch(loadingProduct.clear)
-                    assertNull(expectItem())
-                }
+                        store.dispatch(loadingProduct.clear)
+                        assertNull(expectItem())
+                    }
+        }
     }
 
     @Test
     fun testErrorState() = runBlocking {
-        store.select(productErrorSelector)
-                .test {
-                    val error1 = Error("This is an error")
-                    store.dispatch(loadingProduct.error(error1))
-                    assertEquals(error1, expectItem())
-                }
+        effects.use(this) {
+            store.select(productErrorSelector)
+                    .test {
+                        val error1 = Error("This is an error")
+                        store.dispatch(loadingProduct.error(error1))
+                        assertEquals(error1, expectItem())
+                    }
+        }
     }
 
 }

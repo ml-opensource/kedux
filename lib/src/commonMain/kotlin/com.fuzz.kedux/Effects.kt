@@ -152,5 +152,6 @@ class Effects(vararg effectArgs: EffectFn<out Any>) {
      */
     fun clearBindings() {
         jobList.forEach { it.cancel() }
+        jobList.clear()
     }
 }
