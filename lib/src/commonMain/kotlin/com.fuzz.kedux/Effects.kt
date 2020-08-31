@@ -129,11 +129,11 @@ class Effects(vararg effectArgs: EffectFn<out Any>,
      * Required for iOS interop, as they don't support default parameters yet.
      */
     @JsName("initWithoutScope")
-    constructor(vararg effectArgs: EffectFn<out Any>) : this(effectArgs = *effectArgs, backgroundScope())
+    constructor(vararg effectArgs: EffectFn<out Any>) : this(effectArgs = effectArgs, backgroundScope())
 
     private fun dispatch(store: Store<*>, action: Any) {
+        Store.logIfEnabled { "dispatch (effects) -> $action" }
         store.dispatch(action)
-        Store.logIfEnabled { "EFFECTS: Dispatching New Action $action" }
     }
 
     /**

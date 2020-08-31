@@ -80,6 +80,7 @@ class MovieAdapter : ListAdapter<Movie, MovieViewHolder>(object : DiffUtil.ItemC
         holder.binding.apply {
             title.text = movie.name
             description.text = movie.description
+            time.text = movie.time.toString()
         }
     }
 }

@@ -1,5 +1,6 @@
-actual fun applyTestSchedulers() {
-}
+import kotlinx.coroutines.CoroutineDispatcher
 
-actual fun teardownSchedulers() {
+actual fun applyTestSchedulers(): CoroutineDispatcher? = null
+
+actual fun teardownSchedulers(dispatcher: CoroutineDispatcher?) {
 }

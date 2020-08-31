@@ -1,13 +1,14 @@
 import com.fuzz.kedux.createSelector
+import kotlinx.coroutines.CoroutineScope
 
-val nameSelector by lazy { createSelector<GlobalState, String>(testScope) { state -> state.name } }
+fun CoroutineScope.getNameSelector() = createSelector<GlobalState, String>(this) { state -> state.name }
 
-val namedChangedSelector by lazy { createSelector<GlobalState, Boolean>(testScope) { state -> state.nameChanged } }
+fun CoroutineScope.getNamedChangedSelector() = createSelector<GlobalState, Boolean>(this) { state -> state.nameChanged }
 
-val locationSelector by lazy { createSelector<GlobalState, Location?>(testScope) { state -> state.location } }
+fun CoroutineScope.getLocationSelector() = createSelector<GlobalState, Location?>(this) { state -> state.location }
 
-val locationIdSelector by lazy { locationSelector.compose { state -> state?.id } }
+fun CoroutineScope.getLocationIdSelector() = getLocationSelector().compose { state -> state?.id }
 
-val locationProductSelector by lazy { locationSelector.compose { state -> state?.product } }
+fun CoroutineScope.getLocationProductSelector() = getLocationSelector().compose { state -> state?.product }
 
-val locationProductIdSelector by lazy { locationProductSelector.compose { state -> state?.id } }
+fun CoroutineScope.getLocationProductIdSelector() = getLocationProductSelector().compose { state -> state?.id }

@@ -1,13 +1,11 @@
+import app.cash.turbine.test
 import com.fuzz.kedux.Store
 import com.fuzz.kedux.createStore
-import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SelectorTest: BaseTest() {
+class SelectorTest : BaseTest() {
 
     private lateinit var store: Store<GlobalState>
 
@@ -19,94 +17,81 @@ class SelectorTest: BaseTest() {
 
     @Test
     fun selectorEmitsAllValues() = runBlocking {
-        var count = 0
-        var name = ""
-        store.select(nameSelector)
-                .onEach {
-                    name = it
-                    count++
-                }.launchIn(this)
-                .use {
-                    repeat(3) {
-                        store.dispatch(StoreTestAction.NameChange("Name$it"))
-                        store.dispatch(StoreTestAction.NameChange("Name2-$it"))
-                    }
-                    assertEquals(name, "Name2-2")
-                    assertEquals(7, count)
-                }
+        store.select(getNameSelector()).test {
+            // initial state
+            assertEquals("", expectItem())
+
+            repeat(3) {
+                store.dispatch(StoreTestAction.NameChange("Name$it"))
+                assertEquals("Name$it", expectItem())
+                store.dispatch(StoreTestAction.NameChange("Name2-$it"))
+                assertEquals("Name2-$it", expectItem())
+            }
+        }
     }
 
     @Test
     fun selectorSelectivelyEmitsValues() = runBlocking {
-        val count = atomic(0)
-        val name = atomic("")
-        store.select(nameSelector).onEach {
-            count.value = count.value + 1
-            name.value = it
-        }.launchIn(this).use {
+        store.select(getNameSelector()).test {
+            // initial state
+            assertEquals("", expectItem())
+
             repeat(3) {
                 store.dispatch(StoreTestAction.NameChange("Name$it"))
                 store.dispatch(StoreTestAction.NameChange("Name$it"))
+                assertEquals("Name$it", expectItem())
             }
-            assertEquals("Name2", name.value)
-            assertEquals(4, count.value)
+            expectNoEvents()
         }
     }
 
     @Test
     fun composeSelectors() = runBlocking {
-        var value: Int? = null
-        var count = 0
-        store.select(locationIdSelector).onEach {
-            count++
-            value = it
-        }.launchIn(this).use {
+        store.select(getLocationIdSelector()).test {
+            // initial state
+            assertEquals(null, expectItem())
+
             repeat(3) {
                 store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
                 store.dispatch(StoreTestAction.LocationChange(Location(5, "1")))
                 store.dispatch(StoreTestAction.NameChange("New Name"))
             }
-            assertEquals(5, value)
-            assertEquals(2, count)
+            assertEquals(5, expectItem())
+            expectNoEvents()
         }
     }
 
     @Test
     fun composeSelectors3() = runBlocking {
-        var count = 0
-        var value: Int? = null
-        store.select(locationProductIdSelector)
-                .onEach { next ->
-                    count++
-                    value = next
-                }.launchIn(this)
-                .use {
-                    repeat(3) {
-                        store.dispatch(
-                                StoreTestAction.LocationChange(
-                                        Location(
-                                                5,
-                                                "1",
-                                                product = Product(5, "Burger")
-                                        )
+        store.select(getLocationProductIdSelector()).test {
+            // initial state
+            assertEquals(null, expectItem())
+
+            repeat(3) {
+                store.dispatch(
+                        StoreTestAction.LocationChange(
+                                Location(
+                                        5,
+                                        "1",
+                                        product = Product(5, "Burger")
                                 )
                         )
-                        store.dispatch(
-                                StoreTestAction.LocationChange(
-                                        Location(
-                                                5,
-                                                "1",
-                                                product = Product(5, "Burger")
-                                        )
+                )
+                store.dispatch(
+                        StoreTestAction.LocationChange(
+                                Location(
+                                        5,
+                                        "1",
+                                        product = Product(5, "Burger")
                                 )
                         )
-                        store.dispatch(StoreTestAction.NameChange("New Name"))
-                    }
+                )
+                store.dispatch(StoreTestAction.NameChange("New Name"))
+            }
 
-                    assertEquals(5, value)
-                    assertEquals(2, count)
-
-                }
+            assertEquals(5, expectItem())
+            expectNoEvents()
+        }
     }
 }
 

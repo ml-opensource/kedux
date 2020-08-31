@@ -39,7 +39,7 @@ class FracturedStoreTest {
 
     @Test
     fun canUpdateLocationState() = runBlocking {
-        store.dispatch(LocationActions.ProductChange(Product(5, "Namey")))
+        store.dispatch(LocationActions.ProductChange(Product(5,     "Namey")))
 
         val product: AtomicRef<Product?> = atomic(null)
         store.select(fracturedSelector(locationReducer).compose { it.product })

@@ -11,13 +11,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-class StoreTest {
+class StoreTest : BaseTest() {
 
     private lateinit var store: Store<GlobalState>
 
     @BeforeTest
     fun constructStore() {
-        applyTestSchedulers()
         Store.loggingEnabled = true
         store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
     }

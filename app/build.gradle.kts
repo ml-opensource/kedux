@@ -42,6 +42,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":lib"))
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.1.0")
             }
         }
         val commonTest by getting {

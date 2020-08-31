@@ -1,14 +1,15 @@
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 
-private val mainThreadSurrogate = newSingleThreadContext("UI thread")
-
-actual fun applyTestSchedulers() {
-    Dispatchers.setMain(mainThreadSurrogate)
+actual fun applyTestSchedulers(): CoroutineDispatcher? {
+    return TestCoroutineDispatcher().also { Dispatchers.setMain(it) }
 }
 
-actual fun teardownSchedulers() {
+actual fun teardownSchedulers(dispatcher: CoroutineDispatcher?) {
+    (dispatcher as TestCoroutineDispatcher?)?.cleanupTestCoroutines()
     Dispatchers.resetMain()
 }
+

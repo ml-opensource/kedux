@@ -21,6 +21,7 @@ subprojects {
     repositories {
         google()
         jcenter()
+        maven(url = "https://kotlin.bintray.com/kotlinx/")
         //maven(url = "https://dl.bintray.com/ekito/koin") TODO: revert when Koin is available
         maven(url = "https://dl.bintray.com/touchlabpublic/kotlin")
         maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }

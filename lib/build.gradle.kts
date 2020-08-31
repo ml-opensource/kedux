@@ -55,6 +55,7 @@ kotlin {
         all {
             languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
             languageSettings.useExperimentalAnnotation("kotlinx.coroutines.FlowPreview")
+            languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
         }
         val commonMain by getting {
             dependencies {
@@ -67,6 +68,7 @@ kotlin {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.8")
+                implementation("app.cash.turbine:turbine:0.2.1")
             }
         }
         val nonNative by creating {

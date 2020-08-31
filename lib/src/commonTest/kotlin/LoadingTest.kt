@@ -38,13 +38,12 @@ val effects = Effects(loadingProduct.effect)
 /**
  * Description:
  */
-class LoadingTest {
+class LoadingTest : BaseTest() {
 
     private lateinit var store: Store<State>
 
     @BeforeTest
     fun beforeTest() {
-        applyTestSchedulers()
         store = createStore(reducer, initialLoadingState).also { effects.bindTo(it) }
     }
 
