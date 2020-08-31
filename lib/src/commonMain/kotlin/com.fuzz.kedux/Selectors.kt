@@ -4,12 +4,13 @@ package com.fuzz.kedux
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlin.js.JsName
 
@@ -28,46 +29,26 @@ abstract class Selector<S : Any, R : Any?> {
             ComposeSelectorCreator(this, composeFunction, selectorTransform)
 }
 
-@ExperimentalCoroutinesApi
-class SelectorSubject<S : Any?, R : Any?> internal constructor(
-        private val state: Flow<S>,
-        private val selectorFunction: SelectorFunction<S, R>,
-        private val scope: CoroutineScope,
-        private val _stateSubject: MutableStateFlow<Optional<R>> = MutableStateFlow(Optional.None()),
-) : Flow<R> by _stateSubject.safeUnwrap() {
-
-    init {
-
-        // subscribe happens indefinitely.
-        stateChange()
-                .onEach { value -> _stateSubject.value = value }
-                .launchIn(scope)
-    }
-
-    /**
-     * Disposes of the subscription to the [Store]. Use this when you don't want the selector running anymore.
-     */
-    fun dispose() {
-        scope.cancel()
-    }
-
-    private fun stateChange(): Flow<Optional<R>> = state
-            .distinctUntilChanged()
-            .map { state ->
-                Store.logIfEnabled { "CONSUMING STATE $state" }
-                val value = selectorFunction(state)
-                Store.logIfEnabled { "PROPAGATING STATES $value" }
-                return@map Optional.Some(value)
-            }
-            .distinctUntilChanged()
-}
-
 class SelectorCreator<S : Any, R : Any?>(
         private val selectorFunction: SelectorFunction<S, R>,
         private val scope: CoroutineScope) : Selector<S, R>() {
     @ExperimentalCoroutinesApi
-    override fun invoke(state: CFlow<S>): Flow<R> =
-            SelectorSubject(state, selectorFunction, scope)
+    override fun invoke(state: CFlow<S>): Flow<R> {
+        val stateSubject: MutableStateFlow<Optional<R>> = MutableStateFlow(Optional.None())
+        val job = state
+                .distinctUntilChanged()
+                .map { newState ->
+                    Store.logIfEnabled { "CONSUMING STATE $newState" }
+                    val value = selectorFunction(newState)
+                    Store.logIfEnabled { "PROPAGATING STATES $value" }
+                    return@map Optional.Some(value)
+                }
+                .distinctUntilChanged()
+                .onEach { value -> stateSubject.value = value }
+                .launchIn(scope)
+        // when listening stops, cancel referenced state update job as well.
+        return stateSubject.safeUnwrap().onCompletion { job.cancelAndJoin() };
+    }
 }
 
 class ComposeSelectorCreator<S : Any, T : Any?, R1 : Any?, R2 : Any?>
