@@ -38,17 +38,17 @@ val productErrorSelector = productSelector.error()
 class LoadingTest : BaseTest() {
 
     private lateinit var store: Store<State>
-    private lateinit var effects: EffectTester<State>
+    private lateinit var effects: Effects
 
     @BeforeTest
     fun beforeTest() {
         store = createStore(reducer, initialLoadingState)
-        effects = EffectTester(Effects(loadingProduct.effect), store)
+        effects = Effects(loadingProduct.effect)
     }
 
     @Test
     fun testRequestState() = runBlocking {
-        effects.use(this) {
+        effects.use(this, store) {
             store.select(productSuccessSelector)
                     .test {
                         store.dispatch(loadingProduct.request(5))
@@ -59,7 +59,7 @@ class LoadingTest : BaseTest() {
 
     @Test
     fun testRequestClear() = runBlocking {
-        effects.use(this) {
+        effects.use(this, store) {
             store.select(productOptionalSuccessSelector)
                     .test {
                         assertNull(expectItem())
@@ -75,7 +75,7 @@ class LoadingTest : BaseTest() {
 
     @Test
     fun testErrorState() = runBlocking {
-        effects.use(this) {
+        effects.use(this, store) {
             store.select(productErrorSelector)
                     .test {
                         val error1 = Error("This is an error")

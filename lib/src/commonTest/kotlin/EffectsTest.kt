@@ -24,32 +24,28 @@ val multipleDispatchEffect = createEffect<LocationChange, MultiAction> { change 
     change.map { (location) -> multipleActionOf(LocationChanged(location.other), Reset) }
 }
 
-class EffectTester<S : Any>(private val effects: Effects,
-                            private val store: Store<S>) {
-
-    suspend fun use(scope: CoroutineScope, fn: suspend () -> Unit) {
-        effects.bindTo(store, scope)
-        fn()
-        effects.clearBindings()
-    }
+suspend fun Effects.use(scope: CoroutineScope, store: Store<*>, fn: suspend () -> Unit) {
+    bindTo(store, scope)
+    fn()
+    clearBindings()
 }
 
 class EffectsTest : BaseTest() {
 
     private lateinit var store: Store<GlobalState>
 
-    private lateinit var nameEffects: EffectTester<GlobalState>
+    private lateinit var nameEffects: Effects
 
     @BeforeTest
     fun setupTest() {
         Store.loggingEnabled = true
         store = createStore(combineReducers(sampleReducer, sampleReducer2), initialState)
-        nameEffects = EffectTester(Effects(nameChangeEffect, multipleDispatchEffect), store)
+        nameEffects = Effects(nameChangeEffect, multipleDispatchEffect)
     }
 
     @Test
     fun canChangeNameEffect() = runBlocking {
-        nameEffects.use(this) {
+        nameEffects.use(this, store) {
             store.select(namedChangedSelector)
                     .test {
                         store.dispatch(NameChange("New Name"))
@@ -60,7 +56,7 @@ class EffectsTest : BaseTest() {
 
     @Test
     fun changeDispatchMultipleActionsInEffect() = runBlocking {
-        nameEffects.use(this) {
+        nameEffects.use(this, store) {
             store.actions.test {
                 val originalAction = LocationChange(Location(55, "OTHER NAME"))
                 store.dispatch(originalAction)
