@@ -59,7 +59,6 @@ class StoreTest : BaseTest() {
     fun dispatchPairAction() = runBlocking {
         val action1 = object {}
         val action2 = object {}
-        val actionsList = mutableListOf<Any>()
         store.actions.test {
             store.dispatch(action1 to action2)
             assertEquals(action1, expectItem())
