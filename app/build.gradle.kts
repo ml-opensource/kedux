@@ -148,3 +148,24 @@ android {
         isAbortOnError = false
     }
 }
+
+configurations {
+    create("composeCompiler") {
+        isCanBeConsumed = false
+    }
+}
+dependencies {
+    "composeCompiler"("androidx.compose:compose-compiler:$compose_version")
+}
+android {
+    afterEvaluate {
+        val composeCompilerJar =
+                configurations["composeCompiler"]
+                        .resolve()
+                        .singleOrNull()
+                        ?: error("Please add \"androidx.compose:compose-compiler\" (and only that) as a \"composeCompiler\" dependency")
+        tasks.withType<KotlinCompile> {
+            kotlinOptions.freeCompilerArgs += listOf("-Xuse-ir", "-Xplugin=$composeCompilerJar")
+        }
+    }
+}
