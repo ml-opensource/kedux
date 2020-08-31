@@ -119,6 +119,10 @@ open class Store<S : Any>(
     // required for Kotlin Native, does not support default arguments.
     constructor(reducer: Reducer<S>, initialState: S) : this(reducer, initialState, emptyEnhancer())
 
+    init {
+        ensureNeverFrozen()
+    }
+
     override fun dispatchActual(action: Any) {
         logIfEnabled { "dispatch -> $action" }
         val dispatcher = { enhancedAction: Any ->

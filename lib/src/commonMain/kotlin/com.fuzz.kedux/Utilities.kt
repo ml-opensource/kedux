@@ -1,5 +1,6 @@
 package com.fuzz.kedux
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,8 +22,13 @@ inline fun <reified R> Flow<Any?>.ofType(): Flow<R> = filter {
     it is R
 }.map { it as R }
 
+/**
+ * On Native targets, this is main dispatcher, since we want to avoid freezing.
+ */
+expect fun getBackgroundDispatch(): CoroutineDispatcher
 
-internal fun backgroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Default)
+
+internal fun backgroundScope(): CoroutineScope = CoroutineScope(Job() + getBackgroundDispatch())
 
 internal fun foregroundScope(): CoroutineScope = CoroutineScope(Job() + Dispatchers.Main)
 
