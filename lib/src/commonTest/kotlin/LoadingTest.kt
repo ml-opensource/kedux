@@ -1,3 +1,4 @@
+import app.cash.turbine.test
 import com.fuzz.kedux.Effects
 import com.fuzz.kedux.KeduxLoader
 import com.fuzz.kedux.LoadingAction
@@ -9,14 +10,13 @@ import com.fuzz.kedux.error
 import com.fuzz.kedux.optionalSuccess
 import com.fuzz.kedux.success
 import com.fuzz.kedux.typedReducer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import logAssertEquals as assertEquals
 import kotlin.test.assertNull
+import logAssertEquals as assertEquals
 
 data class State(val product: LoadingModel<Product> = LoadingModel.empty())
 
@@ -28,12 +28,11 @@ val reducer = typedReducer { state: State, action: LoadingAction<*, *> ->
     state.copy(product = loadingProduct.reducer.reduce(state.product, action))
 }
 
-val productSelector = createSelector { state: State -> state.product }
-val productSuccessSelector = productSelector.success()
-val productOptionalSuccessSelector = productSelector.optionalSuccess()
-val productErrorSelector = productSelector.error()
+fun CoroutineScope.getProductSelector() = createSelector(this) { state: State -> state.product }
+fun CoroutineScope.getProductSuccessSelector() = getProductSelector().success()
+fun CoroutineScope.getProductOptionalSuccessSelector() = getProductSelector().optionalSuccess()
+fun CoroutineScope.getProductErrorSelector() = getProductSelector().error()
 
-val effects = Effects(loadingProduct.effect)
 
 /**
  * Description:
@@ -41,9 +40,11 @@ val effects = Effects(loadingProduct.effect)
 class LoadingTest : BaseTest() {
 
     private lateinit var store: Store<State>
+    private lateinit var effects: Effects
 
     @BeforeTest
     fun beforeTest() {
+        effects = Effects(loadingProduct.effect)
         store = createStore(reducer, initialLoadingState).also { effects.bindTo(it) }
     }
 
@@ -54,41 +55,34 @@ class LoadingTest : BaseTest() {
 
     @Test
     fun testRequestState() = runBlocking {
-        var product: Product? = null
-        store.select(productSuccessSelector)
-                .onEach { next ->
-                    product = next
-                }.launchIn(this).use {
+        store.select(getProductSuccessSelector())
+                .test {
                     store.dispatch(loadingProduct.request(5))
-
-                    assertEquals(product, Product(5, "Product Demo"))
+                    assertEquals(Product(5, "Product Demo"), expectItem())
                 }
     }
 
     @Test
     fun testRequestClear() = runBlocking {
-        var product: Product? = null
-        store.select(productOptionalSuccessSelector)
-                .onEach { next ->
-                    product = next
-                }.launchIn(this).use {
-                    store.dispatch(loadingProduct.request(5))
-                    store.dispatch(loadingProduct.clear)
+        store.select(getProductOptionalSuccessSelector())
+                .test {
+                    assertNull(expectItem())
 
-                    assertNull(product)
+                    store.dispatch(loadingProduct.request(5))
+                    assertNull(expectItem())
+
+                    store.dispatch(loadingProduct.clear)
+                    assertNull(expectItem())
                 }
     }
 
     @Test
     fun testErrorState() = runBlocking {
-        var error: Throwable? = null
-        store.select(productErrorSelector)
-                .onEach { next ->
-                    error = next
-                }.launchIn(this).use {
+        store.select(getProductErrorSelector())
+                .test {
                     val error1 = Error("This is an error")
                     store.dispatch(loadingProduct.error(error1))
-                    assertEquals(error1, error)
+                    assertEquals(error1, expectItem())
                 }
     }
 

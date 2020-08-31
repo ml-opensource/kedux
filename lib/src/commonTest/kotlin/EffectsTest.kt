@@ -3,6 +3,7 @@ import StoreTestAction.LocationChanged
 import StoreTestAction.NameChange
 import StoreTestAction.NamedChanged
 import StoreTestAction.Reset
+import app.cash.turbine.test
 import com.fuzz.kedux.Effects
 import com.fuzz.kedux.MultiAction
 import com.fuzz.kedux.Store
@@ -10,15 +11,12 @@ import com.fuzz.kedux.combineReducers
 import com.fuzz.kedux.createEffect
 import com.fuzz.kedux.createStore
 import com.fuzz.kedux.multipleActionOf
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import logAssertEquals as assertEquals
-import kotlin.test.assertTrue
+import logAssertTrue as assertTrue
 
 val nameChangeEffect = createEffect<NameChange, NamedChanged> { change -> change.map { (name) -> NamedChanged(name) } }
 
@@ -48,24 +46,20 @@ class EffectsTest : BaseTest() {
 
     @Test
     fun canChangeNameEffect() = runBlocking {
-        store.dispatch(NameChange("New Name"))
-
         store.select(getNamedChangedSelector())
-                .take(1)
-                .onEach {
-                    assertTrue(it)
-                }.launchIn(this)
+                .test {
+                    store.dispatch(NameChange("New Name"))
+                    assertTrue(expectItem())
+                }
     }
 
     @Test
     fun changeDispatchMultipleActionsInEffect() = runBlocking {
-        val actionsList = mutableListOf<Any>()
-        store.actions.onEach {
-            actionsList += it
-        }.launchIn(this)
-        store.dispatch(LocationChange(Location(55, "OTHER NAME")))
-        println("Actions List $actionsList")
-        assertEquals(LocationChanged("OTHER NAME"), actionsList[1])
-        assertEquals(Reset, actionsList[2])
+        store.actions.test {
+            store.dispatch(LocationChange(Location(55, "OTHER NAME")))
+            assertEquals(LocationChanged("OTHER NAME"), expectItem())
+            assertEquals(Reset, expectItem())
+        }
+
     }
 }
