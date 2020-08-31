@@ -17,7 +17,7 @@ class SelectorTest : BaseTest() {
 
     @Test
     fun selectorEmitsAllValues() = runBlocking {
-        store.select(getNameSelector()).test {
+        store.select(nameSelector).test {
             // initial state
             assertEquals("", expectItem())
 
@@ -32,7 +32,7 @@ class SelectorTest : BaseTest() {
 
     @Test
     fun selectorSelectivelyEmitsValues() = runBlocking {
-        store.select(getNameSelector()).test {
+        store.select(nameSelector).test {
             // initial state
             assertEquals("", expectItem())
 
@@ -47,7 +47,7 @@ class SelectorTest : BaseTest() {
 
     @Test
     fun composeSelectors() = runBlocking {
-        store.select(getLocationIdSelector()).test {
+        store.select(locationIdSelector).test {
             // initial state
             assertEquals(null, expectItem())
 
@@ -63,7 +63,7 @@ class SelectorTest : BaseTest() {
 
     @Test
     fun composeSelectors3() = runBlocking {
-        store.select(getLocationProductIdSelector()).test {
+        store.select(locationProductIdSelector).test {
             // initial state
             assertEquals(null, expectItem())
 

@@ -19,7 +19,7 @@ class TypedActionTest : BaseTest() {
 
     @Test
     fun testTypedReducer() = runBlocking {
-        store.select(getNameSelector()).test {
+        store.select(nameSelector).test {
             // initial state
             assertEquals("", expectItem())
 
@@ -30,7 +30,7 @@ class TypedActionTest : BaseTest() {
 
     @Test
     fun testLocationChangeReducer() = runBlocking {
-        store.select(getLocationSelector()).test {
+        store.select(locationSelector).test {
             // initial state
             assertEquals(null, expectItem())
 
@@ -42,7 +42,7 @@ class TypedActionTest : BaseTest() {
 
     @Test
     fun testResetActionType() = runBlocking {
-        store.select(getLocationSelector())
+        store.select(locationSelector)
                 .test {
                     // initial state
                     assertEquals(null, expectItem())

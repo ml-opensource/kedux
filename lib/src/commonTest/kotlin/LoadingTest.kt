@@ -10,7 +10,6 @@ import com.fuzz.kedux.error
 import com.fuzz.kedux.optionalSuccess
 import com.fuzz.kedux.success
 import com.fuzz.kedux.typedReducer
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flowOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -28,10 +27,10 @@ val reducer = typedReducer { state: State, action: LoadingAction<*, *> ->
     state.copy(product = loadingProduct.reducer.reduce(state.product, action))
 }
 
-fun CoroutineScope.getProductSelector() = createSelector(this) { state: State -> state.product }
-fun CoroutineScope.getProductSuccessSelector() = getProductSelector().success()
-fun CoroutineScope.getProductOptionalSuccessSelector() = getProductSelector().optionalSuccess()
-fun CoroutineScope.getProductErrorSelector() = getProductSelector().error()
+val productSelector = createSelector() { state: State -> state.product }
+val productSuccessSelector = productSelector.success()
+val productOptionalSuccessSelector = productSelector.optionalSuccess()
+val productErrorSelector = productSelector.error()
 
 
 /**
@@ -55,7 +54,7 @@ class LoadingTest : BaseTest() {
 
     @Test
     fun testRequestState() = runBlocking {
-        store.select(getProductSuccessSelector())
+        store.select(productSuccessSelector)
                 .test {
                     store.dispatch(loadingProduct.request(5))
                     assertEquals(Product(5, "Product Demo"), expectItem())
@@ -64,7 +63,7 @@ class LoadingTest : BaseTest() {
 
     @Test
     fun testRequestClear() = runBlocking {
-        store.select(getProductOptionalSuccessSelector())
+        store.select(productOptionalSuccessSelector)
                 .test {
                     assertNull(expectItem())
 
@@ -78,7 +77,7 @@ class LoadingTest : BaseTest() {
 
     @Test
     fun testErrorState() = runBlocking {
-        store.select(getProductErrorSelector())
+        store.select(productErrorSelector)
                 .test {
                     val error1 = Error("This is an error")
                     store.dispatch(loadingProduct.error(error1))

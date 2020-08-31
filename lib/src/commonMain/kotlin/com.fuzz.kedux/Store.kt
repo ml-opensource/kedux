@@ -3,6 +3,7 @@
 package com.fuzz.kedux
 
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.js.JsName
 import kotlin.jvm.JvmName
@@ -138,11 +139,15 @@ open class Store<S : Any>(
         this.reducer = reducer
     }
 
-    fun <R : Any?> select(selector: Selector<S, R>): CFlow<R> = selector(state).wrap()
+    fun <R : Any?> select(
+            selector: Selector<S, R>,
+            scope: CoroutineScope = backgroundScope()): CFlow<R> = selector(scope, state).wrap()
 
     @JvmName("selectList")
     @JsName("selectList")
-    fun <I, R : List<I>> select(listSelector: Selector<S, R>): CFlow<R> = listSelector(state).wrap()
+    fun <I, R : List<I>> select(
+            listSelector: Selector<S, R>,
+            scope: CoroutineScope = backgroundScope()): CFlow<R> = listSelector(scope, state).wrap()
 
     /**
      * Constructs a new effect to perform asynchronous action on the store.

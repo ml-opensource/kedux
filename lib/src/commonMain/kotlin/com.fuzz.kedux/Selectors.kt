@@ -12,13 +12,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import kotlin.js.JsName
 
 typealias SelectorFunction<S, R> = (state: S) -> R
 
 abstract class Selector<S : Any, R : Any?> {
 
-    abstract operator fun invoke(state: CFlow<S>): Flow<R>
+    abstract operator fun invoke(scope: CoroutineScope, state: CFlow<S>): Flow<R>
 
     fun <R2 : Any?> compose(composeFunction: SelectorFunction<R, R2>): Selector<S, R2> =
             ComposeSelectorCreator(this, composeFunction) { this }
@@ -33,7 +32,7 @@ class SelectorCreator<S : Any, R : Any?>(
         private val selectorFunction: SelectorFunction<S, R>,
         private val scope: CoroutineScope) : Selector<S, R>() {
     @ExperimentalCoroutinesApi
-    override fun invoke(state: CFlow<S>): Flow<R> {
+    override fun invoke(scope: CoroutineScope, state: CFlow<S>): Flow<R> {
         val stateSubject: MutableStateFlow<Optional<R>> = MutableStateFlow(Optional.None())
         val job = state
                 .distinctUntilChanged()
@@ -57,16 +56,10 @@ internal constructor(
         private val selectorFunction: SelectorFunction<R1, R2>,
         private val selectorTransform: CFlow<T>.() -> Flow<R1>
 ) : Selector<S, R2>() {
-    override fun invoke(state: CFlow<S>): Flow<R2> {
-        return selectorCreator.invoke(state).wrap().selectorTransform().map { selectorFunction(it) }
+    override fun invoke(scope: CoroutineScope, state: CFlow<S>): Flow<R2> {
+        return selectorCreator.invoke(scope, state).wrap().selectorTransform().map { selectorFunction(it) }
     }
 }
-
-@JsName("createSelectorWithScope")
-fun <S : Any, R : Any?> createSelector(
-        scope: CoroutineScope = backgroundScope(),
-        selectorFunction: SelectorFunction<S, R>): SelectorCreator<S, R> =
-        SelectorCreator(selectorFunction, scope)
 
 fun <S : Any, R : Any?> createSelector(
         selectorFunction: SelectorFunction<S, R>): SelectorCreator<S, R> =

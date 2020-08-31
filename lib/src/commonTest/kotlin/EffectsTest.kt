@@ -46,7 +46,7 @@ class EffectsTest : BaseTest() {
 
     @Test
     fun canChangeNameEffect() = runBlocking {
-        store.select(getNamedChangedSelector())
+        store.select(namedChangedSelector)
                 .test {
                     store.dispatch(NameChange("New Name"))
                     assertTrue(expectItem())
