@@ -12,14 +12,23 @@ import kotlinx.css.FlexDirection.column
 import kotlinx.css.display
 import kotlinx.css.flexDirection
 import kotlinx.html.js.onClickFunction
-import react.*
+import react.RBuilder
+import react.RComponent
+import react.RProps
+import react.RState
 import react.dom.div
+import react.functionalComponent
+import react.setState
+import react.useState
 import styled.css
 import styled.styledButton
 import styled.styledDiv
 import styled.styledSpan
 
-data class State(var movies: List<Movie>, var isMovieAdded: Boolean) : RState
+external interface MovieState : RState {
+    var movies: List<Movie>
+    var isMovieAdded: Boolean
+}
 
 val SelectorComponent = functionalComponent<RProps> {
     val (movies, setMovies) = useState(listOf<Movie>())
@@ -29,11 +38,11 @@ val SelectorComponent = functionalComponent<RProps> {
     }
 }
 
-class MoviesComponent : RComponent<RProps, State>() {
+class MoviesComponent : RComponent<RProps, MovieState>() {
 
     private val componentScope = CoroutineScope(Job() + Dispatchers.Main)
 
-    override fun State.init() {
+    override fun MovieState.init() {
         movies = listOf()
         isMovieAdded = false
     }
