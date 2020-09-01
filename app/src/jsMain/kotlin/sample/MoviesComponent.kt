@@ -38,6 +38,7 @@ val SelectorComponent = functionalComponent<RProps> {
     }
 }
 
+@JsExport
 class MoviesComponent : RComponent<RProps, MovieState>() {
 
     private val componentScope = CoroutineScope(Job() + Dispatchers.Main)
