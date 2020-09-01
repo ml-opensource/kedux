@@ -131,7 +131,13 @@ class Effects(vararg effectArgs: EffectFn<out Any>) {
         store.dispatch(action)
     }
 
-    fun bindTo(store: Store<*>) = bindTo(store, backgroundScope())
+    fun bindTo(store: Store<*>) {
+        effects.forEach { effect ->
+            jobList += effect(store.actions)
+                    .onEach { action -> dispatch(store, action) }
+                    .launchIn(backgroundScope())
+        }
+    }
 
     /**
      * Binds all [EffectFn] to the specified store. Will ignore [createSilentEffect] classes or [EffectFn] that return

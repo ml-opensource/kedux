@@ -23,6 +23,7 @@ kotlin {
     js {
         browser()
         useCommonJs()
+        binaries.executable()
 
         compilations.all {
             kotlinOptions {
