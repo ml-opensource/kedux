@@ -6,7 +6,7 @@
 ![badge][badge-jvm]
 ![badge][badge-mac]
 
-Kedux is a Kotlin-multiplatform implementation of [redux](redux.js.org) that works 
+Kedux is a Kotlin-multiplatform implementation of [redux](https://redux.js.org) that works 
 on Android, iOS, MacOS, and JS utilizing Coroutines + Flow :heart:
  
  __NOTE: This library is currently in development preview. Please check back later when it's ready for release.__
